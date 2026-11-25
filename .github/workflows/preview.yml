@@ -45,6 +45,8 @@ jobs:
       github.actor != 'dependabot[bot]'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    outputs:
+      url: ${{ steps.upload.outputs.url }}
     environment:
       name: preview
       url: ${{ steps.upload.outputs.url }}
@@ -157,3 +159,37 @@ jobs:
         env:
           E2E_BASE_URL: ${{ steps.upload.outputs.url }}
         run: npm run e2e
+
+  # The performance budget (#40): Lighthouse on the home, pricing and blog
+  # pages of the preview, three runs each. Fails when performance,
+  # accessibility or SEO drops below 90 (lighthouserc.cjs). The scores go in
+  # the job summary; the reports stay on the runner, since previews are
+  # private.
+  lighthouse:
+    name: Lighthouse
+    needs: preview
+    if: needs.preview.outputs.url != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      LHCI_URL: ${{ needs.preview.outputs.url }}
+      CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Run Lighthouse on the preview
+        run: npx --yes @lhci/cli@0.16.1 autorun --config=./lighthouserc.cjs
+
+      - name: Show the scores
+        if: always()
+        run: |
+          if [ -f .lighthouseci/reports/manifest.json ]; then
+            node scripts/lighthouse-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+          fi
