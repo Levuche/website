@@ -7,12 +7,11 @@ import {
   siteButtonClasses,
 } from '@levuche/ui';
 import { ArticleHtml } from '@/components/article-html';
-import { BetaForm } from '@/components/beta-form';
+import { GetStarted } from '@/components/auth-buttons';
 import { FaqList } from '@/components/faq-list';
 import { JsonLd } from '@/components/json-ld';
 import { SiteShell } from '@/components/site-shell';
 import { Testimonials } from '@/components/testimonials';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
   Container,
@@ -77,7 +76,7 @@ export default async function HomePage() {
     <SiteShell>
       <JsonLd data={organization} />
 
-      <section id="beta" className="pt-hero pb-section scroll-mt-4">
+      <section className="pt-hero pb-section">
         <Container className="gap-split grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] items-center">
           <div className="flex flex-col gap-5">
             <h1 className="text-display m-0">Your link in bio, now a shop.</h1>
@@ -85,11 +84,9 @@ export default async function HomePage() {
               Levuche turns your Instagram link into a small website that sells
               your packs, prompts and guides. Pay $9 once. No monthly fee.
             </p>
-            <BetaForm />
-            <p className="text-lv-text-3 m-0 text-sm">
-              We approve creators in small groups. You will get an email when
-              your spot opens.
-            </p>
+            <div>
+              <GetStarted size="lg" />
+            </div>
           </div>
           <div className="flex justify-center">
             <PhonePreview />
@@ -179,9 +176,7 @@ export default async function HomePage() {
             <Link href="/pricing" className="text-lv-link font-semibold">
               Pricing details
             </Link>
-            <Button asChild size="lg" className="w-full">
-              <Link href="/#beta">Join the beta</Link>
-            </Button>
+            <GetStarted size="lg" className="w-full" />
           </Card>
         </Container>
       </Section>
@@ -200,9 +195,7 @@ export default async function HomePage() {
           <SectionHeading className="text-lv-on-brand text-h1">
             Say “I’ll take it.”
           </SectionHeading>
-          <Button asChild variant="accent" size="lg">
-            <Link href="/#beta">Get early access</Link>
-          </Button>
+          <GetStarted variant="accent" size="lg" />
         </Container>
       </Section>
     </SiteShell>

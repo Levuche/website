@@ -56,6 +56,7 @@ jobs:
       # Built like the dev site: never claims to be levuche.com, so noindex,
       # and sign-in sends people back to dev.levuche.com.
       NEXT_PUBLIC_SITE_URL: https://dev.levuche.com
+      NEXT_PUBLIC_APP_URL: https://app-dev.levuche.com
       NEXT_PUBLIC_BUILDBASE_REDIRECT_URL: https://dev.levuche.com
       NEXT_PUBLIC_BUILDBASE_ORG_ID: ${{ vars.BUILDBASE_ORG_ID }}
       NEXT_PUBLIC_BUILDBASE_ENVIRONMENT: ${{ vars.BUILDBASE_ENVIRONMENT }}

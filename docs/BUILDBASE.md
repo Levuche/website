@@ -1,7 +1,7 @@
 # Buildbase
 
-levuche.com runs on Buildbase (`@buildbase/sdk`) for sign-in, the beta
-list, the contact form and every piece of editable copy. The site builds
+levuche.com runs on Buildbase (`@buildbase/sdk`) for sign-in, buying the
+add-on, the contact form and every piece of editable copy. The site builds
 and runs with none of it configured: each feature switches itself off
 until its settings are in `.env.local` (or the host's secrets).
 
@@ -19,6 +19,7 @@ development first, check it on `npm run dev`, then repeat it in production.
 | `NEXT_PUBLIC_BUILDBASE_CLIENT_ID`    | The environment's sign-in client                                                                               |
 | `NEXT_PUBLIC_BUILDBASE_REDIRECT_URL` | A redirect URL registered on that client: `http://localhost:3000` locally, `https://levuche.com` in production |
 | `NEXT_PUBLIC_BUILDBASE_ANALYTICS`    | `on` to turn on Buildbase web analytics. Off by default                                                        |
+| `NEXT_PUBLIC_APP_URL`                | The dashboard: `https://app-dev.levuche.com` for dev, `https://app.levuche.com` (the default) in production    |
 | `BUILDBASE_CLIENT_SECRET` (secret)   | The sign-in client's secret                                                                                    |
 | `BUILDBASE_API_TOKEN` (secret)       | Settings, API tokens: an app-server token with a content-reader role, `<orgId>:<secret>`                       |
 | `BUILDBASE_WEBHOOK_SECRET` (secret)  | The signing secret of the content webhook below                                                                |
@@ -30,11 +31,12 @@ commit.
 
 ## What each feature needs
 
-- **Sign in** (header): org id, client id, redirect URL and client secret.
-  The routes are `/api/auth/token`, `/api/auth/session` and
-  `/api/auth/signout`; the session lives in an httpOnly cookie.
-- **Beta sign-up** (home): the same settings. It is the SDK's beta form, so
-  sign-ups land in the console's beta list.
+- **Sign in and Get started** (header and home): org id, client id,
+  redirect URL and client secret. The routes are `/api/auth/token`,
+  `/api/auth/session` and `/api/auth/signout`; the session lives in an
+  httpOnly cookie. Both open Buildbase's hosted page, where new creators
+  sign up, and come back to `/dashboard`, which sends them on to the app at
+  `NEXT_PUBLIC_APP_URL`. Signed in, the header shows **Dashboard**.
 - **Contact form** (`/contact`): org id and `BUILDBASE_CONTACT_FORM_ID`. Make
   a public form named Contact with the fields in
   `content/buildbase/forms/contact.json` (`name`, `email`, `message`).

@@ -19,9 +19,14 @@ test.describe('home page', () => {
     await expect(
       page.getByRole('figure', { name: 'Example creator site on Levuche' })
     ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Get early access' })
-    ).toHaveAttribute('href', '/#beta');
+    // Every "Get started" opens sign-up and lands in the dashboard; the old
+    // beta form is gone.
+    const getStarted = page.getByRole('link', { name: 'Get started' });
+    await expect(getStarted.first()).toBeVisible();
+    for (const link of await getStarted.all()) {
+      await expect(link).toHaveAttribute('href', '/dashboard');
+    }
+    await expect(page.getByRole('link', { name: /beta/i })).toHaveCount(0);
     // Only one h1: the creator name in the phone preview is not a heading.
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
   });
@@ -61,6 +66,14 @@ test('header link opens the pricing page', async ({ page, isMobile }) => {
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 
+test('/dashboard sends people on to the Levuche app', async ({ request }) => {
+  const response = await request.get('/dashboard', { maxRedirects: 0 });
+  expect(response.status()).toBe(307);
+  expect(response.headers()['location']).toMatch(
+    /^https:\/\/app(-dev)?\.levuche\.com\/?$/
+  );
+});
+
 test('footer links lead to real pages', async ({ page, request }) => {
   await page.goto('/');
   const footer = page.getByRole('navigation', { name: 'Footer' });
@@ -89,6 +102,26 @@ test('unknown address shows the not-found page', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: 'Page not found' })
   ).toBeVisible();
+});
+
+test('pages send the security headers', async ({ request }) => {
+  for (const path of ['/', '/pricing', '/contact']) {
+    const headers = (await request.get(path)).headers();
+    // Enforced on levuche.com, report-only on the dev site and previews.
+    const csp =
+      headers['content-security-policy'] ??
+      headers['content-security-policy-report-only'];
+    expect(csp, path).toContain("default-src 'self'");
+    expect(csp, path).toContain("frame-ancestors 'none'");
+    expect(csp, path).toContain("object-src 'none'");
+    expect(headers['strict-transport-security'], path).toContain('max-age=');
+    expect(headers['x-content-type-options'], path).toBe('nosniff');
+    expect(headers['x-frame-options'], path).toBe('DENY');
+    expect(headers['referrer-policy'], path).toBe(
+      'strict-origin-when-cross-origin'
+    );
+    expect(headers['permissions-policy'], path).toContain('camera=()');
+  }
 });
 
 test('robots.txt and the sitemap answer', async ({ request }) => {

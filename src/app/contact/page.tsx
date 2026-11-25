@@ -10,7 +10,7 @@ export const metadata: Metadata = pageMetadata({
   path: '/contact',
   title: 'Contact',
   description:
-    'How to reach the Levuche team about the beta, your account, privacy or security.',
+    'How to reach the Levuche team about your page, your account, privacy or security.',
 });
 
 function Address({ value }: { value: string }) {
@@ -36,7 +36,7 @@ export default function ContactPage() {
         <div className="flex flex-col gap-2.5">
           <h1 className="text-h1 m-0">Contact</h1>
           <p className="text-lv-text-2 m-0 text-base leading-relaxed">
-            Questions about the beta, your site or your data? Write to us.
+            Questions about Levuche, your site or your data? Write to us.
           </p>
         </div>
 

@@ -71,8 +71,8 @@ export default async function PricingPage() {
               )}
               {offers.length === 0 && (
                 <p className="text-lv-text-2 m-0 text-base leading-relaxed">
-                  Plans are being finalised. Join the beta and we’ll email you
-                  when they’re ready.
+                  Plans are being finalised. Get started now and pick one when
+                  you’re ready to sell.
                 </p>
               )}
             </div>
