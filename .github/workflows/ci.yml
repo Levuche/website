@@ -19,24 +19,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Feature branches go into dev, and only dev goes into main, so
-  # levuche.com only ever gets what dev.levuche.com already showed. Make this
-  # a required check on main (docs/BRANCHES.md).
-  source:
-    name: Into main only from dev
+  # Work branches (feature/, fix/ and the like) go into dev, and only dev
+  # goes into main, so levuche.com only ever gets what dev.levuche.com
+  # already showed. Make this a required check on dev and main
+  # (docs/BRANCHES.md).
+  branches:
+    name: Branch rules
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
-      - name: Check where the pull request comes from
+      - name: Check the branch names
         env:
           BASE: ${{ github.base_ref }}
           HEAD: ${{ github.head_ref }}
           HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
         run: |
-          if [ "$BASE" = "main" ] && { [ "$HEAD" != "dev" ] || [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ]; }; then
-            echo "::error::Pull requests into main must come from dev. Open this one against dev instead."
-            exit 1
+          if [ "$BASE" = "main" ]; then
+            if [ "$HEAD" != "dev" ] || [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+              echo "::error::Pull requests into main must come from dev. Open this one against dev instead."
+              exit 1
+            fi
+          elif [ "$BASE" = "dev" ]; then
+            if ! printf '%s' "$HEAD" | grep -Eq '^(feature|fix|hotfix|chore|docs|ci|dependabot)/[a-z0-9._/-]+$'; then
+              echo "::error::Name the branch type/short-name, for example feature/beta-signup or fix/contact-form. Types: feature, fix, hotfix, chore, docs, ci."
+              exit 1
+            fi
           fi
           echo "$HEAD into $BASE is allowed."
 
