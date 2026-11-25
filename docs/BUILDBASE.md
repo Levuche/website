@@ -38,6 +38,15 @@ commit.
 - **Contact form** (`/contact`): org id and `BUILDBASE_CONTACT_FORM_ID`. Make
   a public form named Contact with the fields in
   `content/buildbase/forms/contact.json` (`name`, `email`, `message`).
+  Spam protection: in **Forms > Spam protection** choose the **Built-in
+  check** (a short calculation in the visitor's browser, no third-party
+  script or cookie; the Managed and provider widgets don't render on
+  levuche.com). Then on the form's **Protect** dialog turn on **Require a
+  captcha**, set a link limit (3 is plenty for a contact message), turn on
+  **Block throwaway email addresses**, and keep **Hold for review**. The site
+  solves the check through `/api/contact/challenge` and sends the answer with
+  the message. Turn the captcha on only once this code is deployed in that
+  environment, or the form refuses every message.
 - **Content**: `BUILDBASE_API_TOKEN`. Edits show within about a minute;
   with the webhook they show on the next request.
 - **Content webhook**: register `https://levuche.com/api/webhooks/content`
