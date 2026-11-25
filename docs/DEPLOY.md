@@ -4,10 +4,13 @@ levuche.com runs on Cloudflare Workers, built with OpenNext and deployed by
 GitHub Actions. The repository is public, so Actions minutes are free.
 
 - `.github/workflows/ci.yml` checks and builds every push and pull request.
-- `.github/workflows/deploy.yml` deploys every pull request from a branch of
-  this repository, and every push to `main`, to the dev site
-  (`dev.levuche.com`). A push to `main` then deploys production
-  (`levuche.com`), only if the dev deploy worked.
+- `.github/workflows/deploy.yml` deploys `dev` to the dev site
+  (`dev.levuche.com`) and `main` to production (`levuche.com`), each time
+  something is merged into that branch.
+- `.github/workflows/preview.yml` gives each pull request into `dev` its own
+  preview link, posted on the pull request (section 5).
+
+Work goes feature branch > `dev` > `main` (`docs/BRANCHES.md`).
 
 Nothing secret goes in the repo. The Cloudflare token is a GitHub secret, the
 Buildbase secrets live on each Worker, and the public Buildbase ids are GitHub
@@ -30,8 +33,8 @@ Worker itself can stay: GitHub Actions deploys to the same name, `levuche-com`.
 | A creator's own domain        | Their storefront                                 | Cloudflare for SaaS custom hostnames (step 9) |
 
 Only `levuche.com` is indexed. The dev site sends `noindex` and its canonical
-links point at `dev.levuche.com`. The dev site shows the latest pull request
-or push to deploy, so with two pull requests open, the last one pushed wins.
+links point at `dev.levuche.com`. The dev site always shows the `dev`
+branch.
 
 ## 1. Put both domains on Cloudflare
 
@@ -72,7 +75,9 @@ In GitHub, `Levuche/website` > **Settings**:
 1. **Secrets and variables** > **Actions**:
    - New repository secret `CLOUDFLARE_API_TOKEN`: the token from step 2.
    - New repository variable `CLOUDFLARE_ACCOUNT_ID`: the account id.
-2. **Environments**: create `development` and `production`. In each, add
+2. **Environments**: create `development` and `production` (`preview` is
+   created by the first preview run; give it the same variables as
+   `development`). In each, add
    these variables (public values, not secrets). Leave any you don't have yet;
    the matching feature stays off until it's set.
 
@@ -118,14 +123,37 @@ Until a value is set, the matching part of the site switches itself off: no
 sign-in, sample content from `content/buildbase` on the home and pricing
 pages, and a contact form that says it isn't open yet.
 
-## 5. First deploy and the preview
+## 5. Deploying
 
-Push to the pull request's branch (or re-run the **Deploy to Cloudflare**
-workflow on it). The dev job deploys it to `https://dev.levuche.com`. That is
-the preview: check it before merging.
+Merge a pull request into `dev` and the push deploys `https://dev.levuche.com`.
+Check it there, then open a pull request from `dev` into `main`; merging it
+deploys `https://levuche.com`. To deploy a branch again without a change, open
+**Actions** > **Deploy to Cloudflare** > **Run workflow** and pick `dev` or
+`main`.
 
-When the pull request is merged, the push to `main` deploys the dev site again
-and then `levuche.com`.
+### Preview links
+
+Every pull request into `dev` gets a link of its own, posted as a comment on
+the pull request and updated on every push:
+
+`https://pr-<number>-levuche-com-dev.<account subdomain>.workers.dev`
+
+It's a version of the dev Worker that's uploaded but not deployed, so
+`dev.levuche.com` keeps showing the `dev` branch. It reads the Buildbase
+development content, like the dev site.
+
+- **Needs** a workers.dev subdomain on the Cloudflare account (**Workers &
+  Pages** > **Settings** > **Subdomain**; set it once) and `preview_urls` on
+  the dev Worker, which `wrangler.jsonc` sets and the next deploy of `dev`
+  turns on. Until then the preview job passes with a warning and no link.
+- **Public:** anyone with the link can open it. workers.dev preview links
+  send noindex, so search engines leave them out. To limit them to your
+  testers, turn on Cloudflare Access for the dev Worker's preview URLs (the
+  Worker > **Settings** > **Domains & Routes** > **Preview URLs**).
+- **Sign-in** sends people back to `dev.levuche.com`, so test sign-in there
+  after the merge.
+- Pull requests from forks and from Dependabot get no preview, since they
+  can't read the Cloudflare token.
 
 ## 6. levuche.com and www
 
@@ -190,3 +218,4 @@ Cloudflare docs, read November 2026:
 - [Wildcard DNS records](https://developers.cloudflare.com/dns/manage-dns-records/reference/wildcard-dns-records/)
 - [Workers as the Cloudflare for SaaS fallback origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/) and [Cloudflare for SaaS plans](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/plans/)
 - [OpenNext on Cloudflare: deploying](https://opennext.js.org/cloudflare/howtos/dev-deploy)
+- [Version URLs](https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/) and [Cloudflare Access for Workers](https://developers.cloudflare.com/workers/configuration/cloudflare-access/)
