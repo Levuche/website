@@ -2,14 +2,14 @@ name: Deploy to Cloudflare
 
 # Builds the site with OpenNext and deploys it with Wrangler:
 #
-# - Every pull request from a branch of this repository, and every push to
-#   main, deploys to the dev site (Worker levuche-com-dev,
-#   https://dev.levuche.com), which reads the Buildbase development
-#   environment and sends noindex.
-# - A push to main then deploys production (Worker levuche-com,
-#   https://levuche.com), only if the dev deploy succeeded.
+# - A push to dev (a pull request merged into dev) deploys the dev site
+#   (Worker levuche-com-dev, https://dev.levuche.com), which reads the
+#   Buildbase development environment and sends noindex.
+# - A push to main (dev merged into main) deploys production (Worker
+#   levuche-com, https://levuche.com).
 #
-# Pull requests from forks and Dependabot never run the deploy jobs.
+# Pull requests only run the checks in ci.yml; nothing deploys until a merge.
+# "Run workflow" on dev or main deploys that branch again by hand.
 #
 # Repository secret: CLOUDFLARE_API_TOKEN. Repository variable:
 # CLOUDFLARE_ACCOUNT_ID. GitHub environments "development" and "production"
@@ -20,10 +20,7 @@ name: Deploy to Cloudflare
 on:
   workflow_dispatch:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
+    branches: [dev, main]
 
 permissions:
   contents: read
@@ -31,11 +28,7 @@ permissions:
 jobs:
   deploy-dev:
     name: Deploy the dev site
-    # Not for forks or Dependabot: neither gets the deploy secrets.
-    if: >-
-      github.actor != 'dependabot[bot]' &&
-      (github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name == github.repository)
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     environment:
@@ -65,31 +58,19 @@ jobs:
           node-version: 22
           cache: npm
 
-      # Until Cloudflare is set up, a pull request skips the dev deploy with a
-      # warning instead of failing. A push to main fails, so production never
-      # silently stops deploying.
       - name: Check the Cloudflare settings are in place
-        id: settings
         run: |
-          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          elif [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            echo "::warning::Dev deploy skipped: add the CLOUDFLARE_API_TOKEN secret and the CLOUDFLARE_ACCOUNT_ID variable (docs/DEPLOY.md)."
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-          else
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
             echo "::error::Add the CLOUDFLARE_API_TOKEN secret and the CLOUDFLARE_ACCOUNT_ID variable (Settings > Secrets and variables > Actions). See docs/DEPLOY.md."
             exit 1
           fi
 
-      - if: steps.settings.outputs.ready == 'true'
-        run: npm ci
+      - run: npm ci
 
       - name: Build and deploy (dev)
-        if: steps.settings.outputs.ready == 'true'
         run: npm run cf:deploy:dev
 
       - name: Smoke test
-        if: steps.settings.outputs.ready == 'true'
         run: |
           for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
             code=$(curl -s -o /dev/null -w '%{http_code}' https://dev.levuche.com/ || true)
@@ -101,8 +82,7 @@ jobs:
 
   deploy:
     name: Deploy levuche.com
-    needs: deploy-dev
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     environment:
