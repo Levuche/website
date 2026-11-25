@@ -1,26 +1,35 @@
 # Deploying to Cloudflare
 
-levuche.com runs on Cloudflare Workers, built with OpenNext. Cloudflare's
-Git integration (Workers Builds) builds every push. `main` deploys to
-production and every other branch gets its own preview URL. This page covers
-the one-time setup, the domains, the previews and the secrets.
+levuche.com runs on Cloudflare Workers, built with OpenNext and deployed by
+GitHub Actions. The repository is public, so Actions minutes are free.
 
-Nothing secret goes in the repo. Build variables and secrets live in the
-Cloudflare dashboard (or are set with Wrangler from your own computer).
+- `.github/workflows/ci.yml` checks and builds every push and pull request.
+- `.github/workflows/deploy.yml` deploys every pull request from a branch of
+  this repository, and every push to `main`, to the dev site
+  (`dev.levuche.com`). A push to `main` then deploys production
+  (`levuche.com`), only if the dev deploy worked.
+
+Nothing secret goes in the repo. The Cloudflare token is a GitHub secret, the
+Buildbase secrets live on each Worker, and the public Buildbase ids are GitHub
+variables.
+
+Don't also connect the repo to Cloudflare's own Git builds (Workers Builds),
+or every push would deploy twice.
 
 ## Domain plan
 
-| Address                                          | Serves                               | Set up                                        |
-| ------------------------------------------------ | ------------------------------------ | --------------------------------------------- |
-| `levuche.com`                                    | This site (Worker `levuche-website`) | Custom domain, from `wrangler.jsonc`          |
-| `www.levuche.com`                                | 301 to `levuche.com`                 | Redirect rule (step 6)                        |
-| `<branch>-levuche-website.<account>.workers.dev` | Branch previews of this site         | Automatic once preview builds are on          |
-| `app.levuche.com` (suggested)                    | The Levuche app, once it exists      | Its own Worker with a custom domain (step 9)  |
-| `<name>.levuche.page`                            | Creator storefronts, once they exist | Wildcard DNS and a Worker route (step 9)      |
-| A creator's own domain                           | Their storefront                     | Cloudflare for SaaS custom hostnames (step 9) |
+| Address                       | Serves                                               | Set up                                        |
+| ----------------------------- | ---------------------------------------------------- | --------------------------------------------- |
+| `levuche.com`                 | This site (Worker `levuche-website`)                 | Custom domain, from `wrangler.jsonc`          |
+| `www.levuche.com`             | 301 to `levuche.com`                                 | Redirect rule (step 6)                        |
+| `dev.levuche.com`             | The dev site (Worker `levuche-website-dev`), noindex | Custom domain, from `wrangler.jsonc`          |
+| `app.levuche.com` (suggested) | The Levuche app, once it exists                      | Its own Worker with a custom domain (step 9)  |
+| `<name>.levuche.page`         | Creator storefronts, once they exist                 | Wildcard DNS and a Worker route (step 9)      |
+| A creator's own domain        | Their storefront                                     | Cloudflare for SaaS custom hostnames (step 9) |
 
-Only `levuche.com` is indexed. Every preview build sends `noindex`, and
-workers.dev previews also get `X-Robots-Tag: noindex` from Cloudflare.
+Only `levuche.com` is indexed. The dev site sends `noindex` and its canonical
+links point at `dev.levuche.com`. The dev site shows the latest pull request
+or push to deploy, so with two pull requests open, the last one pushed wins.
 
 ## 1. Put both domains on Cloudflare
 
@@ -32,67 +41,69 @@ workers.dev previews also get `X-Robots-Tag: noindex` from Cloudflare.
 3. At the registrar, switch each domain to the two nameservers Cloudflare
    shows. Wait until the zone reads **Active**.
 
-`wrangler.jsonc` attaches `levuche.com` to the Worker on every production
-deploy, so the `levuche.com` zone has to be active on the same account before
-the site branch is merged into `main`.
+Both Workers attach their domain on every deploy, so the `levuche.com` zone
+has to be active before the first deploy works.
 
-## 2. Connect the repository
+## 2. Cloudflare API token
 
-1. Go to **Workers & Pages** > **Create** > **Import a repository**, and pick
-   GitHub `Levuche/website`. Allow the Cloudflare GitHub app on that repo when
-   asked.
-2. Fill in:
+In Cloudflare, **My Profile** > **API Tokens** > **Create Token** >
+**Create Custom Token**, with:
 
-   | Setting           | Value                                                     |
-   | ----------------- | --------------------------------------------------------- |
-   | Project name      | `levuche-website` (must match `name` in `wrangler.jsonc`) |
-   | Production branch | `main`                                                    |
-   | Build command     | `npm run cf:build`                                        |
-   | Deploy command    | `npx opennextjs-cloudflare deploy`                        |
-   | Root directory    | leave empty                                               |
+| Scope               | Permission             |
+| ------------------- | ---------------------- |
+| Account (Levuche's) | Workers Scripts: Edit  |
+| Account (Levuche's) | Account Settings: Read |
+| Zone: `levuche.com` | Workers Routes: Edit   |
+| Zone: `levuche.com` | DNS: Edit              |
+| Zone: `levuche.com` | Zone: Read             |
 
-3. Save and deploy. The first production build is `main`, which still holds
-   only the scaffold until the site branch is merged. It goes live on the
-   Worker's workers.dev address only, not on `levuche.com` yet.
+Limit it to the Levuche account and the `levuche.com` zone. Copy the token
+once; Cloudflare doesn't show it again.
 
-## 3. Turn on preview builds
+The account id is on the account's **Workers & Pages** overview page (it isn't
+secret).
 
-1. Open the Worker > **Settings** > **Build** > **Branch control**, and tick
-   **Enable Preview Builds**.
-2. Leave **Preview command** as `npx wrangler preview`.
-3. Each push to a branch other than `main` now builds a preview. Cloudflare
-   posts the preview URL on the pull request. For the `site-pages` branch it
-   looks like `site-pages-levuche-website.<account>.workers.dev`, and it stays
-   the same across pushes.
+## 3. GitHub settings
 
-A branch gets its first preview on its next push after this is turned on.
+In GitHub, `Levuche/website` > **Settings**:
 
-## 4. Build variables
+1. **Secrets and variables** > **Actions**:
+   - New repository secret `CLOUDFLARE_API_TOKEN`: the token from step 2.
+   - New repository variable `CLOUDFLARE_ACCOUNT_ID`: the account id.
+2. **Environments**: create `development` and `production`. In each, add
+   these variables (public values, not secrets). Leave any you don't have yet;
+   the matching feature stays off until it's set.
 
-`NEXT_PUBLIC_*` values are baked into the build, and Workers Builds gives
-every branch the same build variables. So `scripts/cf-build.mjs` does this:
-on any branch other than `main`, a variable named `PREVIEW_<NAME>` replaces
-`<NAME>`, and the build is marked as a preview (noindex).
+   | Variable                | `development`                     | `production`                         |
+   | ----------------------- | --------------------------------- | ------------------------------------ |
+   | `BUILDBASE_ORG_ID`      | Levuche org id                    | Levuche org id                       |
+   | `BUILDBASE_ENVIRONMENT` | the development environment's key | not used (production is the default) |
+   | `BUILDBASE_CLIENT_ID`   | development sign-in client id     | production sign-in client id         |
+   | `BUILDBASE_ANALYTICS`   | `on` when wanted                  | `on` when wanted                     |
 
-Set these under **Settings** > **Build** > **Variables and secrets**. None of
-them is secret.
+   The site address and sign-in redirect are fixed in the workflow
+   (`https://dev.levuche.com` and `https://levuche.com`), so the dev site can
+   never present itself as levuche.com.
 
-| Variable                             | Production value             | Preview variable and value                                                      |
-| ------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`               | `https://levuche.com`        | `PREVIEW_NEXT_PUBLIC_SITE_URL` = the preview URL from step 3                    |
-| `NEXT_PUBLIC_BUILDBASE_ORG_ID`       | Levuche org id               | not needed (same org)                                                           |
-| `NEXT_PUBLIC_BUILDBASE_ENVIRONMENT`  | leave unset                  | `PREVIEW_NEXT_PUBLIC_BUILDBASE_ENVIRONMENT` = the development environment's key |
-| `NEXT_PUBLIC_BUILDBASE_CLIENT_ID`    | production sign-in client id | `PREVIEW_NEXT_PUBLIC_BUILDBASE_CLIENT_ID` = development sign-in client id       |
-| `NEXT_PUBLIC_BUILDBASE_REDIRECT_URL` | `https://levuche.com`        | `PREVIEW_NEXT_PUBLIC_BUILDBASE_REDIRECT_URL` = the preview URL                  |
-| `NEXT_PUBLIC_BUILDBASE_ANALYTICS`    | `on` when wanted             | optional                                                                        |
+3. Optional: under **Environments** > `production`, add yourself as a
+   required reviewer so production waits for your click.
 
-Contact addresses (`NEXT_PUBLIC_CONTACT_EMAIL` and the others) default to
-`hello@levuche.com` and need no variable.
+## 4. Runtime secrets on each Worker
 
-## 5. Runtime secrets
+These four are read on each request and must never be in the repo. The first
+deploy creates both Workers; after that, set each secret from your computer in
+the repo folder (Wrangler asks for the value, so it stays out of your shell
+history):
 
-These four are read on each request and must never be in the repo. Add each as
-type **Secret**.
+```sh
+npx wrangler login
+npx wrangler secret put BUILDBASE_API_TOKEN --env dev
+npx wrangler secret put BUILDBASE_API_TOKEN
+```
+
+The first line of each pair is the dev site (Buildbase development values),
+the second is production. Or add them in the dashboard: the Worker >
+**Settings** > **Variables and Secrets** > **Add** > type **Secret**.
 
 | Secret                      | What it is                                       |
 | --------------------------- | ------------------------------------------------ |
@@ -101,36 +112,24 @@ type **Secret**.
 | `BUILDBASE_WEBHOOK_SECRET`  | The content webhook's signing secret             |
 | `BUILDBASE_CONTACT_FORM_ID` | The Contact form's public id                     |
 
-**Production:** the Worker > **Settings** > **Variables and Secrets** > **Add**,
-or from your computer in the repo folder:
-
-```sh
-npx wrangler secret put BUILDBASE_API_TOKEN
-```
-
-**Previews** use the Buildbase development environment's values, set with
-Wrangler. Base secrets reach new previews only, so for a preview that already
-exists, also set it on that preview by name:
-
-```sh
-npx wrangler preview base-config secret put BUILDBASE_API_TOKEN
-npx wrangler preview secret put BUILDBASE_API_TOKEN --name site-pages
-```
-
-Repeat for each of the four. Wrangler asks for the value, so it never lands in
-your shell history. Run `npx wrangler login` once first.
-
 Until a value is set, the matching part of the site switches itself off: no
-sign-in, no content from Buildbase (previews show the sample content in
-`content/buildbase`), and the contact form says it isn't open yet.
+sign-in, sample content from `content/buildbase` on the home and pricing
+pages, and a contact form that says it isn't open yet.
+
+## 5. First deploy and the preview
+
+Push to the pull request's branch (or re-run the **Deploy to Cloudflare**
+workflow on it). The dev job deploys it to `https://dev.levuche.com`. That is
+the preview: check it before merging.
+
+When the pull request is merged, the push to `main` deploys the dev site again
+and then `levuche.com`.
 
 ## 6. levuche.com and www
 
-1. Merge the site branch into `main`. The production deploy attaches
-   `levuche.com` as a custom domain from `wrangler.jsonc` and creates its DNS
-   record. If the build log says it couldn't, add it by hand: the Worker >
-   **Settings** > **Domains & Routes** > **Add** > **Custom Domain** >
-   `levuche.com`.
+1. The production deploy attaches `levuche.com` from `wrangler.jsonc` and
+   creates its DNS record. If its log says it couldn't, add it by hand: the
+   Worker > **Settings** > **Domains & Routes** > **Add** > **Custom Domain**.
 2. For `www`, add a DNS record in the `levuche.com` zone: type `AAAA`, name
    `www`, content `100::`, proxied (orange cloud).
 3. **Rules** > **Redirect Rules** > create from the template **Redirect from
@@ -141,12 +140,10 @@ sign-in, no content from Buildbase (previews show the sample content in
 
 ## 7. Buildbase addresses
 
-Each Buildbase environment needs the site's addresses:
-
-| Setting in Buildbase        | production                                 | development                                 |
-| --------------------------- | ------------------------------------------ | ------------------------------------------- |
-| Sign-in client redirect URL | `https://levuche.com`                      | `http://localhost:3000` and the preview URL |
-| Content webhook URL         | `https://levuche.com/api/webhooks/content` | `<preview URL>/api/webhooks/content`        |
+| Setting in Buildbase        | production                                 | development                                           |
+| --------------------------- | ------------------------------------------ | ----------------------------------------------------- |
+| Sign-in client redirect URL | `https://levuche.com`                      | `http://localhost:3000` and `https://dev.levuche.com` |
+| Content webhook URL         | `https://levuche.com/api/webhooks/content` | `https://dev.levuche.com/api/webhooks/content`        |
 
 ## 8. Deploying by hand (optional)
 
@@ -154,11 +151,12 @@ From your own computer, with `.env.local` filled in for the target:
 
 ```sh
 npx wrangler login
-npm run cf:deploy
+npm run cf:deploy:dev   # dev.levuche.com
+npm run cf:deploy       # levuche.com
 ```
 
-Workers Builds is the better route: a local build picks up `.env.local`, which
-may not match production.
+The workflow is the better route: a local build picks up `.env.local`, which
+may not match what the workflow builds.
 
 ## 9. Later: the app and creator storefronts
 
@@ -178,18 +176,15 @@ them.
   `levuche.page` zone. Add a fallback origin such as `customers.levuche.page`
   (`AAAA 100::`, proxied), and a Worker route `*/*` on the storefront Worker.
   Each creator points a CNAME at `customers.levuche.page`, and the app adds
-  their domain as a custom hostname so Cloudflare issues its certificate.
-  Check Cloudflare for SaaS pricing before turning it on.
+  their domain as a custom hostname so Cloudflare issues its certificate. The
+  first 100 custom hostnames are included, then $0.10 each a month (November
+  2026).
 
 ## Sources
 
 Cloudflare docs, read November 2026:
 
-- [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)
-- [Build branches and preview builds](https://developers.cloudflare.com/workers/ci-cd/builds/build-branches/)
-- [Worker Previews](https://developers.cloudflare.com/workers/previews/) and [Previews configuration](https://developers.cloudflare.com/workers/previews/configuration/)
-- [Workers Builds default variables](https://developers.cloudflare.com/changelog/post/2025-06-10-default-env-vars/)
 - [Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/) and [Routes](https://developers.cloudflare.com/workers/configuration/routing/routes/)
 - [Wildcard DNS records](https://developers.cloudflare.com/dns/manage-dns-records/reference/wildcard-dns-records/)
-- [Workers as the Cloudflare for SaaS fallback origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/)
+- [Workers as the Cloudflare for SaaS fallback origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/) and [Cloudflare for SaaS plans](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/plans/)
 - [OpenNext on Cloudflare: deploying](https://opennext.js.org/cloudflare/howtos/dev-deploy)

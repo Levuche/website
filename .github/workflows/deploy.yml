@@ -1,0 +1,154 @@
+name: Deploy to Cloudflare
+
+# Builds the site with OpenNext and deploys it with Wrangler:
+#
+# - Every pull request from a branch of this repository, and every push to
+#   main, deploys to the dev site (Worker levuche-website-dev,
+#   https://dev.levuche.com), which reads the Buildbase development
+#   environment and sends noindex.
+# - A push to main then deploys production (Worker levuche-website,
+#   https://levuche.com), only if the dev deploy succeeded.
+#
+# Pull requests from forks and Dependabot never run the deploy jobs.
+#
+# Repository secret: CLOUDFLARE_API_TOKEN. Repository variable:
+# CLOUDFLARE_ACCOUNT_ID. GitHub environments "development" and "production"
+# hold the public Buildbase values as variables (docs/DEPLOY.md). Runtime
+# secrets (Buildbase client secret, API token, webhook secret) live on each
+# Worker, set with `wrangler secret put`, and are never needed here.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-dev:
+    name: Deploy the dev site
+    # Not for forks or Dependabot: neither gets the deploy secrets.
+    if: >-
+      github.actor != 'dependabot[bot]' &&
+      (github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment:
+      name: development
+      url: https://dev.levuche.com
+    concurrency:
+      group: deploy-dev
+      cancel-in-progress: false
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      # Fixed here, not variables, so the dev site can never claim to be
+      # levuche.com and is always noindex.
+      NEXT_PUBLIC_SITE_URL: https://dev.levuche.com
+      NEXT_PUBLIC_BUILDBASE_REDIRECT_URL: https://dev.levuche.com
+      NEXT_PUBLIC_BUILDBASE_ORG_ID: ${{ vars.BUILDBASE_ORG_ID }}
+      NEXT_PUBLIC_BUILDBASE_ENVIRONMENT: ${{ vars.BUILDBASE_ENVIRONMENT }}
+      NEXT_PUBLIC_BUILDBASE_CLIENT_ID: ${{ vars.BUILDBASE_CLIENT_ID }}
+      NEXT_PUBLIC_BUILDBASE_ANALYTICS: ${{ vars.BUILDBASE_ANALYTICS }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Until Cloudflare is set up, a pull request skips the dev deploy with a
+      # warning instead of failing. A push to main fails, so production never
+      # silently stops deploying.
+      - name: Check the Cloudflare settings are in place
+        id: settings
+        run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          elif [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            echo "::warning::Dev deploy skipped: add the CLOUDFLARE_API_TOKEN secret and the CLOUDFLARE_ACCOUNT_ID variable (docs/DEPLOY.md)."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Add the CLOUDFLARE_API_TOKEN secret and the CLOUDFLARE_ACCOUNT_ID variable (Settings > Secrets and variables > Actions). See docs/DEPLOY.md."
+            exit 1
+          fi
+
+      - if: steps.settings.outputs.ready == 'true'
+        run: npm ci
+
+      - name: Build and deploy (dev)
+        if: steps.settings.outputs.ready == 'true'
+        run: npm run cf:deploy:dev
+
+      - name: Smoke test
+        if: steps.settings.outputs.ready == 'true'
+        run: |
+          for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' https://dev.levuche.com/ || true)
+            echo "dev.levuche.com: $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 15
+          done
+          echo "::warning::dev.levuche.com did not answer 200 yet (a new custom domain's certificate can take a few minutes)."
+
+  deploy:
+    name: Deploy levuche.com
+    needs: deploy-dev
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: https://levuche.com
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      NEXT_PUBLIC_SITE_URL: https://levuche.com
+      NEXT_PUBLIC_BUILDBASE_REDIRECT_URL: https://levuche.com
+      NEXT_PUBLIC_BUILDBASE_ORG_ID: ${{ vars.BUILDBASE_ORG_ID }}
+      # Empty: the org's production environment.
+      NEXT_PUBLIC_BUILDBASE_ENVIRONMENT: ''
+      NEXT_PUBLIC_BUILDBASE_CLIENT_ID: ${{ vars.BUILDBASE_CLIENT_ID }}
+      NEXT_PUBLIC_BUILDBASE_ANALYTICS: ${{ vars.BUILDBASE_ANALYTICS }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Check the Cloudflare settings are in place
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Add the CLOUDFLARE_API_TOKEN secret and the CLOUDFLARE_ACCOUNT_ID variable. See docs/DEPLOY.md."
+            exit 1
+          fi
+
+      - run: npm ci
+
+      - name: Build and deploy (production)
+        run: npm run cf:deploy
+
+      - name: Smoke test
+        run: |
+          for i in 1 2 3 4 5 6; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' https://levuche.com/ || true)
+            echo "levuche.com: $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 10
+          done
+          echo "::warning::levuche.com did not answer 200 yet (a new custom domain's certificate can take a few minutes)."

@@ -12,12 +12,10 @@ export const siteUrl = (
 ).replace(/\/+$/, '');
 
 /**
- * Only a production build on the production host is indexed. Preview and
- * staging builds send noindex (see next.config.ts and scripts/cf-build.mjs).
+ * Only the production host is indexed. The dev site (dev.levuche.com) and any
+ * other host send noindex (see next.config.ts).
  */
-export const isIndexable =
-  siteUrl === PRODUCTION_URL &&
-  process.env.NEXT_PUBLIC_SITE_ENV?.trim() !== 'preview';
+export const isIndexable = siteUrl === PRODUCTION_URL;
 
 export const site = {
   name: 'Levuche',

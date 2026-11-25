@@ -12,9 +12,10 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run format:check && npm run typecheck",
-    "cf:build": "node scripts/cf-build.mjs",
-    "cf:preview": "node scripts/cf-build.mjs && opennextjs-cloudflare preview",
-    "cf:deploy": "node scripts/cf-build.mjs && opennextjs-cloudflare deploy"
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:deploy:dev": "opennextjs-cloudflare build && opennextjs-cloudflare deploy --env dev"
   },
   "dependencies": {
     "@buildbase/sdk": "^1.9.0",

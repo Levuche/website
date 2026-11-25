@@ -1,7 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // levuche.com on Cloudflare Workers, built with OpenNext. Setup, domains,
-  // previews and secrets: docs/DEPLOY.md. No secrets belong in this file.
+  // levuche.com on Cloudflare Workers, built with OpenNext and deployed by
+  // GitHub Actions. Setup, domains and secrets: docs/DEPLOY.md. No secrets
+  // belong in this file.
   "name": "levuche-website",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-01",
@@ -14,15 +15,22 @@
     "binding": "ASSETS",
   },
   "observability": { "enabled": true },
-  // levuche.com is the only production host. The levuche.com zone must be on
-  // the same Cloudflare account before the first deploy. www.levuche.com is a
-  // 301 redirect rule in the dashboard, not a route here.
+  // Production: levuche.com only (no workers.dev address). The levuche.com
+  // zone must be on the same Cloudflare account before the first deploy.
+  // www.levuche.com is a 301 redirect rule in the dashboard, not a route.
   "routes": [{ "pattern": "levuche.com", "custom_domain": true }],
+  "workers_dev": false,
   // Keep runtime values set in the dashboard on each deploy. Secrets are
   // always kept; this also keeps any plain-text ones.
   "keep_vars": true,
-  // Settings for branch previews (Workers Builds runs `npx wrangler preview`
-  // on every branch except main). Preview secrets are set with
-  // `npx wrangler preview base-config secret put NAME`.
-  "previews": {},
+  "env": {
+    // The dev site: every pull request and every push to main deploys here
+    // first (.github/workflows/deploy.yml). It reads the Buildbase
+    // development environment and sends noindex.
+    "dev": {
+      "name": "levuche-website-dev",
+      "routes": [{ "pattern": "dev.levuche.com", "custom_domain": true }],
+      "workers_dev": false,
+    },
+  },
 }

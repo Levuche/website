@@ -20,13 +20,14 @@ npm run dev
 
 The site runs on http://localhost:3000.
 
-| Command              | What it does                                                               |
-| -------------------- | -------------------------------------------------------------------------- |
-| `npm run dev`        | Local development server                                                   |
-| `npm run build`      | Production build                                                           |
-| `npm run check`      | Lint, formatting and type check                                            |
-| `npm run cf:preview` | Build for Cloudflare Workers and preview locally                           |
-| `npm run cf:deploy`  | Build and deploy to Cloudflare Workers by hand (setup in `docs/DEPLOY.md`) |
+| Command                 | What it does                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------ |
+| `npm run dev`           | Local development server                                                                   |
+| `npm run build`         | Production build                                                                           |
+| `npm run check`         | Lint, formatting and type check                                                            |
+| `npm run cf:preview`    | Build for Cloudflare Workers and preview locally                                           |
+| `npm run cf:deploy`     | Build and deploy levuche.com by hand (GitHub Actions normally does this; `docs/DEPLOY.md`) |
+| `npm run cf:deploy:dev` | Build and deploy the dev site, dev.levuche.com, by hand                                    |
 
 ## Environment
 
