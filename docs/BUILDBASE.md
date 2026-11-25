@@ -72,10 +72,11 @@ and their own domains, so they never receive it.
 
 For the app to read the same sign-in it must:
 
-- read and write the same cookie: `bb-session-id` in production,
-  `bb-session-id-<environment key>` in development, httpOnly, `Path=/`,
-  `SameSite=Lax`, `Domain=levuche.com`, and clear it the same way on
-  sign-out;
+- read and write the same cookie, with the helpers from `@levuche/kit/server`
+  (v0.2.0 or later) that the website uses: `sessionCookieName()`,
+  `sessionCookieOptions()` and `expireHostOnlySessionCookie()`. That gives
+  `bb-session-id` in production, `bb-session-id-<environment key>` in
+  development, httpOnly, `Path=/`, `SameSite=Lax`, `Domain=levuche.com`;
 - use the same Buildbase org and environment as the website (production
   with production, development with development);
 - have its own sign-in client with its own redirect URLs
@@ -93,7 +94,9 @@ Buildbase keeps it in local storage, which only the site that wrote it can
 read, so the app cannot see the website's copy. Links into the app carry
 the code along instead: **Dashboard**, **Get started** and **Sign in** add
 `?ref=<code>`, and `/dashboard` passes it on to the app, which must call
-`captureReferral()` on landing too.
+`captureReferral()` on landing too. The parameter, the code check and the
+environment id come from `@levuche/kit` (`withReferral()`,
+`forwardReferral()`, `buildbaseEnvironmentId()`), which the app uses too.
 
 Nothing is kept until affiliate programs are turned on in the console
 (**Billing > Selling > Settings > Affiliates**): an unknown code keeps

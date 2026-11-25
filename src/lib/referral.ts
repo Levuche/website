@@ -1,6 +1,11 @@
 import { captureReferral, getReferral } from '@buildbase/sdk/tracking';
+import {
+  buildbaseEnvironmentId,
+  isReferralCode,
+  REFERRAL_EVENT,
+  withReferral as addReferral,
+} from '@levuche/kit';
 import { buildbase } from '@/lib/buildbase-config';
-import { isReferralCode, REFERRAL_PARAM } from '@/lib/referral-code';
 
 /**
  * Affiliate links. A link like levuche.com/?ref=MAYA is turned into a signed
@@ -9,21 +14,13 @@ import { isReferralCode, REFERRAL_PARAM } from '@/lib/referral-code';
  *
  * Buildbase keeps that referral for this site alone (local storage), so the
  * Levuche app cannot read it. Links from here into the app carry the code
- * along as ?ref=, and the app keeps its own copy. See docs/BUILDBASE.md.
+ * along as ?ref=, and the app keeps its own copy. The parameter, the code
+ * check and the environment id come from @levuche/kit, which the app uses
+ * too. See docs/BUILDBASE.md.
  */
 
-/**
- * The id Buildbase knows this environment by (its `environmentId`): the org
- * id for production, `<orgId>-<key>` for another environment. Null before
- * the org is set.
- */
-function referralOrgId(): string | null {
-  const { orgId, environment } = buildbase;
-  if (!/^[0-9a-f]{24}$/i.test(orgId)) return null;
-  return environment && environment !== 'production'
-    ? `${orgId}-${environment}`
-    : orgId;
-}
+/** The id Buildbase keeps this environment's referrals under, or null. */
+const referralOrgId = () => buildbaseEnvironmentId(buildbase);
 
 /**
  * Keeps the referral from this page's ?ref=, if there is one. Never throws:
@@ -39,8 +36,7 @@ export function keepReferral() {
   );
 }
 
-/** Sent on window once a referral is kept, so links pick the code up. */
-export const REFERRAL_EVENT = 'levuche:referral';
+export { REFERRAL_EVENT };
 
 /** The affiliate code kept in this browser, or null. */
 export function referralCode(): string | null {
@@ -55,10 +51,5 @@ export function referralCode(): string | null {
  * the same affiliate. Unchanged when there is none.
  */
 export function withReferral(href: string, code = referralCode()): string {
-  if (!code) return href;
-  const url = new URL(href, 'https://levuche.invalid');
-  url.searchParams.set(REFERRAL_PARAM, code);
-  return url.origin === 'https://levuche.invalid'
-    ? `${url.pathname}${url.search}${url.hash}`
-    : url.toString();
+  return addReferral(href, code);
 }
