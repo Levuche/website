@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { buttonClasses } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { LevucheLogo } from '@/components/logo';
 import { AuthButtons } from '@/components/auth-buttons';
 import { cn } from '@/lib/utils';
@@ -34,9 +34,9 @@ export function SiteHeader({ current = null }: { current?: Current }) {
           Pricing
         </Link>
         <AuthButtons />
-        <Link href="/#beta" className={buttonClasses()}>
-          Join the beta
-        </Link>
+        <Button asChild>
+          <Link href="/#beta">Join the beta</Link>
+        </Button>
       </nav>
     </header>
   );

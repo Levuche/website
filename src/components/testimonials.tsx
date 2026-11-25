@@ -1,5 +1,5 @@
 import type { Testimonial } from '@buildbase/sdk/server';
-import { QuoteGrid } from '@/components/ui/marketing';
+import { QuoteGrid } from '@/components/marketing';
 
 /** Testimonials from Buildbase, as quote cards. */
 export function Testimonials({ items }: { items: Testimonial[] }) {

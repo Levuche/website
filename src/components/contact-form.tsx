@@ -1,11 +1,17 @@
 'use client';
 
+import { CheckIcon } from 'lucide-react';
+import { useId } from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Alert } from '@/components/ui/feedback';
-import { TextAreaField, TextField } from '@/components/ui/field';
-import { useId, useState } from 'react';
-
-type State = 'idle' | 'sending' | 'sent' | 'error';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  useSendContactMessage,
+  type ContactMessage,
+} from '@/hooks/use-send-contact-message';
+import { ApiError } from '@/lib/api';
 
 const MESSAGES: Record<string, string> = {
   invalid_fields: 'Please add your name, a valid email and a message.',
@@ -20,67 +26,68 @@ const MESSAGES: Record<string, string> = {
  */
 export function ContactForm() {
   const id = useId();
-  const [state, setState] = useState<State>('idle');
-  const [error, setError] = useState<string | null>(null);
+  const send = useSendContactMessage();
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const fields = Object.fromEntries(new FormData(form).entries());
-    setState('sending');
-    setError(null);
-    try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fields),
-      });
-      const body = (await res.json().catch(() => ({}))) as { error?: string };
-      if (!res.ok) throw new Error(body.error ?? 'unavailable');
-      form.reset();
-      setState('sent');
-    } catch (err) {
-      const code = err instanceof Error ? err.message : '';
-      setError(
-        MESSAGES[code] ??
-          'Your message didn’t send. Please try again, or email us instead.'
-      );
-      setState('error');
-    }
-  }
-
-  if (state === 'sent') {
+  if (send.isSuccess) {
     return (
-      <Alert tone="success" className="p-5 text-base">
-        Thanks, your message is on its way. We’ll reply by email.
+      <Alert variant="success" className="p-5 text-base">
+        <CheckIcon aria-hidden />
+        <AlertDescription>
+          Thanks, your message is on its way. We’ll reply by email.
+        </AlertDescription>
       </Alert>
     );
   }
 
+  const error = send.error
+    ? ((send.error instanceof ApiError && MESSAGES[send.error.code]) ??
+      'Your message didn’t send. Please try again, or email us instead.')
+    : null;
+
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <TextField
-        label="Name"
-        name="name"
-        required
-        maxLength={200}
-        autoComplete="name"
-      />
-      <TextField
-        label="Email"
-        name="email"
-        type="email"
-        required
-        maxLength={320}
-        autoComplete="email"
-      />
-      <TextAreaField
-        label="Message"
-        name="message"
-        required
-        rows={6}
-        maxLength={5000}
-      />
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        const fields = Object.fromEntries(
+          new FormData(event.currentTarget).entries()
+        ) as ContactMessage;
+        send.mutate(fields);
+      }}
+      className="flex flex-col gap-4"
+    >
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor={`${id}-name`}>Name</FieldLabel>
+          <Input
+            id={`${id}-name`}
+            name="name"
+            required
+            maxLength={200}
+            autoComplete="name"
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor={`${id}-email`}>Email</FieldLabel>
+          <Input
+            id={`${id}-email`}
+            name="email"
+            type="email"
+            required
+            maxLength={320}
+            autoComplete="email"
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor={`${id}-message`}>Message</FieldLabel>
+          <Textarea
+            id={`${id}-message`}
+            name="message"
+            required
+            rows={6}
+            maxLength={5000}
+          />
+        </Field>
+      </FieldGroup>
       {/* Left empty by people; bots tend to fill it. */}
       <div aria-hidden className="hidden">
         <label htmlFor={`${id}-company`}>Company</label>
@@ -91,13 +98,13 @@ export function ContactForm() {
           autoComplete="off"
         />
       </div>
-      {error && <Alert tone="danger">{error}</Alert>}
+      {error && <Alert variant="destructive">{error}</Alert>}
       <Button
         type="submit"
-        loading={state === 'sending'}
+        loading={send.isPending}
         className="min-h-12 self-start px-7"
       >
-        {state === 'sending' ? 'Sending…' : 'Send message'}
+        {send.isPending ? 'Sending…' : 'Send message'}
       </Button>
     </form>
   );

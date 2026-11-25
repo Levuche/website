@@ -1,3 +1,7 @@
+'use client';
+
+import { Avatar as AvatarPrimitive } from 'radix-ui';
+import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
 
 /** First letters of up to two words: "Desi Origins" becomes "DO". */
@@ -10,69 +14,50 @@ export function initials(name: string) {
     .join('');
 }
 
-/**
- * A round avatar: the picture when there is one, otherwise the initials.
- * Decorative by default, since a name is usually shown next to it.
- */
-export function Avatar({
-  name,
-  src,
-  size = 48,
-  tone = 'brand',
+/** shadcn/ui Avatar: a round picture, or initials until it loads. */
+function Avatar({
   className,
-}: {
-  name: string;
-  src?: string | null;
-  size?: number;
-  tone?: 'brand' | 'accent';
-  className?: string;
-}) {
-  const tones = {
-    brand: 'bg-lv-brand text-lv-on-brand',
-    accent: 'bg-lv-accent text-lv-on-accent',
-  };
-  const style = { width: size, height: size, fontSize: Math.round(size / 3) };
-  if (src) {
-    return (
-      // A small avatar at a fixed size; next/image adds nothing here.
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={src}
-        alt=""
-        width={size}
-        height={size}
-        loading="lazy"
-        style={style}
-        className={cn('flex-none rounded-full object-cover', className)}
-      />
-    );
-  }
+  ...props
+}: ComponentProps<typeof AvatarPrimitive.Root>) {
   return (
-    <span
-      aria-hidden
-      style={style}
+    <AvatarPrimitive.Root
+      data-slot="avatar"
       className={cn(
-        'inline-flex flex-none items-center justify-center rounded-full font-bold',
-        tones[tone],
+        'relative flex size-10 shrink-0 overflow-hidden rounded-full',
         className
       )}
-    >
-      {initials(name)}
-    </span>
+      {...props}
+    />
   );
 }
 
-/** Grey bars shown while something loads. */
-export function Skeleton({ lines = 2 }: { lines?: number }) {
+function AvatarImage({
+  className,
+  ...props
+}: ComponentProps<typeof AvatarPrimitive.Image>) {
   return (
-    <span aria-hidden className="flex flex-col gap-2">
-      {Array.from({ length: lines }, (_, i) => (
-        <span
-          key={i}
-          className="bg-lv-surface-2 block h-3.5 rounded-[7px]"
-          style={{ width: `${i % 2 ? 45 : 70}%` }}
-        />
-      ))}
-    </span>
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      className={cn('aspect-square size-full object-cover', className)}
+      {...props}
+    />
   );
 }
+
+function AvatarFallback({
+  className,
+  ...props
+}: ComponentProps<typeof AvatarPrimitive.Fallback>) {
+  return (
+    <AvatarPrimitive.Fallback
+      data-slot="avatar-fallback"
+      className={cn(
+        'bg-primary text-primary-foreground flex size-full items-center justify-center rounded-full text-sm font-bold',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+export { Avatar, AvatarFallback, AvatarImage };

@@ -1,5 +1,10 @@
 import type { Faq } from '@buildbase/sdk/server';
-import { Accordion, AccordionItem } from '@/components/ui/disclosure';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { ArticleHtml } from '@/components/article-html';
 import { renderMarkdown } from '@/lib/markdown';
 
@@ -12,17 +17,16 @@ export function FaqList({
   openFirst?: boolean;
 }) {
   return (
-    <Accordion>
+    <Accordion type="multiple" defaultValue={openFirst ? ['faq-0'] : []}>
       {faqs.map((item, i) => (
-        <AccordionItem
-          key={`${i}-${item.question}`}
-          title={item.question}
-          defaultOpen={openFirst && i === 0}
-        >
-          <ArticleHtml
-            html={renderMarkdown(item.answer).html}
-            className="text-sm [&_p]:my-2"
-          />
+        <AccordionItem key={`${i}-${item.question}`} value={`faq-${i}`}>
+          <AccordionTrigger>{item.question}</AccordionTrigger>
+          <AccordionContent>
+            <ArticleHtml
+              html={renderMarkdown(item.answer).html}
+              className="text-sm [&_p]:my-2"
+            />
+          </AccordionContent>
         </AccordionItem>
       ))}
     </Accordion>
