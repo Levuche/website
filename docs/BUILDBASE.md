@@ -64,6 +64,15 @@ preview before setup still matches the boards.
 | Pricing, Questions               | FAQ collection | `pricing-faq`               |
 | Legal and trust pages            | Content, Docs  | `legal/<page>`, below       |
 
+The blog and docs follow their folder trees in Buildbase, at any depth. A
+folder's address is its parents' slugs and its own (`/docs/guides/setup`),
+and a post's is its folder's address and its slug
+(`/docs/guides/setup/connect-instagram`). Each folder has its own page that
+lists its sub-folders and posts, named as in the console. The docs side
+navigation nests the same way. Add, rename or move folders and posts in the
+console and the site follows on the next request; only published posts are
+shown, and folders with nothing published are left out.
+
 Legal pages are docs in a Docs folder with the slug `legal`, one published
 page each, with these slugs: `terms`, `privacy`, `cookies`, `pack-terms`,
 `refunds`, `fees`, `creator-rules`, `copyright`, `security`,

@@ -1,47 +1,83 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 import { DocsNav } from '@/components/content/docs-nav';
-import { EntryPage } from '@/components/content/entry-page';
+import { EntryPage, folderCrumbs } from '@/components/content/entry-page';
+import { FolderPage } from '@/components/content/folder-page';
 import { SiteShell } from '@/components/site-shell';
-import { getDocPages, getEntry, groupDocs } from '@/lib/content';
+import { findFolder, getContentTree, getEntry } from '@/lib/content';
 import { pageMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-dynamic';
 
 type Props = { params: Promise<{ path: string[] }> };
 
-async function load(params: Props['params']) {
-  const path = (await params).path.map(decodeURIComponent).join('/');
-  return { path, item: await getEntry('docs', path) };
+const DESCRIPTION = 'How to set up and run your Levuche site.';
+
+/**
+ * A path under /docs names a page (`folder/slug`) or a folder (`folder`), as
+ * filed in Buildbase. Cached per request, so the metadata and the page share
+ * one read.
+ */
+const load = cache(async (path: string) => {
+  const tree = await getContentTree('docs');
+  const item = await getEntry('docs', path, tree);
+  const folder = item ? null : findFolder(tree, path);
+  const parent = path.split('/').slice(0, -1).join('/');
+  const above = parent ? findFolder(tree, parent) : null;
+  const parents = above ? [...above.parents, above.folder] : [];
+  return { tree, item, folder, parents };
+});
+
+async function pathOf(params: Props['params']) {
+  return (await params).path.map(decodeURIComponent).join('/');
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { path, item } = await load(params);
-  if (!item) return {};
-  return pageMetadata({
-    path: `/docs/${path}`,
-    title: item.seo?.title || item.title,
-    description:
-      item.seo?.description ||
-      item.description ||
-      'How to set up and run your Levuche site.',
-  });
+  const path = await pathOf(params);
+  const { item, folder } = await load(path);
+  if (item) {
+    return pageMetadata({
+      path: `/docs/${path}`,
+      title: item.seo?.title || item.title,
+      description: item.seo?.description || item.description || DESCRIPTION,
+    });
+  }
+  if (folder) {
+    return pageMetadata({
+      path: `/docs/${path}`,
+      title: `${folder.folder.name} · Docs`,
+      description: DESCRIPTION,
+    });
+  }
+  return {};
 }
 
 export default async function DocsEntry({ params }: Props) {
-  const [{ path, item }, docs] = await Promise.all([
-    load(params),
-    getDocPages(),
-  ]);
-  if (!item) notFound();
-  const groups = groupDocs(docs);
+  const path = await pathOf(params);
+  const { tree, item, folder, parents } = await load(path);
+  if (!item && !folder) notFound();
   return (
     <SiteShell>
       <div className="mx-auto grid max-w-[1184px] grid-cols-1 items-start md:grid-cols-[240px_minmax(0,1fr)] md:gap-6 md:px-[clamp(16px,3vw,32px)]">
         <aside className="hidden pt-7 md:block">
-          <DocsNav groups={groups} current={path} />
+          <DocsNav tree={tree} current={path} />
         </aside>
-        <EntryPage item={item} path={path} base="/docs" backLabel="All docs" />
+        {item ? (
+          <EntryPage
+            item={item}
+            path={path}
+            base="/docs"
+            crumbs={folderCrumbs('/docs', 'Docs', parents)}
+          />
+        ) : folder ? (
+          <FolderPage
+            folder={folder.folder}
+            entries={folder.folder.entries}
+            base="/docs"
+            crumbs={folderCrumbs('/docs', 'Docs', folder.parents)}
+          />
+        ) : null}
       </div>
     </SiteShell>
   );
