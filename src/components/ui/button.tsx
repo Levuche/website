@@ -1,96 +1,79 @@
-import type { ButtonHTMLAttributes } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { Slot } from 'radix-ui';
+import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
-import { Spinner } from './icons';
+import { Spinner } from './spinner';
 
-export type ButtonVariant = 'primary' | 'accent' | 'secondary' | 'danger';
-export type ButtonSize = 'md' | 'lg';
-
-const base =
-  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-full font-[inherit] no-underline transition-[box-shadow,transform] duration-150 motion-reduce:transition-none disabled:cursor-not-allowed aria-disabled:cursor-not-allowed';
-
-const variants: Record<ButtonVariant, string> = {
-  primary:
-    'bg-lv-primary text-lv-on-primary border-0 font-bold hover:-translate-y-px hover:shadow-[0_6px_16px_rgba(20,21,74,0.28)] disabled:bg-lv-surface-2 disabled:text-lv-text-3 disabled:translate-y-0 disabled:shadow-none',
-  accent:
-    'bg-lv-accent text-lv-on-accent border-0 font-bold hover:-translate-y-px hover:shadow-[0_6px_16px_rgba(20,21,74,0.28)] disabled:bg-lv-surface-2 disabled:text-lv-text-3 disabled:translate-y-0 disabled:shadow-none',
-  secondary:
-    'border-lv-border text-lv-link border-2 bg-transparent font-semibold hover:border-lv-link disabled:text-lv-text-3 disabled:border-lv-border',
-  danger:
-    'border-lv-danger-border text-lv-danger border-2 bg-transparent font-semibold hover:border-lv-danger disabled:opacity-60',
-};
-
-const sizes: Record<ButtonSize, string> = {
-  md: 'min-h-11 px-5 text-[15px]',
-  lg: 'min-h-[52px] px-8 text-lg',
-};
-
-/**
- * The button's classes, for a link that should look like a button
- * (for example Next's <Link className={buttonClasses()}>).
+/*
+ * shadcn/ui Button, in Levuche's styles: pill-shaped, at least 44 px tall
+ * (WCAG 2.5.8). `default` is navy on light and amber on dark; `accent` is the
+ * amber call to action.
  */
-export function buttonClasses({
-  variant = 'primary',
-  size = 'md',
+const buttonVariants = cva(
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full font-[inherit] whitespace-nowrap no-underline transition-[box-shadow,transform,border-color] duration-150 outline-none focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-lv-accent disabled:pointer-events-none disabled:cursor-not-allowed motion-reduce:transition-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[18px]",
+  {
+    variants: {
+      variant: {
+        default:
+          'bg-primary text-primary-foreground font-bold hover:-translate-y-px hover:shadow-[0_6px_16px_rgba(20,21,74,0.28)] disabled:bg-secondary disabled:text-muted-foreground',
+        accent:
+          'bg-lv-accent text-lv-on-accent font-bold hover:-translate-y-px hover:shadow-[0_6px_16px_rgba(20,21,74,0.28)] disabled:bg-secondary disabled:text-muted-foreground',
+        outline:
+          'border-border text-lv-link hover:border-lv-link border-2 bg-transparent font-semibold disabled:text-muted-foreground',
+        destructive:
+          'border-lv-danger-border text-destructive hover:border-destructive border-2 bg-transparent font-semibold disabled:opacity-60',
+        ghost:
+          'text-lv-link hover:bg-accent bg-transparent font-semibold disabled:text-muted-foreground',
+        link: 'text-lv-link bg-transparent font-semibold underline-offset-4 hover:underline',
+      },
+      size: {
+        default: 'min-h-11 px-5 text-[15px]',
+        lg: 'min-h-[52px] px-8 text-lg',
+        icon: 'border-border hover:border-lv-link size-11 rounded-xl border-2',
+      },
+    },
+    defaultVariants: { variant: 'default', size: 'default' },
+  }
+);
+
+function Button({
   className,
-}: {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  className?: string;
-} = {}) {
-  return cn(base, variants[variant], sizes[size], className);
-}
-
-export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  /** Shows a spinner, sets aria-busy and blocks clicks. */
-  loading?: boolean;
-};
-
-/** Atoms board: Publish, Accent, Secondary and Remove buttons, 44 px high. */
-export function Button({
-  variant = 'primary',
-  size = 'md',
+  variant,
+  size,
+  asChild = false,
   loading = false,
   disabled,
-  type = 'button',
-  className,
   children,
   ...props
-}: ButtonProps) {
+}: ComponentProps<'button'> &
+  VariantProps<typeof buttonVariants> & {
+    /** Render the child (such as a Next <Link>) with the button's styles. */
+    asChild?: boolean;
+    /** Shows a spinner, sets aria-busy and blocks clicks. */
+    loading?: boolean;
+  }) {
+  const Comp = asChild ? Slot.Root : 'button';
   return (
-    <button
-      type={type}
-      disabled={disabled || loading}
+    <Comp
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }))}
+      disabled={asChild ? undefined : disabled || loading}
       aria-busy={loading || undefined}
-      className={buttonClasses({ variant, size, className })}
+      {...(asChild ? {} : { type: props.type ?? 'button' })}
       {...props}
     >
-      {loading ? <Spinner /> : null}
-      {children}
-    </button>
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {loading ? (
+            <Spinner role={undefined} aria-label={undefined} aria-hidden />
+          ) : null}
+          {children}
+        </>
+      )}
+    </Comp>
   );
 }
 
-/** A square 44 px button holding one icon. `label` is its accessible name. */
-export function IconButton({
-  label,
-  className,
-  children,
-  type = 'button',
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { label: string }) {
-  return (
-    <button
-      type={type}
-      aria-label={label}
-      className={cn(
-        'border-lv-border text-lv-link hover:border-lv-link inline-flex size-11 cursor-pointer items-center justify-center rounded-xl border-2 bg-transparent disabled:cursor-not-allowed disabled:opacity-60',
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
+export { Button, buttonVariants };

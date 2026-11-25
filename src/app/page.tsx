@@ -12,16 +12,16 @@ import { FaqList } from '@/components/faq-list';
 import { JsonLd } from '@/components/json-ld';
 import { SiteShell } from '@/components/site-shell';
 import { Testimonials } from '@/components/testimonials';
-import { buttonClasses } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
-  Card,
   Container,
   FeatureList,
   Section,
   SectionHeading,
   StepList,
-} from '@/components/ui/marketing';
-import { PhoneFrame } from '@/components/ui/phone-frame';
+} from '@/components/marketing';
+import { PhoneFrame } from '@/components/phone-frame';
 import { addOnOffer, getAddOns, type Offer } from '@/lib/billing';
 import {
   CONTENT,
@@ -184,12 +184,9 @@ export default async function HomePage() {
             <Link href="/pricing" className="text-lv-link font-semibold">
               Pricing details
             </Link>
-            <Link
-              href="/#beta"
-              className={buttonClasses({ size: 'lg', className: 'w-full' })}
-            >
-              Join the beta
-            </Link>
+            <Button asChild size="lg" className="w-full">
+              <Link href="/#beta">Join the beta</Link>
+            </Button>
           </Card>
         </Container>
       </Section>
@@ -210,12 +207,9 @@ export default async function HomePage() {
           <SectionHeading className="text-lv-on-brand text-[clamp(34px,5vw,52px)] tracking-[-1.5px]">
             Say “I’ll take it.”
           </SectionHeading>
-          <Link
-            href="/#beta"
-            className={buttonClasses({ variant: 'accent', size: 'lg' })}
-          >
-            Get early access
-          </Link>
+          <Button asChild variant="accent" size="lg">
+            <Link href="/#beta">Get early access</Link>
+          </Button>
         </Container>
       </Section>
     </SiteShell>
