@@ -59,20 +59,19 @@ preview before setup still matches the boards.
 | `/docs`, `/docs/<folder>/<slug>` | Content, Docs  | each page's folder and slug |
 | Home, Live in three steps        | Collection     | `home-steps`                |
 | Home, features                   | Collection     | `home-features`             |
-| Home, pricing card               | Rich content   | `home-pricing`              |
 | Home, What creators say          | Testimonials   | all published               |
 | Home, Questions                  | FAQ collection | `home-faq`                  |
-| Pricing, intro line              | Rich content   | `pricing-intro`             |
-| Pricing, plans                   | Collection     | `pricing-plans`             |
-| Pricing, compare table           | Collection     | `pricing-compare`           |
 | Pricing, Questions               | FAQ collection | `pricing-faq`               |
 | Legal and trust pages            | Rich content   | `legal-<page>`, below       |
 
 Legal pages: `legal-terms`, `legal-privacy`, `legal-cookies`,
-`legal-pack-terms`, `legal-creator-rules`, `legal-copyright`,
-`legal-security`, `legal-subprocessors`. Until an entry exists its page
+`legal-pack-terms`, `legal-refunds`, `legal-fees`, `legal-creator-rules`,
+`legal-copyright`, `legal-security`, `legal-subprocessors`. Until an entry exists its page
 says the text is still being written and gives the contact address. The
 page shows the entry's last update date.
+
+Prices are not content: the home pricing card and the pricing page come
+from Buildbase Billing, below.
 
 Collections: each record's fields are in `content/buildbase/collections/`.
 Records show in their `order`; archived records are hidden. A collection
@@ -81,6 +80,47 @@ must have a **published version** before its records can be read.
 Rich text, FAQ answers, posts and docs are Markdown, with raw HTML allowed.
 The site sanitises it (`src/lib/markdown.ts`): scripts, iframes, styles and
 event handlers are removed, and outside links open in a new tab.
+
+## Billing (prices)
+
+Every price on the site comes from Buildbase Billing (`src/lib/billing.ts`),
+read from the public routes with only `NEXT_PUBLIC_BUILDBASE_ORG_ID` (and
+`NEXT_PUBLIC_BUILDBASE_ENVIRONMENT` outside production). Buildbase caches
+them for five minutes. The catalog is changed only by a person in the
+console; development is tested against a Stripe sandbox, production uses
+live keys.
+
+| Where on the site          | Buildbase Billing                                                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Pricing cards, home card   | Add-ons on sale, in catalog order (the first on home)                                                                                 |
+| Pricing cards, after those | Plans in the pricing group `levuche`, when it exists                                                                                  |
+| Compare table              | The group's products (features, limits, quotas), shown with two or more plans                                                         |
+| Buy button                 | Buys the add-on (Stripe Checkout), signing in first: for the person, or their current workspace when the add-on is sold to workspaces |
+
+Each Levuche page is a workspace, and one person can run several pages, so
+the add-on is sold to workspaces: every page buys its own. A signed-in
+person with more than one page picks which page on the card. In Setup,
+the workspace model has to let one person have several workspaces.
+
+An add-on card shows its name, its USD price ("$9 once per page"), its badge, and
+its description one point per line. The fee per sale and other selling
+terms are not on a public route yet, so they go in that description.
+
+Console setup, in order (development first, then production):
+
+1. Billing, Credentials: the Stripe secret key (test key in development),
+   then "Create the endpoint for me" for the webhook.
+2. Settings, General: billing currency USD.
+3. Billing, Product categories, then Products: what the offer grants
+   (e.g. `site`, "Your site at yourname.levuche.page").
+4. Billing, Add-ons: "Levuche" (slug `levuche`), shape lifetime, bought by
+   a workspace, $9 USD one-time, granting `site`; publish it.
+5. Only for plans that renew: Billing, Plans, then Pricing groups with
+   slug `levuche`, published.
+
+Plans and pricing groups move to production with Environments, Changes
+(or `npx @buildbase/sdk env diff/push`); check add-ons there too. With no
+org set, `content/buildbase/billing.json` is the sample the page shows.
 
 ## Rendering
 

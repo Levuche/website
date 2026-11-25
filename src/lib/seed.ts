@@ -1,8 +1,6 @@
 import type { Faq, RichContent } from '@buildbase/sdk/server';
 import homeFeatures from '../../content/buildbase/collections/home-features.json';
 import homeSteps from '../../content/buildbase/collections/home-steps.json';
-import pricingCompare from '../../content/buildbase/collections/pricing-compare.json';
-import pricingPlans from '../../content/buildbase/collections/pricing-plans.json';
 import homeFaq from '../../content/buildbase/faqs/home-faq.json';
 import pricingFaq from '../../content/buildbase/faqs/pricing-faq.json';
 import richContent from '../../content/buildbase/rich-content.json';
@@ -17,8 +15,6 @@ import richContent from '../../content/buildbase/rich-content.json';
 const collections: Record<string, { records: Record<string, unknown>[] }> = {
   [homeSteps.slug]: homeSteps,
   [homeFeatures.slug]: homeFeatures,
-  [pricingPlans.slug]: pricingPlans,
-  [pricingCompare.slug]: pricingCompare,
 };
 
 const faqs: Record<string, { faqs: { question: string; answer: string }[] }> = {

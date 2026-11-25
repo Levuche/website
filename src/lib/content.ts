@@ -16,8 +16,11 @@ import { seedCollection, seedFaqs, seedRichContent } from '@/lib/seed';
  * - FAQs: Content, FAQs, one collection per page.
  * - Testimonials: Content, Testimonials.
  * - Legal and trust pages: Content, Rich content, one entry per page.
- * - Lists the CMS has no type for (home steps and features, pricing plans
- *   and the compare table): Content, Collections.
+ * - Lists the CMS has no type for (home steps and features): Content,
+ *   Collections.
+ *
+ * Prices are not content: they come from Buildbase Billing
+ * (src/lib/billing.ts).
  *
  * The slugs below are the contract with the console; docs/BUILDBASE.md
  * lists every one with its fields. Reads use the org API token on the
@@ -33,10 +36,7 @@ export const CONTENT = {
   collections: {
     homeSteps: 'home-steps',
     homeFeatures: 'home-features',
-    pricingPlans: 'pricing-plans',
-    pricingCompare: 'pricing-compare',
   },
-  rich: { homePricing: 'home-pricing', pricingIntro: 'pricing-intro' },
   /** Rich content slug for a legal or trust page: `legal-<page slug>`. */
   legal: (slug: string) => `legal-${slug}`,
 } as const;

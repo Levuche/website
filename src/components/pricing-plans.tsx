@@ -2,52 +2,36 @@
 
 import Link from 'next/link';
 import { useRef, useState } from 'react';
+import { BuyAddOn } from '@/components/buy-add-on';
+import type { Offer } from '@/lib/billing';
 import { cn } from '@/lib/utils';
 
 type Period = 'monthly' | 'yearly';
 
-/** A plan from the Buildbase collection `pricing-plans` (docs/BUILDBASE.md). */
-export interface Plan {
-  name: string;
-  /** A price paid once. When set, it is shown instead of the period prices. */
-  oneTimePrice: string;
-  monthlyPrice: string;
-  yearlyPrice: string;
-  feeNote: string;
-  /** Sanitised HTML from the Markdown renderer (src/lib/markdown.ts). */
-  featuresHtml: string;
-  recommended: boolean;
-  ctaLabel: string;
-  ctaHref: string;
-}
-
 /**
- * A price is shown as "$<value> once", "$<value> a month" or "a year"; a word
- * such as "Free" or "Custom" is shown as typed, with no period.
+ * The pricing cards, one per Buildbase Billing offer (src/lib/billing.ts):
+ * an add-on shows "$9 once" with a Buy button, a plan shows its monthly or
+ * yearly price. The first card is drawn as the main one.
  */
-const isNumber = (value: string) => !/^[A-Za-z][A-Za-z ]*$/.test(value);
-const money = (value: string) => (isNumber(value) ? `$${value}` : value);
-
 export function PricingPlans({
   intro,
-  plans,
+  offers,
+  currency,
 }: {
   intro: React.ReactNode;
-  plans: Plan[];
+  offers: Offer[];
+  currency: string;
 }) {
-  const hasYearly = plans.some((plan) => plan.yearlyPrice);
-  const hasMonthly = plans.some((plan) => plan.monthlyPrice);
-  // "Yearly, save N%": the best saving over twelve monthly payments, when
-  // both prices are numbers.
+  const hasYearly = offers.some((o) => o.yearly && !o.once);
+  const hasMonthly = offers.some((o) => o.monthly && !o.once);
+  // "Yearly, save N%": the best saving over twelve monthly payments.
   const saving = Math.max(
     0,
-    ...plans.map((plan) => {
-      const monthly = Number(plan.monthlyPrice);
-      const yearly = Number(plan.yearlyPrice);
-      return monthly > 0 && yearly > 0
-        ? Math.round((1 - yearly / (monthly * 12)) * 100)
-        : 0;
-    })
+    ...offers.map((o) =>
+      o.monthlyMinor && o.yearlyMinor
+        ? Math.round((1 - o.yearlyMinor / (o.monthlyMinor * 12)) * 100)
+        : 0
+    )
   );
   const [period, setPeriod] = useState<Period>(
     hasMonthly || !hasYearly ? 'monthly' : 'yearly'
@@ -112,70 +96,82 @@ export function PricingPlans({
         )}
       </div>
 
-      {plans.length > 0 && (
+      {offers.length > 0 && (
         <div
           className={cn(
             'grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-5',
-            plans.length === 1 && 'max-w-[440px]'
+            offers.length === 1 && 'max-w-[440px]'
           )}
         >
-          {plans.map((plan, index) => {
+          {offers.map((offer, index) => {
+            const main = index === 0 && offers.length > 1;
             const price =
-              plan.oneTimePrice ||
-              (period === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice);
-            const per = plan.oneTimePrice
-              ? 'once'
-              : period === 'monthly'
-                ? 'a month'
-                : 'a year';
+              offer.once ||
+              (period === 'monthly' ? offer.monthly : offer.yearly) ||
+              offer.monthly ||
+              offer.yearly;
+            const per = offer.once
+              ? offer.addOnSlug && offer.payerType === 'workspace'
+                ? 'once per page'
+                : 'once'
+              : offer.isFree
+                ? ''
+                : price === offer.yearly && period === 'yearly'
+                  ? 'a year'
+                  : 'a month';
+            const button = cn(
+              'mt-auto rounded-full text-center no-underline',
+              main || offers.length === 1
+                ? 'bg-lv-primary text-lv-on-primary p-4 font-bold'
+                : 'border-lv-border text-lv-link border-2 bg-transparent p-3.5 font-semibold'
+            );
             return (
               <article
-                key={`${index}-${plan.name}`}
+                key={offer.key}
                 className={cn(
                   'flex flex-col gap-3.5 rounded-3xl',
-                  plan.recommended
+                  main
                     ? 'border-lv-primary bg-lv-surface border-2 p-[23px]'
                     : 'border-lv-border border p-6'
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <h2 className="m-0 text-xl font-bold">{plan.name}</h2>
-                  {plan.recommended && (
+                  <h2 className="m-0 text-xl font-bold">{offer.name}</h2>
+                  {offer.badge && (
                     <span className="bg-lv-accent text-lv-on-accent rounded-full px-2.5 py-1 text-xs font-bold">
-                      Recommended
+                      {offer.badge}
                     </span>
                   )}
                 </div>
                 {price && (
                   <p className="m-0 flex items-baseline gap-1.5">
                     <span className="text-[40px] font-bold tracking-[-1px] tabular-nums">
-                      {money(price)}
+                      {price}
                     </span>
-                    {isNumber(price) && (
+                    {per && (
                       <span className="text-lv-text-2 text-sm">{per}</span>
                     )}
                   </p>
                 )}
-                {plan.feeNote && (
-                  <p className="text-lv-text-2 m-0 text-sm">{plan.feeNote}</p>
-                )}
-                {plan.featuresHtml && (
+                {offer.featuresHtml && (
                   <div
                     className="lv-plan-features"
-                    dangerouslySetInnerHTML={{ __html: plan.featuresHtml }}
+                    dangerouslySetInnerHTML={{ __html: offer.featuresHtml }}
                   />
                 )}
-                <Link
-                  href={plan.ctaHref}
-                  className={cn(
-                    'mt-auto rounded-full text-center no-underline',
-                    plan.recommended
-                      ? 'bg-lv-primary text-lv-on-primary p-4 font-bold'
-                      : 'border-lv-border text-lv-link border-2 p-3.5 font-semibold'
-                  )}
-                >
-                  {plan.ctaLabel}
-                </Link>
+                {offer.addOnSlug ? (
+                  <BuyAddOn
+                    slug={offer.addOnSlug}
+                    payerType={offer.payerType}
+                    currency={currency}
+                    label={`Get ${offer.name}`}
+                    className={button}
+                  />
+                ) : (
+                  <Link href="/#beta" className={button}>
+                    Join the beta
+                  </Link>
+                )}
               </article>
             );
           })}
