@@ -201,12 +201,26 @@ async function folderTree(kind: ContentKind): Promise<ContentFolderTreeNode[]> {
   return Array.isArray(nodes) ? nodes : [];
 }
 
+/**
+ * A folder's sub-folders. The tree route lists them under `subfolders`; the
+ * SDK's type names `children` and `subFolders` too, so all three are read.
+ */
 function childNodes(node: ContentFolderTreeNode): ContentFolderTreeNode[] {
-  const kids = [...(node.children ?? []), ...(node.subFolders ?? [])];
-  return kids.filter(
-    (kid): kid is ContentFolderTreeNode =>
-      typeof kid === 'object' && kid !== null
-  );
+  const list = (value: unknown): unknown[] =>
+    Array.isArray(value) ? value : [];
+  const kids = [
+    ...list(node.subfolders),
+    ...list(node.children),
+    ...list(node.subFolders),
+  ];
+  const seen = new Set<string>();
+  return kids.filter((kid): kid is ContentFolderTreeNode => {
+    if (typeof kid !== 'object' || kid === null) return false;
+    const id = (kid as ContentFolderTreeNode)._id ?? '';
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
 }
 
 /**
