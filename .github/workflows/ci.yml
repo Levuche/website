@@ -5,6 +5,7 @@ name: CI
 # Buildbase feature switches itself off, so this builds what any fork can.
 
 on:
+  workflow_dispatch:
   push:
     branches: ['**']
   pull_request:
