@@ -1,13 +1,18 @@
 import type { MetadataRoute } from 'next';
+import { notFound } from 'next/navigation';
 import { contentPath, getBlogPosts, getDocPages } from '@/lib/content';
 import { legalPages } from '@/lib/legal';
-import { absoluteUrl } from '@/lib/site';
+import { absoluteUrl, isIndexable } from '@/lib/site';
 
 // Lists the blog posts and docs in Buildbase, so it is built per request.
 export const dynamic = 'force-dynamic';
 
-/** sitemap.xml: every public page, on the site's own host only. */
+/**
+ * sitemap.xml: every public page, on levuche.com only. The dev site and
+ * preview links have no sitemap at all (404), so nothing lists their pages.
+ */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  if (!isIndexable) notFound();
   const [posts, docs] = await Promise.all([getBlogPosts(), getDocPages()]);
   const pages: MetadataRoute.Sitemap = [
     '/',

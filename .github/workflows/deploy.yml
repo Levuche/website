@@ -48,6 +48,10 @@ jobs:
       NEXT_PUBLIC_BUILDBASE_ENVIRONMENT: ${{ vars.BUILDBASE_ENVIRONMENT }}
       NEXT_PUBLIC_BUILDBASE_CLIENT_ID: ${{ vars.BUILDBASE_CLIENT_ID }}
       NEXT_PUBLIC_BUILDBASE_ANALYTICS: ${{ vars.BUILDBASE_ANALYTICS }}
+      # Optional: a Cloudflare Access service token, so the checks after the
+      # deploy can see past the team sign-in (docs/DEPLOY.md).
+      CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -72,13 +76,22 @@ jobs:
 
       - name: Smoke test
         run: |
+          auth=()
+          if [ -n "$CF_ACCESS_CLIENT_ID" ] && [ -n "$CF_ACCESS_CLIENT_SECRET" ]; then
+            auth=(-H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET")
+          fi
           for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' https://dev.levuche.com/ || true)
+            code=$(curl -s -o /dev/null -w '%{http_code}' "${auth[@]}" https://dev.levuche.com/ || true)
             echo "dev.levuche.com: $code"
             [ "$code" = "200" ] && exit 0
+            # 302: Cloudflare Access asks for sign-in, so the site is up.
+            [ "$code" = "302" ] && [ ${#auth[@]} -eq 0 ] && exit 0
             sleep 15
           done
           echo "::warning::dev.levuche.com did not answer 200 yet (a new custom domain's certificate can take a few minutes)."
+
+      - name: Check the dev site stays out of search
+        run: node scripts/check-indexing.mjs https://dev.levuche.com private
 
   deploy:
     name: Deploy levuche.com
