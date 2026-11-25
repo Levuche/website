@@ -282,6 +282,28 @@ same policy. When you add a tracking tag in Buildbase (Settings > Tracking &
 tags), add its hosts to the policy first; Buildbase's _Providers_ page lists
 them.
 
+## 12. Error pages and error alerts
+
+Unknown addresses get `src/app/not-found.tsx` (404). A page that throws while
+rendering gets `src/app/error.tsx`: the header and footer stay, with **Try
+again** and a link home. If the root layout itself fails,
+`src/app/global-error.tsx` shows a plain page with its own `<html>`. Both log
+the error with `console.error`, and show Next.js's error reference so a report
+from a visitor can be matched to the log line.
+
+`wrangler.jsonc` already turns on Workers observability, so those errors and
+any 5xx responses are recorded. Alerts are set in the Cloudflare dashboard,
+once for each Worker (`levuche-com` and `levuche-com-dev`):
+
+1. **Workers & Pages** → the Worker → **Observability** → turn on **Issues**.
+   Issues groups uncaught exceptions, failed invocations, 5xx responses and
+   `console.error` calls with an error.
+2. In **Issues**, add an **automation** that sends new and returning issues to
+   your email (or a webhook). An occurrence threshold of `1` alerts on the
+   first error.
+
+Source: Cloudflare, Workers Logs, "Alert on application events".
+
 ## Sources
 
 Cloudflare docs, read November 2026:
