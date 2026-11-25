@@ -97,7 +97,12 @@ live keys.
 | Compare table              | The group's products (features, limits, quotas), shown with two or more plans                                                         |
 | Buy button                 | Buys the add-on (Stripe Checkout), signing in first: for the person, or their current workspace when the add-on is sold to workspaces |
 
-An add-on card shows its name, its USD price ("$9 once"), its badge, and
+Each Levuche page is a workspace, and one person can run several pages, so
+the add-on is sold to workspaces: every page buys its own. A signed-in
+person with more than one page picks which page on the card. In Setup,
+the workspace model has to let one person have several workspaces.
+
+An add-on card shows its name, its USD price ("$9 once per page"), its badge, and
 its description one point per line. The fee per sale and other selling
 terms are not on a public route yet, so they go in that description.
 

@@ -13,9 +13,10 @@ import { isAuthConfigured } from '@/lib/buildbase-config';
 const BUY_PARAM = 'buy';
 
 /**
- * Buys a Buildbase add-on: for the signed-in person (`{ user: true }`) when
- * the add-on is sold to a person, or for their current workspace when it is
- * sold to a workspace (the add-on's `payerType`, set in Billing, Add-ons).
+ * Buys a Buildbase add-on: for a workspace when the add-on is sold to
+ * workspaces (each Levuche page is a workspace and pays for itself), or for
+ * the signed-in person (`{ user: true }`) when it is sold to people. The
+ * add-on's `payerType` is set in Billing, Add-ons.
  * Buildbase opens Stripe Checkout and the buyer comes back to /pricing.
  * Not signed in: Buildbase's sign-in first, then the purchase carries on
  * by itself (the `?buy=<slug>` on the way back). With no sign-in client
@@ -48,8 +49,19 @@ function BuyWithBuildbase({
   className,
 }: Props) {
   const { isAuthenticated, isLoading, signIn } = useSaaSAuth();
-  const { currentWorkspace } = useSaaSWorkspaces();
-  const workspaceId = currentWorkspace?._id ?? null;
+  // Each Levuche page is a workspace and buys its own add-on. Someone who
+  // runs several pages picks which one; the current one is the default.
+  const { currentWorkspace, workspaces } = useSaaSWorkspaces();
+  const [pickedId, setPickedId] = useState<string | null>(null);
+  const workspaceId =
+    (pickedId && workspaces.some((w) => w._id === pickedId)
+      ? pickedId
+      : null) ??
+    currentWorkspace?._id ??
+    workspaces[0]?._id ??
+    null;
+  const showPicker =
+    isAuthenticated && payerType === 'workspace' && workspaces.length > 1;
   const subject = payerType === 'user' ? { user: true as const } : workspaceId;
   const { purchaseAddOn, loading } = usePurchaseAddOn(subject);
   const noWorkspace =
@@ -59,7 +71,7 @@ function BuyWithBuildbase({
 
   const checkout = async () => {
     try {
-      if (!subject) throw new Error('No workspace to buy for');
+      if (!subject) throw new Error('No page to buy for');
       const urls = createAddOnPurchaseRedirectUrls(
         subject,
         `${window.location.origin}/pricing`
@@ -99,6 +111,22 @@ function BuyWithBuildbase({
 
   return (
     <>
+      {showPicker && workspaceId && (
+        <label className="text-lv-text-2 flex flex-col gap-1.5 text-sm">
+          For which page?
+          <select
+            value={workspaceId}
+            onChange={(event) => setPickedId(event.target.value)}
+            className="border-lv-border bg-lv-card text-lv-text min-h-11 rounded-xl border px-3 text-base"
+          >
+            {workspaces.map((w) => (
+              <option key={w._id} value={w._id}>
+                {w.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <button
         type="button"
         onClick={() => void buy()}
@@ -110,7 +138,7 @@ function BuyWithBuildbase({
       </button>
       {noWorkspace && (
         <p className="text-lv-text-2 m-0 text-sm">
-          Your account has no workspace yet, so there is nothing to add this to.
+          Create your page first, then come back to buy it.
         </p>
       )}
       {failed && (

@@ -168,7 +168,13 @@ export default async function HomePage() {
                     {offer.once || offer.monthly || offer.yearly}
                   </strong>
                   <span className="text-lv-text-2 text-lg">
-                    {offer.once ? 'once' : offer.monthly ? 'a month' : 'a year'}
+                    {offer.once
+                      ? offer.payerType === 'workspace'
+                        ? 'once per page'
+                        : 'once'
+                      : offer.monthly
+                        ? 'a month'
+                        : 'a year'}
                   </span>
                 </p>
                 {offer.featuresHtml && (

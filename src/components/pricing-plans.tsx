@@ -111,7 +111,9 @@ export function PricingPlans({
               offer.monthly ||
               offer.yearly;
             const per = offer.once
-              ? 'once'
+              ? offer.addOnSlug && offer.payerType === 'workspace'
+                ? 'once per page'
+                : 'once'
               : offer.isFree
                 ? ''
                 : price === offer.yearly && period === 'yearly'
