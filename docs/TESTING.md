@@ -17,10 +17,9 @@ reels, newsletter, footer), each following the creator's own theme. The
 creator site app and the page editor use the same package. Here they are
 only used for the phone preview on the home page.
 
-- It is installed from GitHub at a fixed version: a tag such as `v0.1.0`
-  once Levuche/ui has one, or a commit until then
-  (`"@levuche/ui": "github:Levuche/ui#<commit>"` in `package.json`). Either
-  way the site only changes version in a pull request here.
+- It is installed from GitHub at a release tag
+  (`"@levuche/ui": "github:Levuche/ui#v0.1.0"` in `package.json`), so the
+  site only changes version in a pull request here.
 - `next.config.ts` lists it in `transpilePackages` (it ships TypeScript).
 - `src/app/globals.css` imports its `--site-*` tokens
   (`@levuche/ui/tokens.css`) and points Tailwind at its source with
