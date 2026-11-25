@@ -20,17 +20,22 @@ npm run dev
 
 The site runs on http://localhost:3000.
 
-| Command              | What it does                                                                                                  |
-| -------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`        | Local development server                                                                                      |
-| `npm run build`      | Production build                                                                                              |
-| `npm run check`      | Lint, formatting and type check                                                                               |
-| `npm run cf:preview` | Build for Cloudflare Workers and preview locally                                                              |
-| `npm run cf:deploy`  | Build and deploy to Cloudflare Workers (add `account_id` and the levuche.com route to `wrangler.jsonc` first) |
+| Command                 | What it does                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------ |
+| `npm run dev`           | Local development server                                                                   |
+| `npm run build`         | Production build                                                                           |
+| `npm run check`         | Lint, formatting and type check                                                            |
+| `npm run cf:preview`    | Build for Cloudflare Workers and preview locally                                           |
+| `npm run cf:deploy`     | Build and deploy levuche.com by hand (GitHub Actions normally does this; `docs/DEPLOY.md`) |
+| `npm run cf:deploy:dev` | Build and deploy the dev site, dev.levuche.com, by hand                                    |
 
 ## Environment
 
-Only public values, all listed in `.env.example`. Never commit real keys or a filled-in `.env` file; `.gitignore` keeps every `.env*` file except the example out of git.
+Every setting is listed in `.env.example`. Copy it to `.env.local` and fill in what you need; the site builds and runs with it copied as is. Never commit real keys or a filled-in `.env` file; `.gitignore` keeps every `.env*` file except the example out of git. Server secrets for Cloudflare go in `wrangler secret put NAME`, never in `wrangler.jsonc`. Cloudflare setup, domains and branch previews: `docs/DEPLOY.md`.
+
+## Buildbase
+
+Sign-in, the beta list, the contact form and all editable copy (blog, docs, FAQs, testimonials, legal pages, and the home and pricing lists) come from [Buildbase](https://buildbase.app) through `@buildbase/sdk`. Use a development environment for local work and previews and production for levuche.com. Setup, the content model and every slug: [docs/BUILDBASE.md](docs/BUILDBASE.md). Seed text: `content/buildbase/`.
 
 ## License and ownership
 

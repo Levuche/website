@@ -1,0 +1,74 @@
+{
+  "slug": "pricing-plans",
+  "title": "Pricing: plans",
+  "note": "One plan: $9 once, no monthly fee (decided 25 Nov 2026). [FEE] is still to be decided.",
+  "fields": [
+    {
+      "slug": "name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "slug": "one_time_price",
+      "type": "text",
+      "required": false,
+      "helpText": "A price paid once, in dollars (9). When set, the card shows \"$9 once\" and ignores the monthly and yearly prices."
+    },
+    {
+      "slug": "monthly_price",
+      "type": "text",
+      "required": false,
+      "helpText": "A number in dollars (9) or a word (Free). Empty hides the price."
+    },
+    {
+      "slug": "yearly_price",
+      "type": "text",
+      "required": false,
+      "helpText": "As monthly_price. The Monthly/Yearly switch shows only when plans have both."
+    },
+    {
+      "slug": "fee_note",
+      "type": "text",
+      "required": false,
+      "helpText": "One line under the price, such as the fee per sale."
+    },
+    {
+      "slug": "features",
+      "type": "rich-text",
+      "required": false,
+      "helpText": "One feature per line."
+    },
+    {
+      "slug": "recommended",
+      "type": "bool",
+      "required": false
+    },
+    {
+      "slug": "cta_label",
+      "type": "text",
+      "required": false,
+      "helpText": "Button text. Empty: Join the beta."
+    },
+    {
+      "slug": "cta_url",
+      "type": "text",
+      "required": false,
+      "helpText": "A path on the site (/#beta) or an https link. Empty: /#beta."
+    },
+    {
+      "slug": "order",
+      "type": "integer",
+      "required": true
+    }
+  ],
+  "records": [
+    {
+      "name": "Levuche",
+      "one_time_price": "9",
+      "fee_note": "[FEE]% per sale, only when you sell, plus Stripe fees",
+      "features": "Your site at yourname.levuche.page\nStorage and extras from prepaid credits\nYour own domain, when you want it",
+      "recommended": false,
+      "order": 1
+    }
+  ]
+}

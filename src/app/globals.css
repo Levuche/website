@@ -6,6 +6,7 @@
  * <html>, so these apply page-wide. Marketing pages use only --lv-* tokens;
  * --site-* is the sample creator brand used in the phone preview.
  */
+:root:not([data-lv]),
 [data-lv='light'] {
   --lv-bg: #ffffff;
   --lv-surface: #f6f7fd;
@@ -133,4 +134,201 @@ body {
 :focus-visible {
   outline: 3px solid var(--lv-accent);
   outline-offset: 2px;
+}
+
+/*
+ * Buildbase SDK components (sign-in dialogs, account screens, the beta form)
+ * in Levuche's colours. The SDK reads HSL triplets on its own .saas-os-ui
+ * root; these mirror the --lv-* tokens above. Keep them in step.
+ */
+.saas-os-ui {
+  --background: 0 0% 100%;
+  --foreground: 239 57% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 239 57% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 239 57% 18%;
+  --primary: 239 54% 31%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 231 62% 96%;
+  --secondary-foreground: 239 57% 18%;
+  --muted: 231 64% 98%;
+  --muted-foreground: 238 23% 29%;
+  --accent: 231 62% 96%;
+  --accent-foreground: 239 57% 18%;
+  --destructive: 0 69% 36%;
+  --destructive-text: 0 69% 36%;
+  --success: 143 59% 26%;
+  --success-text: 143 59% 26%;
+  --border: 232 48% 91%;
+  --input: 232 48% 91%;
+  --ring: 239 54% 31%;
+  --radius: 1rem;
+  font-family: var(--font-sora), system-ui, sans-serif;
+}
+
+[data-lv='dark'] .saas-os-ui {
+  --background: 238 49% 10%;
+  --foreground: 235 65% 97%;
+  --card: 237 47% 18%;
+  --card-foreground: 235 65% 97%;
+  --popover: 237 47% 18%;
+  --popover-foreground: 235 65% 97%;
+  --primary: 40 100% 58%;
+  --primary-foreground: 239 57% 18%;
+  --secondary: 237 45% 20%;
+  --secondary-foreground: 235 65% 97%;
+  --muted: 238 49% 15%;
+  --muted-foreground: 237 61% 87%;
+  --accent: 237 45% 20%;
+  --accent-foreground: 235 65% 97%;
+  --destructive: 0 100% 80%;
+  --destructive-text: 0 100% 80%;
+  --success: 144 57% 72%;
+  --success-text: 144 57% 72%;
+  --border: 238 38% 28%;
+  --input: 238 38% 28%;
+  --ring: 40 100% 58%;
+}
+
+/* Long-form text from Buildbase (legal pages, blog posts, docs). The HTML is
+   sanitised in src/lib/markdown.ts; these rules give it the site's type. */
+.lv-prose {
+  color: var(--lv-text-2);
+  font-size: 17px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.lv-prose > :first-child {
+  margin-top: 0;
+}
+.lv-prose :is(p, ul, ol, blockquote, h2, h3, h4) {
+  max-width: var(--container-measure, 68ch);
+}
+.lv-prose :is(h2, h3, h4) {
+  color: var(--lv-text);
+  font-weight: 700;
+  scroll-margin-top: 1rem;
+}
+.lv-prose h2 {
+  margin: 2.25rem 0 0.75rem;
+  font-size: 1.5rem;
+  letter-spacing: -0.3px;
+}
+.lv-prose h3 {
+  margin: 1.75rem 0 0.5rem;
+  font-size: 1.2rem;
+}
+.lv-prose h4 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.05rem;
+}
+.lv-prose :is(p, ul, ol, blockquote, table, pre, figure) {
+  margin: 1rem 0;
+}
+.lv-prose ul {
+  list-style: disc;
+  padding-inline-start: 1.5rem;
+}
+.lv-prose ol {
+  list-style: decimal;
+  padding-inline-start: 1.5rem;
+}
+.lv-prose li {
+  margin: 0.35rem 0;
+}
+.lv-prose a {
+  color: var(--lv-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.lv-prose .heading-anchor {
+  color: inherit;
+  text-decoration: none;
+}
+.lv-prose strong {
+  color: var(--lv-text);
+}
+.lv-prose blockquote {
+  border-inline-start: 4px solid var(--lv-border);
+  padding-inline-start: 1rem;
+  color: var(--lv-text-3);
+}
+.lv-prose code {
+  background: var(--lv-surface-2);
+  border-radius: 6px;
+  padding: 0.1em 0.35em;
+  font-size: 0.9em;
+}
+.lv-prose pre {
+  background: var(--lv-surface);
+  border: 1px solid var(--lv-border);
+  border-radius: 14px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+.lv-prose pre code {
+  background: none;
+  padding: 0;
+}
+.lv-prose table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.lv-prose :is(th, td) {
+  border-top: 1px solid var(--lv-border);
+  padding: 0.6rem 0.5rem;
+  text-align: start;
+  vertical-align: top;
+}
+.lv-prose th {
+  color: var(--lv-text-3);
+  font-weight: 600;
+}
+.lv-prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 14px;
+}
+.lv-prose hr {
+  border: 0;
+  border-top: 1px solid var(--lv-border);
+  margin: 2rem 0;
+}
+
+/* A pricing plan's features (sanitised HTML from Buildbase): each list item
+   gets the board's check mark. */
+.lv-plan-features {
+  font-size: 15px;
+}
+.lv-plan-features :is(p, ul, ol) {
+  margin: 0;
+}
+.lv-plan-features :is(ul, ol) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  list-style: none;
+  padding: 0;
+}
+.lv-plan-features li {
+  display: flex;
+  gap: 0.625rem;
+}
+.lv-plan-features li::before {
+  content: '';
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  background-color: var(--lv-success);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+.lv-plan-features a {
+  color: var(--lv-link);
 }

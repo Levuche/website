@@ -14,19 +14,31 @@
     "check": "npm run lint && npm run format:check && npm run typecheck",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:deploy:dev": "opennextjs-cloudflare build && opennextjs-cloudflare deploy --env dev"
   },
   "dependencies": {
+    "@buildbase/sdk": "^1.9.0",
     "clsx": "^2.1.1",
+    "hast-util-to-string": "^3.0.1",
     "next": "16.4.6",
     "next-themes": "^0.4.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "tailwind-merge": "^3.4.0"
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "rehype-slug": "^6.0.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "tailwind-merge": "^3.4.0",
+    "unified": "^11.0.5"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.20.18",
     "@tailwindcss/postcss": "^4",
+    "@types/hast": "^3.0.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -37,5 +49,10 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "wrangler": "^4.166.0"
+  },
+  "overrides": {
+    "glob": {
+      "minimatch": "^11.0.9"
+    }
   }
 }

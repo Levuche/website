@@ -1,0 +1,54 @@
+name: CI
+
+# Lint, Prettier, the type check, the OpenNext build and a Wrangler dry run
+# on every push and pull request. No secrets and no Buildbase values: every
+# Buildbase feature switches itself off, so this builds what any fork can.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check and build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Prettier
+        run: npm run format:check
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Build for Cloudflare Workers (OpenNext, runs next build)
+        run: npm run cf:build
+
+      - name: Bundle the Worker (dry run, no deploy)
+        run: |
+          npx wrangler deploy --dry-run --outdir .wrangler/dry-run 2>&1 | tee wrangler-output.txt
+          echo "## Cloudflare Worker" >> "$GITHUB_STEP_SUMMARY"
+          grep "Total Upload" wrangler-output.txt >> "$GITHUB_STEP_SUMMARY" || true

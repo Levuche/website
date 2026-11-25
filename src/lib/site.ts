@@ -11,7 +11,10 @@ export const siteUrl = (
   process.env.NEXT_PUBLIC_SITE_URL?.trim() || PRODUCTION_URL
 ).replace(/\/+$/, '');
 
-/** Preview and staging builds send noindex (see next.config.ts). */
+/**
+ * Only the production host is indexed. The dev site (dev.levuche.com) and any
+ * other host send noindex (see next.config.ts).
+ */
 export const isIndexable = siteUrl === PRODUCTION_URL;
 
 export const site = {
@@ -23,6 +26,7 @@ export const site = {
     name: 'Jagodana LLC',
     url: 'https://jagodana.com',
     founder: 'Dharmendra Jagodana',
+    address: '1021 E Lincolnway, 7463 Cheyenne, WY 82001',
   },
   themeColor: '#24257A',
 } as const;

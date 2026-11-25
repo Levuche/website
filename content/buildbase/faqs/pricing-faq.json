@@ -1,0 +1,22 @@
+{
+  "slug": "pricing-faq",
+  "title": "Pricing questions",
+  "faqs": [
+    {
+      "question": "Is the $9 really paid once?",
+      "answer": "[Answer from the billing terms.]"
+    },
+    {
+      "question": "What does Levuche take from a sale?",
+      "answer": "[Answer from the billing terms.]"
+    },
+    {
+      "question": "What are prepaid credits for?",
+      "answer": "[Answer.]"
+    },
+    {
+      "question": "How do I get paid?",
+      "answer": "[Answer.]"
+    }
+  ]
+}
