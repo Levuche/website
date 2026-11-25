@@ -112,7 +112,8 @@ test('signing out clears a cookie for this host only off levuche.com', async ({
   for (const cookie of cookies) {
     expect(cookie).toMatch(/Max-Age=0/i);
     // levuche.com hosts share it; a test host keeps its own.
-    if (!new URL(baseURL!).hostname.endsWith('levuche.com')) {
+    const host = new URL(baseURL!).hostname;
+    if (host !== 'levuche.com' && !host.endsWith('.levuche.com')) {
       expect(cookie).not.toMatch(/Domain=/i);
     }
   }
