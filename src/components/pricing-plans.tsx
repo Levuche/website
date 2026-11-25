@@ -9,6 +9,8 @@ type Period = 'monthly' | 'yearly';
 /** A plan from the Buildbase collection `pricing-plans` (docs/BUILDBASE.md). */
 export interface Plan {
   name: string;
+  /** A price paid once. When set, it is shown instead of the period prices. */
+  oneTimePrice: string;
   monthlyPrice: string;
   yearlyPrice: string;
   feeNote: string;
@@ -20,8 +22,8 @@ export interface Plan {
 }
 
 /**
- * A price is shown as "$<value> a month" (or "a year"); a word such as
- * "Free" or "Custom" is shown as typed, with no period.
+ * A price is shown as "$<value> once", "$<value> a month" or "a year"; a word
+ * such as "Free" or "Custom" is shown as typed, with no period.
  */
 const isNumber = (value: string) => !/^[A-Za-z][A-Za-z ]*$/.test(value);
 const money = (value: string) => (isNumber(value) ? `$${value}` : value);
@@ -111,10 +113,21 @@ export function PricingPlans({
       </div>
 
       {plans.length > 0 && (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-5">
+        <div
+          className={cn(
+            'grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-5',
+            plans.length === 1 && 'max-w-[440px]'
+          )}
+        >
           {plans.map((plan, index) => {
             const price =
-              period === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice;
+              plan.oneTimePrice ||
+              (period === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice);
+            const per = plan.oneTimePrice
+              ? 'once'
+              : period === 'monthly'
+                ? 'a month'
+                : 'a year';
             return (
               <article
                 key={`${index}-${plan.name}`}
@@ -139,9 +152,7 @@ export function PricingPlans({
                       {money(price)}
                     </span>
                     {isNumber(price) && (
-                      <span className="text-lv-text-2 text-sm">
-                        {period === 'monthly' ? 'a month' : 'a year'}
-                      </span>
+                      <span className="text-lv-text-2 text-sm">{per}</span>
                     )}
                   </p>
                 )}

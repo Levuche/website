@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArticleHtml } from '@/components/article-html';
-import { contact, contactPlaceholder } from '@/lib/contact';
+import { contact } from '@/lib/contact';
 import { CONTENT, getRichContent } from '@/lib/content';
 import { getLegalPage } from '@/lib/legal';
 import { renderMarkdown } from '@/lib/markdown';
@@ -101,7 +101,7 @@ export default async function LegalPage({ params }: Props) {
         <a href={`mailto:${address}`} className="text-lv-link">
           {address}
         </a>
-        . {site.owner.name}, {contactPlaceholder.address}.
+        . {site.owner.name}, {site.owner.address}.
       </p>
     </article>
   );

@@ -18,7 +18,3 @@ export const contact = {
   privacy: levucheAddress(process.env.NEXT_PUBLIC_PRIVACY_EMAIL) ?? HELLO,
   security: levucheAddress(process.env.NEXT_PUBLIC_SECURITY_EMAIL) ?? HELLO,
 };
-
-export const contactPlaceholder = {
-  address: '[Company address]',
-} as const;

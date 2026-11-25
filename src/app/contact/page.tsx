@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SiteShell } from '@/components/site-shell';
 import { ContactForm } from '@/components/contact-form';
-import { contact, contactPlaceholder } from '@/lib/contact';
+import { contact } from '@/lib/contact';
 import { pageMetadata } from '@/lib/metadata';
 import { site } from '@/lib/site';
 
@@ -92,7 +92,7 @@ export default function ContactPage() {
             .
           </p>
           <p className={text}>
-            {site.owner.name}, {contactPlaceholder.address}
+            {site.owner.name}, {site.owner.address}
           </p>
         </section>
       </div>

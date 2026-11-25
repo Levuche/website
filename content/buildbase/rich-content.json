@@ -2,10 +2,10 @@
   "home-pricing": {
     "title": "Home: pricing card",
     "content": "**$9** once\n\n- Your site at yourname.levuche.page\n- [YOUR FEE]% per sale, only when you sell\n- Storage and extras from prepaid credits\n- Your own domain, when you want it",
-    "note": "Draft from the Main board; the price conflicts with the pricing board."
+    "note": "From the Main board. $9 once is decided; [YOUR FEE] is not."
   },
   "pricing-intro": {
     "title": "Pricing: intro line",
-    "content": "[One line on how pricing works during and after the beta.]"
+    "content": "Pay $9 once. No monthly fee."
   }
 }

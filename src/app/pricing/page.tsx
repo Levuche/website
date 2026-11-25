@@ -21,6 +21,7 @@ export const dynamic = 'force-dynamic';
 
 type PlanRecord = {
   name?: string;
+  one_time_price?: string | number;
   monthly_price?: string | number;
   yearly_price?: string | number;
   fee_note?: string;
@@ -77,6 +78,7 @@ function toPlan(record: PlanRecord): Plan | null {
   if (!name) return null;
   return {
     name,
+    oneTimePrice: text(record.one_time_price),
     monthlyPrice: text(record.monthly_price),
     yearlyPrice: text(record.yearly_price),
     feeNote: text(record.fee_note),

@@ -1,9 +1,19 @@
 {
   "slug": "pricing-plans",
   "title": "Pricing: plans",
-  "note": "Draft from the MarketingPages board. The home page says $9 once; this board shows monthly plans. Decide which before entering prices.",
+  "note": "One plan: $9 once, no monthly fee (decided 25 Nov 2026). [FEE] is still to be decided.",
   "fields": [
-    { "slug": "name", "type": "text", "required": true },
+    {
+      "slug": "name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "slug": "one_time_price",
+      "type": "text",
+      "required": false,
+      "helpText": "A price paid once, in dollars (9). When set, the card shows \"$9 once\" and ignores the monthly and yearly prices."
+    },
     {
       "slug": "monthly_price",
       "type": "text",
@@ -28,7 +38,11 @@
       "required": false,
       "helpText": "One feature per line."
     },
-    { "slug": "recommended", "type": "bool", "required": false },
+    {
+      "slug": "recommended",
+      "type": "bool",
+      "required": false
+    },
     {
       "slug": "cta_label",
       "type": "text",
@@ -41,35 +55,20 @@
       "required": false,
       "helpText": "A path on the site (/#beta) or an https link. Empty: /#beta."
     },
-    { "slug": "order", "type": "integer", "required": true }
+    {
+      "slug": "order",
+      "type": "integer",
+      "required": true
+    }
   ],
   "records": [
     {
-      "name": "[Plan 1]",
-      "monthly_price": "[PRICE]",
-      "yearly_price": "[PRICE]",
-      "fee_note": "[FEE]% per sale, plus Stripe fees",
-      "features": "Your handle.levuche.page site\n[N] packs\nInbox and short links",
+      "name": "Levuche",
+      "one_time_price": "9",
+      "fee_note": "[FEE]% per sale, only when you sell, plus Stripe fees",
+      "features": "Your site at yourname.levuche.page\nStorage and extras from prepaid credits\nYour own domain, when you want it",
       "recommended": false,
       "order": 1
-    },
-    {
-      "name": "[Plan 2]",
-      "monthly_price": "[PRICE]",
-      "yearly_price": "[PRICE]",
-      "fee_note": "[FEE]% per sale, plus Stripe fees",
-      "features": "Everything in [Plan 1]\nYour own domain\nVersion history and rollback\nAPI keys",
-      "recommended": true,
-      "order": 2
-    },
-    {
-      "name": "[Plan 3]",
-      "monthly_price": "[PRICE]",
-      "yearly_price": "[PRICE]",
-      "fee_note": "[FEE]% per sale, plus Stripe fees",
-      "features": "Everything in [Plan 2]\n[N] team members\n[Extra feature]",
-      "recommended": false,
-      "order": 3
     }
   ]
 }

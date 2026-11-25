@@ -28,6 +28,7 @@ export const site = {
     name: 'Jagodana LLC',
     url: 'https://jagodana.com',
     founder: 'Dharmendra Jagodana',
+    address: '1021 E Lincolnway, 7463 Cheyenne, WY 82001',
   },
   themeColor: '#24257A',
 } as const;
