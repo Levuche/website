@@ -31,7 +31,7 @@ The site runs on http://localhost:3000.
 
 ## Environment
 
-Every setting is listed in `.env.example`. Copy it to `.env.local` and fill in what you need; the site builds and runs with it copied as is. Never commit real keys or a filled-in `.env` file; `.gitignore` keeps every `.env*` file except the example out of git. Server secrets for Cloudflare go in `wrangler secret put NAME`, never in `wrangler.jsonc`. Cloudflare setup, domains and branch previews: `docs/DEPLOY.md`.
+Every setting is listed in `.env.example`. Copy it to `.env.local` and fill in what you need; the site builds and runs with it copied as is. Never commit real keys or a filled-in `.env` file; `.gitignore` keeps every `.env*` file except the example out of git. Server secrets for Cloudflare go in `wrangler secret put NAME`, never in `wrangler.jsonc`. Cloudflare setup and domains: `docs/DEPLOY.md`. Branches (feature > `dev` > `main`) and GitHub rules: `docs/BRANCHES.md`.
 
 ## Buildbase
 

@@ -4,10 +4,11 @@ levuche.com runs on Cloudflare Workers, built with OpenNext and deployed by
 GitHub Actions. The repository is public, so Actions minutes are free.
 
 - `.github/workflows/ci.yml` checks and builds every push and pull request.
-- `.github/workflows/deploy.yml` deploys every pull request from a branch of
-  this repository, and every push to `main`, to the dev site
-  (`dev.levuche.com`). A push to `main` then deploys production
-  (`levuche.com`), only if the dev deploy worked.
+- `.github/workflows/deploy.yml` deploys `dev` to the dev site
+  (`dev.levuche.com`) and `main` to production (`levuche.com`), each time
+  something is merged into that branch. Pull requests deploy nothing.
+
+Work goes feature branch > `dev` > `main` (`docs/BRANCHES.md`).
 
 Nothing secret goes in the repo. The Cloudflare token is a GitHub secret, the
 Buildbase secrets live on each Worker, and the public Buildbase ids are GitHub
@@ -30,8 +31,8 @@ Worker itself can stay: GitHub Actions deploys to the same name, `levuche-com`.
 | A creator's own domain        | Their storefront                                 | Cloudflare for SaaS custom hostnames (step 9) |
 
 Only `levuche.com` is indexed. The dev site sends `noindex` and its canonical
-links point at `dev.levuche.com`. The dev site shows the latest pull request
-or push to deploy, so with two pull requests open, the last one pushed wins.
+links point at `dev.levuche.com`. The dev site always shows the `dev`
+branch.
 
 ## 1. Put both domains on Cloudflare
 
@@ -118,14 +119,13 @@ Until a value is set, the matching part of the site switches itself off: no
 sign-in, sample content from `content/buildbase` on the home and pricing
 pages, and a contact form that says it isn't open yet.
 
-## 5. First deploy and the preview
+## 5. Deploying
 
-Push to the pull request's branch (or re-run the **Deploy to Cloudflare**
-workflow on it). The dev job deploys it to `https://dev.levuche.com`. That is
-the preview: check it before merging.
-
-When the pull request is merged, the push to `main` deploys the dev site again
-and then `levuche.com`.
+Merge a pull request into `dev` and the push deploys `https://dev.levuche.com`.
+Check it there, then open a pull request from `dev` into `main`; merging it
+deploys `https://levuche.com`. To deploy a branch again without a change, open
+**Actions** > **Deploy to Cloudflare** > **Run workflow** and pick `dev` or
+`main`.
 
 ## 6. levuche.com and www
 
