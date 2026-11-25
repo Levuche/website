@@ -70,6 +70,15 @@ function canonical(html) {
   return tag.match(/href="([^"]*)"/i)?.[1] ?? '';
 }
 
+// The origin of a link, or '' when it isn't an absolute URL.
+function originOf(href) {
+  try {
+    return new URL(href).origin;
+  } catch {
+    return '';
+  }
+}
+
 const home = await get('/');
 if (isAccessGate(home.response)) {
   expect(isPrivate, `${baseUrl}/ is behind Cloudflare Access sign-in`);
@@ -126,7 +135,7 @@ if (isAccessGate(home.response)) {
     );
     expect(
       sitemap.response.status === 200 &&
-        sitemap.body.includes('<loc>https://levuche.com'),
+        /<loc>https:\/\/levuche\.com(\/|<)/.test(sitemap.body),
       '/sitemap.xml lists levuche.com pages'
     );
     for (const page of ['/', '/pricing']) {
@@ -141,7 +150,7 @@ if (isAccessGate(home.response)) {
         `${page} says index`
       );
       expect(
-        canonical(body).startsWith('https://levuche.com'),
+        originOf(canonical(body)) === 'https://levuche.com',
         `${page} canonical is on levuche.com`
       );
     }
