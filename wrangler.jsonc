@@ -3,7 +3,7 @@
   // levuche.com on Cloudflare Workers, built with OpenNext and deployed by
   // GitHub Actions. Setup, domains and secrets: docs/DEPLOY.md. No secrets
   // belong in this file.
-  "name": "levuche-website",
+  "name": "levuche-com",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -28,7 +28,7 @@
     // first (.github/workflows/deploy.yml). It reads the Buildbase
     // development environment and sends noindex.
     "dev": {
-      "name": "levuche-website-dev",
+      "name": "levuche-com-dev",
       "routes": [{ "pattern": "dev.levuche.com", "custom_domain": true }],
       "workers_dev": false,
     },

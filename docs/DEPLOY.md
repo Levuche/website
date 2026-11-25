@@ -14,18 +14,20 @@ Buildbase secrets live on each Worker, and the public Buildbase ids are GitHub
 variables.
 
 Don't also connect the repo to Cloudflare's own Git builds (Workers Builds),
-or every push would deploy twice.
+or every push would deploy twice. If it is connected, disconnect it: the
+Worker > **Settings** > **Build** > **Git repository** > **Disconnect**. The
+Worker itself can stay: GitHub Actions deploys to the same name, `levuche-com`.
 
 ## Domain plan
 
-| Address                       | Serves                                               | Set up                                        |
-| ----------------------------- | ---------------------------------------------------- | --------------------------------------------- |
-| `levuche.com`                 | This site (Worker `levuche-website`)                 | Custom domain, from `wrangler.jsonc`          |
-| `www.levuche.com`             | 301 to `levuche.com`                                 | Redirect rule (step 6)                        |
-| `dev.levuche.com`             | The dev site (Worker `levuche-website-dev`), noindex | Custom domain, from `wrangler.jsonc`          |
-| `app.levuche.com` (suggested) | The Levuche app, once it exists                      | Its own Worker with a custom domain (step 9)  |
-| `<name>.levuche.page`         | Creator storefronts, once they exist                 | Wildcard DNS and a Worker route (step 9)      |
-| A creator's own domain        | Their storefront                                     | Cloudflare for SaaS custom hostnames (step 9) |
+| Address                       | Serves                                           | Set up                                        |
+| ----------------------------- | ------------------------------------------------ | --------------------------------------------- |
+| `levuche.com`                 | This site (Worker `levuche-com`)                 | Custom domain, from `wrangler.jsonc`          |
+| `www.levuche.com`             | 301 to `levuche.com`                             | Redirect rule (step 6)                        |
+| `dev.levuche.com`             | The dev site (Worker `levuche-com-dev`), noindex | Custom domain, from `wrangler.jsonc`          |
+| `app.levuche.com` (suggested) | The Levuche app, once it exists                  | Its own Worker with a custom domain (step 9)  |
+| `<name>.levuche.page`         | Creator storefronts, once they exist             | Wildcard DNS and a Worker route (step 9)      |
+| A creator's own domain        | Their storefront                                 | Cloudflare for SaaS custom hostnames (step 9) |
 
 Only `levuche.com` is indexed. The dev site sends `noindex` and its canonical
 links point at `dev.levuche.com`. The dev site shows the latest pull request

@@ -3,10 +3,10 @@ name: Deploy to Cloudflare
 # Builds the site with OpenNext and deploys it with Wrangler:
 #
 # - Every pull request from a branch of this repository, and every push to
-#   main, deploys to the dev site (Worker levuche-website-dev,
+#   main, deploys to the dev site (Worker levuche-com-dev,
 #   https://dev.levuche.com), which reads the Buildbase development
 #   environment and sends noindex.
-# - A push to main then deploys production (Worker levuche-website,
+# - A push to main then deploys production (Worker levuche-com,
 #   https://levuche.com), only if the dev deploy succeeded.
 #
 # Pull requests from forks and Dependabot never run the deploy jobs.
