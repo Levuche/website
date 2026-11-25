@@ -6,7 +6,8 @@ const isIndexable =
   (process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'https://levuche.com').replace(
     /\/+$/,
     ''
-  ) === 'https://levuche.com';
+  ) === 'https://levuche.com' &&
+  process.env.NEXT_PUBLIC_SITE_ENV?.trim() !== 'preview';
 
 const nextConfig: NextConfig = {
   // No `x-powered-by: Next.js` header.

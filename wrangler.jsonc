@@ -1,8 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // levuche.com on Cloudflare Workers, built with OpenNext (`npm run cf:deploy`).
-  // Add "account_id" and the levuche.com custom domain route before the first
-  // deploy. No secrets belong in this file.
+  // levuche.com on Cloudflare Workers, built with OpenNext. Setup, domains,
+  // previews and secrets: docs/DEPLOY.md. No secrets belong in this file.
   "name": "levuche-website",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-01",
@@ -15,4 +14,15 @@
     "binding": "ASSETS",
   },
   "observability": { "enabled": true },
+  // levuche.com is the only production host. The levuche.com zone must be on
+  // the same Cloudflare account before the first deploy. www.levuche.com is a
+  // 301 redirect rule in the dashboard, not a route here.
+  "routes": [{ "pattern": "levuche.com", "custom_domain": true }],
+  // Keep runtime values set in the dashboard on each deploy. Secrets are
+  // always kept; this also keeps any plain-text ones.
+  "keep_vars": true,
+  // Settings for branch previews (Workers Builds runs `npx wrangler preview`
+  // on every branch except main). Preview secrets are set with
+  // `npx wrangler preview base-config secret put NAME`.
+  "previews": {},
 }
