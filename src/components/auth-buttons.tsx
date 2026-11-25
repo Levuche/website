@@ -4,6 +4,7 @@ import { useSaaSAuth } from '@buildbase/sdk/react';
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { isAuthConfigured } from '@/lib/buildbase-config';
+import { goal } from '@/lib/goals';
 import { appUrl } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
@@ -78,7 +79,12 @@ export function GetStarted({
   const classes = cn(buttonVariants({ size, variant }), className);
   if (!isAuthConfigured) {
     return (
-      <Link href={DASHBOARD_PATH} prefetch={false} className={classes}>
+      <Link
+        href={DASHBOARD_PATH}
+        prefetch={false}
+        className={classes}
+        onClick={() => goal('get_started', { page: window.location.pathname })}
+      >
         {label}
       </Link>
     );
@@ -99,6 +105,7 @@ function GetStartedWithBuildbase({
       href={DASHBOARD_PATH}
       className={classes}
       onClick={(event) => {
+        goal('get_started', { page: window.location.pathname });
         // Signed in, or not known yet: the link itself goes to the dashboard.
         if (isAuthenticated || isLoading) return;
         event.preventDefault();

@@ -2,6 +2,7 @@
 
 import { useMutation } from '@tanstack/react-query';
 import { postJson } from '@/lib/api';
+import { goal } from '@/lib/goals';
 
 export type ContactMessage = {
   name: string;
@@ -17,5 +18,6 @@ export function useSendContactMessage() {
     mutationKey: ['contact', 'send'],
     mutationFn: (message: ContactMessage) =>
       postJson<{ ok: true }>('/api/contact', message),
+    onSuccess: () => goal('contact_sent'),
   });
 }

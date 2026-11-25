@@ -47,6 +47,44 @@ commit.
   `BUILDBASE_WEBHOOK_SECRET`. On Cloudflare each worker instance keeps its
   own cache, so an edit can take up to a minute to reach every visitor.
 
+## Web analytics, goals and the cookie banner
+
+Off until `NEXT_PUBLIC_BUILDBASE_ANALYTICS=on` (the GitHub variable
+`BUILDBASE_ANALYTICS` for the deploy and preview workflows). It needs sign-in
+set up too, since it runs inside the Buildbase provider. To turn it on:
+
+1. Console, **Settings > Analytics**: under **Domains**, **Track**
+   `levuche.com` and `dev.levuche.com`, then turn on **Only listed domains**.
+2. Update the **Cookies** and **Privacy** docs in the `legal` folder (below),
+   in the same environment, so they don't say there is no analytics.
+3. Set the variable to `on` and deploy. Check visits arrive as Buildbase's
+   _Verify and troubleshoot_ page describes.
+
+With it on, the site shows Buildbase's `CookieBanner` (analytics only, with a
+link to `/privacy`) and a **Cookie settings** button in the footer that opens
+it again. Visitors are counted with cookies only after they say yes. The
+cookies to list on the Cookies page:
+
+| Cookie       | What it does                       | How long            |
+| ------------ | ---------------------------------- | ------------------- |
+| `bb_vid`     | A random visitor ID, after a yes   | 395 days            |
+| `bb_sid`     | A random visit ID, after a yes     | 30 minutes, renewed |
+| `bb_consent` | The visitor's answer to the banner | 395 days            |
+
+Goals (`src/lib/goals.ts`), sent only while analytics is on:
+
+| Goal           | When                                   |
+| -------------- | -------------------------------------- |
+| `get_started`  | A Get started button is pressed        |
+| `pricing_view` | The pricing page opens                 |
+| `buy_add_on`   | A Buy button for the add-on is pressed |
+| `contact_sent` | The contact form sends a message       |
+
+Sign-up, login, checkout and payment are counted by Buildbase itself. Adding
+a tag under **Settings > Tracking & tags** also needs its hosts in the
+Content-Security-Policy (`next.config.ts`) and, for a marketing tag, the
+`marketing` category on the banner.
+
 ## Content model
 
 The slugs are the contract between the console and the code
