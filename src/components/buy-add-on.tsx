@@ -73,6 +73,10 @@ function BuyWithBuildbase({
   const { purchaseAddOn, loading } = usePurchaseAddOn(subject);
   const noWorkspace =
     isAuthenticated && payerType === 'workspace' && !workspaceId;
+  // Buildbase refuses a sign-in with a message (a wrong client ID or a
+  // redirect address the client doesn't list) and the SDK only logs it in
+  // development builds, so it is shown here.
+  const [signInError, setSignInError] = useState<string | null>(null);
   const resumed = useRef(false);
   const pickerId = useId();
 
@@ -93,8 +97,13 @@ function BuyWithBuildbase({
 
   const buy = async () => {
     checkoutMutation.reset();
+    setSignInError(null);
     if (!isAuthenticated) {
-      await signIn(`/pricing?${BUY_PARAM}=${encodeURIComponent(slug)}`);
+      try {
+        await signIn(`/pricing?${BUY_PARAM}=${encodeURIComponent(slug)}`);
+      } catch (error) {
+        setSignInError(error instanceof Error ? error.message : String(error));
+      }
       return;
     }
     await checkout();
@@ -149,6 +158,11 @@ function BuyWithBuildbase({
         <p className="text-lv-text-2 m-0 text-sm">
           Create your page first, then come back to buy it.
         </p>
+      )}
+      {signInError && (
+        <Alert variant="destructive">
+          Sign-in didn’t open ({signInError}). Please try again in a moment.
+        </Alert>
       )}
       {checkoutMutation.isError && (
         <Alert variant="destructive">
