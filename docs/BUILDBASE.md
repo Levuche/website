@@ -62,13 +62,20 @@ preview before setup still matches the boards.
 | Home, What creators say          | Testimonials   | all published               |
 | Home, Questions                  | FAQ collection | `home-faq`                  |
 | Pricing, Questions               | FAQ collection | `pricing-faq`               |
-| Legal and trust pages            | Rich content   | `legal-<page>`, below       |
+| Legal and trust pages            | Content, Docs  | `legal/<page>`, below       |
 
-Legal pages: `legal-terms`, `legal-privacy`, `legal-cookies`,
-`legal-pack-terms`, `legal-refunds`, `legal-fees`, `legal-creator-rules`,
-`legal-copyright`, `legal-security`, `legal-subprocessors`. Until an entry exists its page
-says the text is still being written and gives the contact address. The
-page shows the entry's last update date.
+Legal pages are docs in a Docs folder with the slug `legal`, one published
+page each, with these slugs: `terms`, `privacy`, `cookies`, `pack-terms`,
+`refunds`, `fees`, `creator-rules`, `copyright`, `security`,
+`subprocessors`. Each shows at `/<slug>` (for example `legal/fees` is
+`/fees`), and the `legal` folder is left out of `/docs` and the sitemap's
+docs. Until a page is published, its page says the text is still being
+written and gives the contact address. The page shows the doc's last update
+date.
+
+Content blocks (rich content) are for copy the other types don't cover and
+that changes often or is shaped per page, such as changelog entries. Use
+Blogs, Docs, FAQs, Testimonials or Collections whenever one fits.
 
 Prices are not content: the home pricing card and the pricing page come
 from Buildbase Billing, below.

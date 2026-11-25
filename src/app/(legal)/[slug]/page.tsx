@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ArticleHtml } from '@/components/article-html';
 import { contact } from '@/lib/contact';
-import { CONTENT, getRichContent } from '@/lib/content';
+import { getLegalDoc } from '@/lib/content';
 import { getLegalPage } from '@/lib/legal';
 import { renderMarkdown } from '@/lib/markdown';
 import { pageMetadata } from '@/lib/metadata';
@@ -38,15 +38,15 @@ function formatDate(value: unknown): string | null {
 }
 
 /**
- * One legal or trust page. Its text is the Buildbase rich content entry
- * `legal-<slug>` (Markdown). Until that entry exists the page says the text
- * is being written and gives the contact address.
+ * One legal or trust page. Its text is the published Buildbase doc
+ * `legal/<slug>` (Content, Docs, Markdown). Until that doc is published the
+ * page says the text is being written and gives the contact address.
  */
 export default async function LegalPage({ params }: Props) {
   const page = getLegalPage((await params).slug);
   if (!page) notFound();
 
-  const entry = await getRichContent(CONTENT.legal(page.slug));
+  const entry = await getLegalDoc(page.slug);
   const body = entry ? renderMarkdown(entry.content) : null;
   const updated = formatDate(entry?.updatedAt);
 

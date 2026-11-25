@@ -20,5 +20,5 @@ Words in [square brackets] are still placeholders from the design boards
   never as content.
 - `forms/contact.json`: the fields of the Contact form.
 
-The legal pages (`legal-<slug>`) have no seed text on purpose: their text
+The legal pages (docs at `legal/<slug>` in Content, Docs) have no seed text on purpose: their text
 must be written and reviewed first.
