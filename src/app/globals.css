@@ -297,3 +297,38 @@ body {
   border-top: 1px solid var(--lv-border);
   margin: 2rem 0;
 }
+
+/* A pricing plan's features (sanitised HTML from Buildbase): each list item
+   gets the board's check mark. */
+.lv-plan-features {
+  font-size: 15px;
+}
+.lv-plan-features :is(p, ul, ol) {
+  margin: 0;
+}
+.lv-plan-features :is(ul, ol) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  list-style: none;
+  padding: 0;
+}
+.lv-plan-features li {
+  display: flex;
+  gap: 0.625rem;
+}
+.lv-plan-features li::before {
+  content: '';
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  background-color: var(--lv-success);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+.lv-plan-features a {
+  color: var(--lv-link);
+}

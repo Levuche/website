@@ -51,22 +51,25 @@ function safeHref(value: unknown) {
 }
 
 /**
- * A plan's features, one per line. The field may be plain text, Markdown
- * bullets or rich-text HTML; tags and stray angle brackets are dropped, and
- * React escapes the rest.
+ * A plan's features as sanitised HTML. The field may be plain text with one
+ * feature per line, a Markdown list, or rich-text HTML; it goes through the
+ * same Markdown renderer and sanitiser as every other Buildbase text.
  */
-function featureLines(value: unknown): string[] {
-  return (
-    text(value)
-      .replace(/<\/(p|li|div)>|<br\s*\/?>/gi, '\n')
-      .replace(/<[^>]*>/g, '')
-      // Drop any angle bracket left over, so no tag can survive in parts.
-      .replace(/[<>]/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .split('\n')
-      .map((line) => line.replace(/^\s*[-*•]\s*/, '').trim())
-      .filter(Boolean)
-  );
+function featuresHtml(value: unknown): string {
+  const source = text(value);
+  if (!source) return '';
+  const isMarkup =
+    source.includes('<') ||
+    source.split('\n').some((line) => /^\s*([-*]|\d+\.)\s/.test(line));
+  const markdown = isMarkup
+    ? source
+    : source
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => `- ${line}`)
+        .join('\n');
+  return renderMarkdown(markdown).html;
 }
 
 function toPlan(record: PlanRecord): Plan | null {
@@ -77,7 +80,7 @@ function toPlan(record: PlanRecord): Plan | null {
     monthlyPrice: text(record.monthly_price),
     yearlyPrice: text(record.yearly_price),
     feeNote: text(record.fee_note),
-    features: featureLines(record.features),
+    featuresHtml: featuresHtml(record.features),
     recommended: record.recommended === true,
     ctaLabel: text(record.cta_label) || 'Join the beta',
     ctaHref: safeHref(record.cta_url),
