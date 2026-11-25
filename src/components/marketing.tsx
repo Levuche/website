@@ -9,7 +9,7 @@ export function Container({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('max-w-page px-gutter mx-auto w-full', className)}
+      className={cn('max-w-layout px-gutter mx-auto w-full', className)}
       {...props}
     />
   );

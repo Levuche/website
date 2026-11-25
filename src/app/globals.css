@@ -156,8 +156,8 @@
 
 /*
  * Size presets. Use these names in class lists instead of pixel values, so
- * the site's scale lives in one place: text-h1, py-section, max-w-page,
- * rounded-card, min-h-control and so on. Each text preset sets size, line
+ * the site's scale lives in one place: text-h1, py-section, max-w-layout,
+ * rounded-card, min-h-control-sm and so on. Each text preset sets size, line
  * height, letter spacing and weight together. Values that use clamp() grow
  * from phone to desktop; the rest are fixed.
  */
@@ -206,8 +206,9 @@
   --spacing-card: clamp(20px, 2.5vw, 28px); /* inside a large card */
   --spacing-split: clamp(32px, 5vw, 64px); /* between two columns */
 
-  /* Widths: max-w-page, max-w-content, max-w-article, max-w-form, max-w-narrow */
-  --container-page: 1240px; /* header, footer, home page bands */
+  /* Widths: max-w-layout, max-w-content, max-w-article, max-w-form,
+     max-w-narrow. (max-w-page is @levuche/ui's creator page column.) */
+  --container-layout: 1240px; /* header, footer, home page bands */
   --container-content: 1184px; /* blog, docs, pricing, legal */
   --container-article: 820px; /* one post, the FAQ list, contact */
   --container-form: 520px; /* forms and the hero paragraph */
@@ -222,19 +223,29 @@
   --shadow-lift: 0 6px 16px rgba(20, 21, 74, 0.28);
 }
 
-/* Buttons, fields and tabs: 40 px with a mouse, 44 px on touch screens.
-   Use min-h-control or size-control. */
+/* Control heights, the same presets and values as @levuche/ui's tokens.css,
+   so buttons and fields use one set of names in both repos:
+     control-sm  40 px, 44 px on touch   (buttons, fields, tabs)
+     control-md  44 px, 48 px on touch   (large buttons, FAQ questions)
+     control-lg  48 px, 52 px on touch
+   Use min-h-control-sm, size-control-sm and so on. Drop this block once the
+   website moves to the @levuche/ui version that defines them. */
 :root {
-  --control-height: 2.5rem;
+  --levuche-control-sm: 2.5rem;
+  --levuche-control-md: 2.75rem;
+  --levuche-control-lg: 3rem;
 }
 @media (pointer: coarse) {
   :root {
-    --control-height: 2.75rem;
+    --levuche-control-sm: 2.75rem;
+    --levuche-control-md: 3rem;
+    --levuche-control-lg: 3.25rem;
   }
 }
 @theme inline {
-  --spacing-control: var(--control-height);
-  --spacing-control-lg: 2.75rem; /* large buttons and FAQ questions */
+  --spacing-control-sm: var(--levuche-control-sm);
+  --spacing-control-md: var(--levuche-control-md);
+  --spacing-control-lg: var(--levuche-control-lg);
 }
 
 html {

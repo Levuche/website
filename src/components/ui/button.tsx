@@ -27,9 +27,9 @@ const buttonVariants = cva(
         link: 'text-lv-link bg-transparent font-semibold underline-offset-4 hover:underline',
       },
       size: {
-        default: 'min-h-control px-4 text-sm',
-        lg: 'min-h-control-lg px-6 text-base',
-        icon: 'border-border hover:border-lv-link size-control rounded-xl border-2',
+        default: 'min-h-control-sm px-4 text-sm',
+        lg: 'min-h-control-md px-6 text-base',
+        icon: 'border-border hover:border-lv-link size-control-sm rounded-xl border-2',
       },
     },
     defaultVariants: { variant: 'default', size: 'default' },

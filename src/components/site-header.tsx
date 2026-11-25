@@ -10,7 +10,7 @@ type Current = 'pricing' | null;
 export function SiteHeader({ current = null }: { current?: Current }) {
   const link = 'text-lv-text-2 no-underline hover:text-lv-text';
   return (
-    <header className="max-w-page px-gutter mx-auto flex w-full flex-wrap items-center justify-between gap-4 py-3.5">
+    <header className="max-w-layout px-gutter mx-auto flex w-full flex-wrap items-center justify-between gap-4 py-3.5">
       <LevucheLogo />
       <nav
         aria-label="Main"
