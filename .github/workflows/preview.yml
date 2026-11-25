@@ -12,8 +12,12 @@ name: Preview
 #   https://pr-<number>-levuche-com-dev.<account subdomain>.workers.dev
 #
 # The link is posted as a comment on the pull request and kept up to date.
-# workers.dev preview links send noindex. They are public unless Cloudflare
-# Access protects them (docs/DEPLOY.md).
+# Preview links are for the team only: Cloudflare Access asks for sign-in
+# (docs/DEPLOY.md, "Keep the dev site private"), and they send noindex, block
+# every crawler in robots.txt and have no sitemap. The checks below get past
+# Access with a service token (secrets CF_ACCESS_CLIENT_ID and
+# CF_ACCESS_CLIENT_SECRET); without one they only confirm the link asks for
+# sign-in.
 #
 # Needs: the account's workers.dev subdomain, and "preview_urls": true on the
 # dev Worker, which the first deploy of dev after this file lands turns on.
@@ -57,6 +61,10 @@ jobs:
       NEXT_PUBLIC_BUILDBASE_ENVIRONMENT: ${{ vars.BUILDBASE_ENVIRONMENT }}
       NEXT_PUBLIC_BUILDBASE_CLIENT_ID: ${{ vars.BUILDBASE_CLIENT_ID }}
       NEXT_PUBLIC_BUILDBASE_ANALYTICS: ${{ vars.BUILDBASE_ANALYTICS }}
+      # Optional: a Cloudflare Access service token, so the checks can see
+      # past the team sign-in.
+      CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -98,13 +106,25 @@ jobs:
         env:
           URL: ${{ steps.upload.outputs.url }}
         run: |
+          auth=()
+          if [ -n "$CF_ACCESS_CLIENT_ID" ] && [ -n "$CF_ACCESS_CLIENT_SECRET" ]; then
+            auth=(-H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET")
+          fi
           for i in 1 2 3 4 5 6 7 8; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' "$URL/" || true)
+            code=$(curl -s -o /dev/null -w '%{http_code}' "${auth[@]}" "$URL/" || true)
             echo "preview: $code"
             [ "$code" = "200" ] && exit 0
+            # 302: Cloudflare Access asks for sign-in, so the link is up.
+            [ "$code" = "302" ] && [ ${#auth[@]} -eq 0 ] && exit 0
             sleep 10
           done
           echo "::warning::The preview link did not answer 200 yet."
+
+      - name: Check the preview stays out of search
+        if: steps.upload.outputs.url != ''
+        env:
+          URL: ${{ steps.upload.outputs.url }}
+        run: node scripts/check-indexing.mjs "$URL" private
 
       - name: Post the link on the pull request
         if: steps.upload.outputs.url != ''

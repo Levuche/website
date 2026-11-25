@@ -27,14 +27,15 @@ Worker itself can stay: GitHub Actions deploys to the same name, `levuche-com`.
 | ----------------------------- | ------------------------------------------------ | --------------------------------------------- |
 | `levuche.com`                 | This site (Worker `levuche-com`)                 | Custom domain, from `wrangler.jsonc`          |
 | `www.levuche.com`             | 301 to `levuche.com`                             | Redirect rule (step 6)                        |
-| `dev.levuche.com`             | The dev site (Worker `levuche-com-dev`), noindex | Custom domain, from `wrangler.jsonc`          |
+| `dev.levuche.com`             | The dev site (Worker `levuche-com-dev`), private | Custom domain, from `wrangler.jsonc`          |
 | `app.levuche.com` (suggested) | The Levuche app, once it exists                  | Its own Worker with a custom domain (step 9)  |
 | `<name>.levuche.page`         | Creator storefronts, once they exist             | Wildcard DNS and a Worker route (step 9)      |
 | A creator's own domain        | Their storefront                                 | Cloudflare for SaaS custom hostnames (step 9) |
 
-Only `levuche.com` is indexed. The dev site sends `noindex` and its canonical
-links point at `dev.levuche.com`. The dev site always shows the `dev`
-branch.
+Only `levuche.com` is indexed. The dev site and preview links are for the
+team only (section 10): Cloudflare Access asks for sign-in, and behind it
+every page and file sends `noindex`, `robots.txt` blocks every crawler and
+there is no sitemap. The dev site always shows the `dev` branch.
 
 ## 1. Put both domains on Cloudflare
 
@@ -146,10 +147,9 @@ development content, like the dev site.
   Pages** > **Settings** > **Subdomain**; set it once) and `preview_urls` on
   the dev Worker, which `wrangler.jsonc` sets and the next deploy of `dev`
   turns on. Until then the preview job passes with a warning and no link.
-- **Public:** anyone with the link can open it. workers.dev preview links
-  send noindex, so search engines leave them out. To limit them to your
-  testers, turn on Cloudflare Access for the dev Worker's preview URLs (the
-  Worker > **Settings** > **Domains & Routes** > **Preview URLs**).
+- **Team only:** once Cloudflare Access is on for the dev Worker's preview
+  URLs (section 10), only the team can open it. It also sends noindex,
+  blocks crawlers in `robots.txt` and has no sitemap.
 - **Sign-in** sends people back to `dev.levuche.com`, so test sign-in there
   after the merge.
 - Pull requests from forks and from Dependabot get no preview, since they
@@ -210,6 +210,62 @@ them.
   first 100 custom hostnames are included, then $0.10 each a month (November
   2026).
 
+## 10. Keep the dev site private (Cloudflare Access)
+
+The code already keeps the dev site and preview links out of search: every
+page and file sends `X-Robots-Tag: noindex, nofollow` and a `noindex` meta
+tag, `robots.txt` disallows everything, and `/sitemap.xml` is 404. Only a
+`levuche.com` build is open to search engines (`src/lib/site.ts`,
+`next.config.ts`, `scripts/write-asset-headers.mjs`). The **Search indexing**
+check in CI builds both and checks each (`scripts/check-indexing.mjs`).
+
+noindex only asks search engines to stay away; anyone with the address can
+still open the site. Cloudflare Access closes it: people sign in with a team
+email (a one-time code by email, or Google if you add it) before they see
+anything. Access is free for up to 50 users. All of this is in the
+Cloudflare dashboard, on the account that holds `levuche.com`.
+
+1. **Team-only sign-in for `dev.levuche.com`.** **Zero Trust** > **Access
+   controls** > **Applications** > **Create new application** > **Self-hosted
+   and private**. Name it `Levuche dev site`. **Add public hostname**:
+   subdomain `dev`, domain `levuche.com`, no path. Under **Access policies**,
+   **Create new policy**: name `Levuche team`, action **Allow**, include
+   **Emails ending in** your team's domain (for example `@levuche.com`), or
+   **Emails** with each person's address. Keep the session at 24 hours and
+   save the application.
+2. **Let the Buildbase content webhook through.** It is the only thing that
+   calls the dev site from outside, and it is signed, so it needs no sign-in.
+   **Create new application** > **Self-hosted and private** again, named
+   `Levuche dev webhooks`: hostname `dev` / `levuche.com`, path
+   `api/webhooks/content`. Policy: action **Bypass**, include **Everyone**.
+   The more specific path wins, so only that one address skips sign-in.
+   Sign-in and checkout are unaffected: Buildbase and Stripe send people
+   back in their own browser, after they have signed in.
+3. **Preview links.** **Workers & Pages** > `levuche-com-dev` >
+   **Settings** > **Domains & Routes** > **Preview URLs** > **Enable
+   Cloudflare Access**.
+   Then **Manage Cloudflare Access** and change the shared policy
+   **Cloudflare Workers Preview URLs** to the same team emails as step 1.
+   Keep the Worker's own `workers.dev` address off (`wrangler.jsonc` sets
+   `"workers_dev": false`).
+4. **A key for the checks in GitHub Actions.** **Zero Trust** > **Access
+   controls** > **Service credentials** > **Service Tokens** > **Create
+   Service Token**, named `levuche-github-actions`, duration 1 year. Copy the
+   Client ID and Client Secret (the secret is shown once). In both
+   applications from steps 1 and 3, add a policy: action **Service Auth**,
+   include **Service Token** `levuche-github-actions`. In GitHub,
+   `Levuche/website` > **Settings** > **Secrets and variables** > **Actions**,
+   add the repository secrets `CF_ACCESS_CLIENT_ID` and
+   `CF_ACCESS_CLIENT_SECRET`. Without them the deploy and preview checks only
+   confirm that the site asks for sign-in.
+5. **Check it.** Open `https://dev.levuche.com` in a private window: it
+   should ask for an email. Sign in with a team address and the site shows.
+   An address outside the team gets no code.
+
+Search engines have probably not listed the dev site, since it has sent
+noindex from the start. If it ever shows up in Google, add `dev.levuche.com`
+in Search Console and use **Removals**.
+
 ## Sources
 
 Cloudflare docs, read November 2026:
@@ -219,3 +275,4 @@ Cloudflare docs, read November 2026:
 - [Workers as the Cloudflare for SaaS fallback origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/) and [Cloudflare for SaaS plans](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/plans/)
 - [OpenNext on Cloudflare: deploying](https://opennext.js.org/cloudflare/howtos/dev-deploy)
 - [Version URLs](https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/) and [Cloudflare Access for Workers](https://developers.cloudflare.com/workers/configuration/cloudflare-access/)
+- [Self-hosted Access applications](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/self-hosted-public-app/), [Access service tokens](https://developers.cloudflare.com/cloudflare-one/access-controls/service-credentials/service-tokens/) and [static asset headers](https://developers.cloudflare.com/workers/static-assets/headers/)

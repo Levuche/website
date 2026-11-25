@@ -232,7 +232,7 @@ function PhonePreview() {
       <PackRow
         title="Origins reel pack"
         detail="100 prompts, 1 guide"
-        price="$[PRICE]"
+        price="$20"
       />
       <p className={siteButtonClasses({ fullWidth: true, className: 'm-0' })}>
         I’ll take it

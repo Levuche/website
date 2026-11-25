@@ -62,7 +62,7 @@ Playwright tests in `e2e/`, run in Chromium at desktop and phone sizes:
 
 | File                 | What it checks                                                                                                                                                                                                                |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `site.spec.ts`       | Home page structure, one h1, skip link, header and footer links, legal page, 404, robots and sitemap, accessibility in light and dark                                                                                         |
+| `site.spec.ts`       | Home page structure, one h1, skip link, header and footer links, legal page, 404, robots and sitemap (none off levuche.com), accessibility in light and dark                                                                  |
 | `components.spec.ts` | The website's shadcn components at `/ui`, light and dark: button states and tap size, field hint and error, email validation, tabs, segmented control, checkboxes and accordion from the keyboard, alert roles, accessibility |
 | `contact.spec.ts`    | Contact form: required fields, a successful send, and the error message (the API is intercepted)                                                                                                                              |
 | `a11y.ts`            | axe check, WCAG 2.2 AA, fails on serious or critical problems                                                                                                                                                                 |
@@ -90,3 +90,9 @@ npm run build
 npm run e2e                                  # starts next start on port 3100
 E2E_BASE_URL=https://dev.levuche.com npm run e2e   # or test a deployed site
 ```
+
+The dev site and preview links are behind Cloudflare Access (team sign-in,
+`docs/DEPLOY.md` section 10). To test them, also set `CF_ACCESS_CLIENT_ID`
+and `CF_ACCESS_CLIENT_SECRET` to an Access service token. `e2e/fixtures.ts`
+sends it only to the site under test. The preview workflow reads them from
+the repository secrets of the same names.

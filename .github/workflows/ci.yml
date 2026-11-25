@@ -48,6 +48,55 @@ jobs:
           fi
           echo "$HEAD into $BASE is allowed."
 
+  # Builds the site twice, once as levuche.com and once as the dev site, and
+  # checks what search engines see on each: levuche.com is open with a
+  # sitemap; the dev site and preview links say noindex everywhere, block
+  # every crawler in robots.txt and have no sitemap (docs/DEPLOY.md).
+  indexing:
+    name: Search indexing (${{ matrix.site }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - site: production
+            url: https://levuche.com
+          - site: private
+            url: https://dev.levuche.com
+    env:
+      NEXT_PUBLIC_SITE_URL: ${{ matrix.url }}
+      SITE: ${{ matrix.site }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Start the site
+        run: |
+          npx next start -p 3200 > next-start.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf -o /dev/null http://localhost:3200/robots.txt && exit 0
+            sleep 2
+          done
+          cat next-start.log
+          exit 1
+
+      - name: Check what search engines see
+        env:
+          CHECK_ASSET_HEADERS: '1'
+        run: npm run check:indexing -- http://localhost:3200 "$SITE"
+
   check:
     name: Check and build
     runs-on: ubuntu-24.04
