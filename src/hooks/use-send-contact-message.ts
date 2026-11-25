@@ -2,6 +2,7 @@
 
 import { useMutation } from '@tanstack/react-query';
 import { ApiError, postJson } from '@/lib/api';
+import { goal } from '@/lib/goals';
 import { solveChallenge, type PowChallenge } from '@/lib/solve-challenge';
 
 export type ContactMessage = {
@@ -42,5 +43,6 @@ export function useSendContactMessage() {
       const captcha = await spamCheck();
       return postJson<{ ok: true }>('/api/contact', { ...message, captcha });
     },
+    onSuccess: () => goal('contact_sent'),
   });
 }

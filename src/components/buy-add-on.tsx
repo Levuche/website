@@ -16,6 +16,7 @@ import {
   NativeSelectOption,
 } from '@/components/ui/native-select';
 import { isAuthConfigured } from '@/lib/buildbase-config';
+import { goal } from '@/lib/goals';
 
 const BUY_PARAM = 'buy';
 
@@ -92,6 +93,7 @@ function BuyWithBuildbase({
   const opening = loading || checkoutMutation.isPending;
 
   const buy = async () => {
+    goal('buy_add_on', { slug });
     checkoutMutation.reset();
     setSignInError(null);
     if (!isAuthenticated) {
