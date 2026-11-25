@@ -24,7 +24,16 @@ function AuthButtonsInner() {
 
   if (!isAuthenticated) {
     return (
-      <button type="button" className={link} onClick={() => signIn()}>
+      <button
+        type="button"
+        className={link}
+        onClick={() =>
+          // The SDK logs a refused sign-in only in development builds.
+          signIn().catch((error: unknown) => {
+            console.error('Sign-in refused:', error);
+          })
+        }
+      >
         Sign in
       </button>
     );

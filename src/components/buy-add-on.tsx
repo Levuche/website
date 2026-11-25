@@ -67,6 +67,10 @@ function BuyWithBuildbase({
   const noWorkspace =
     isAuthenticated && payerType === 'workspace' && !workspaceId;
   const [failed, setFailed] = useState(false);
+  // Buildbase refuses a sign-in with a message (a wrong client ID or a
+  // redirect address the client doesn't list) and the SDK only logs it in
+  // development builds, so it is shown here.
+  const [signInError, setSignInError] = useState<string | null>(null);
   const resumed = useRef(false);
 
   const checkout = async () => {
@@ -84,8 +88,13 @@ function BuyWithBuildbase({
 
   const buy = async () => {
     setFailed(false);
+    setSignInError(null);
     if (!isAuthenticated) {
-      await signIn(`/pricing?${BUY_PARAM}=${encodeURIComponent(slug)}`);
+      try {
+        await signIn(`/pricing?${BUY_PARAM}=${encodeURIComponent(slug)}`);
+      } catch (error) {
+        setSignInError(error instanceof Error ? error.message : String(error));
+      }
       return;
     }
     await checkout();
@@ -139,6 +148,11 @@ function BuyWithBuildbase({
       {noWorkspace && (
         <p className="text-lv-text-2 m-0 text-sm">
           Create your page first, then come back to buy it.
+        </p>
+      )}
+      {signInError && (
+        <p role="alert" className="text-lv-text-2 m-0 text-sm">
+          Sign-in didn’t open ({signInError}). Please try again in a moment.
         </p>
       )}
       {failed && (
