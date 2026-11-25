@@ -24,13 +24,17 @@
   // always kept; this also keeps any plain-text ones.
   "keep_vars": true,
   "env": {
-    // The dev site: every pull request and every push to main deploys here
-    // first (.github/workflows/deploy.yml). It reads the Buildbase
-    // development environment and sends noindex.
+    // The dev site: every push to the dev branch deploys here
+    // (.github/workflows/deploy.yml). It reads the Buildbase development
+    // environment and sends noindex. Pull requests into dev upload preview
+    // versions of this Worker (.github/workflows/preview.yml), which need
+    // preview_urls on. Preview links are on workers.dev and send noindex;
+    // the Worker itself stays off workers.dev.
     "dev": {
       "name": "levuche-com-dev",
       "routes": [{ "pattern": "dev.levuche.com", "custom_domain": true }],
       "workers_dev": false,
+      "preview_urls": true,
     },
   },
 }
