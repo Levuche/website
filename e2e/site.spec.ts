@@ -19,9 +19,14 @@ test.describe('home page', () => {
     await expect(
       page.getByRole('figure', { name: 'Example creator site on Levuche' })
     ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Get early access' })
-    ).toHaveAttribute('href', '/#beta');
+    // Every "Get started" opens sign-up and lands in the dashboard; the old
+    // beta form is gone.
+    const getStarted = page.getByRole('link', { name: 'Get started' });
+    await expect(getStarted.first()).toBeVisible();
+    for (const link of await getStarted.all()) {
+      await expect(link).toHaveAttribute('href', '/dashboard');
+    }
+    await expect(page.getByRole('link', { name: /beta/i })).toHaveCount(0);
     // Only one h1: the creator name in the phone preview is not a heading.
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
   });
@@ -59,6 +64,14 @@ test('header link opens the pricing page', async ({ page, isMobile }) => {
     .click();
   await expect(page).toHaveURL(/\/pricing$/);
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+});
+
+test('/dashboard sends people on to the Levuche app', async ({ request }) => {
+  const response = await request.get('/dashboard', { maxRedirects: 0 });
+  expect(response.status()).toBe(307);
+  expect(response.headers()['location']).toMatch(
+    /^https:\/\/app(-dev)?\.levuche\.com\/?$/
+  );
 });
 
 test('footer links lead to real pages', async ({ page, request }) => {
