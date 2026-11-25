@@ -53,12 +53,12 @@ for (const mode of ['light', 'dark'] as const) {
       await expect(busy).toBeDisabled();
       await buttons.getByRole('button', { name: 'Reset' }).click();
       await expect(publish).toBeEnabled();
-      // 44 px minimum touch target (Atoms board, WCAG 2.5.8).
+      // 40 px with a mouse; 44 px on touch screens (pointer: coarse).
       for (const name of ['Primary', 'Secondary', 'Undo']) {
         const box = await buttons
           .getByRole('button', { name, exact: true })
           .boundingBox();
-        expect(box?.height ?? 0, name).toBeGreaterThanOrEqual(44);
+        expect(box?.height ?? 0, name).toBeGreaterThanOrEqual(40);
       }
     });
 

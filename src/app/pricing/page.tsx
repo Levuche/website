@@ -44,22 +44,22 @@ export default async function PricingPage() {
 
   return (
     <SiteShell current="pricing">
-      <div className="mx-auto flex max-w-[1184px] flex-col gap-7 px-[clamp(16px,3vw,32px)] pt-7 pb-16">
+      <div className="max-w-content px-gutter mx-auto flex flex-col gap-7 pt-7 pb-16">
         <PricingPlans
           offers={offers}
           currency={BILLING.currency}
           intro={
-            <div className="flex max-w-[640px] flex-col gap-2.5">
-              <h1 className="m-0 text-[clamp(36px,5vw,48px)] leading-[1.05] font-bold tracking-[-1.4px]">
+            <div className="max-w-form flex flex-col gap-2.5">
+              <h1 className="text-h1 m-0">
                 Pick a plan when you’re ready to sell
               </h1>
               {onlyOnce && (
-                <p className="text-lv-text-2 m-0 text-[17px] leading-relaxed">
+                <p className="text-lv-text-2 m-0 text-base leading-relaxed">
                   Pay once. No monthly fee.
                 </p>
               )}
               {offers.length === 0 && (
-                <p className="text-lv-text-2 m-0 text-[17px] leading-relaxed">
+                <p className="text-lv-text-2 m-0 text-base leading-relaxed">
                   Plans are being finalised. Join the beta and we’ll email you
                   when they’re ready.
                 </p>
@@ -71,7 +71,7 @@ export default async function PricingPage() {
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
           {rows.length > 0 && columns.length > 0 && (
             <section className="flex flex-col gap-3">
-              <h2 className="m-0 text-[22px] font-bold">Compare plans</h2>
+              <h2 className="m-0 text-xl font-bold">Compare plans</h2>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-sm">
                   <thead>
@@ -98,12 +98,12 @@ export default async function PricingPage() {
                       >
                         <th
                           scope="row"
-                          className="text-lv-text px-2 py-[11px] text-left font-semibold"
+                          className="text-lv-text px-2 py-2.75 text-left font-semibold"
                         >
                           {row.name}
                         </th>
                         {row.values.map((value, i) => (
-                          <td key={i} className="px-2 py-[11px]">
+                          <td key={i} className="px-2 py-2.75">
                             {value}
                           </td>
                         ))}
@@ -116,7 +116,7 @@ export default async function PricingPage() {
           )}
           {questions.length > 0 && (
             <section className="flex flex-col gap-2.5">
-              <h2 className="m-0 mb-0.5 text-[22px] font-bold">Questions</h2>
+              <h2 className="text-h3 m-0 mb-0.5">Questions</h2>
               <FaqList faqs={questions} openFirst />
             </section>
           )}

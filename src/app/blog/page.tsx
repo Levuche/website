@@ -19,12 +19,10 @@ export default async function BlogIndex() {
   const items = tree.all;
   return (
     <SiteShell>
-      <div className="mx-auto flex max-w-[1184px] flex-col gap-8 px-[clamp(16px,3vw,32px)] pt-7 pb-16">
+      <div className="max-w-content px-gutter mx-auto flex flex-col gap-8 pt-7 pb-16">
         <div className="flex flex-col gap-2.5">
-          <h1 className="m-0 text-[clamp(36px,5vw,48px)] leading-[1.05] font-bold tracking-[-1.4px]">
-            Blog
-          </h1>
-          <p className="text-lv-text-2 m-0 text-[17px] leading-relaxed">
+          <h1 className="text-h1 m-0">Blog</h1>
+          <p className="text-lv-text-2 m-0 text-base leading-relaxed">
             News, guides and stories from Levuche.
           </p>
         </div>

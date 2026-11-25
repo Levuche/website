@@ -81,7 +81,7 @@ export function EmailSignupDemo() {
           placeholder="you@email.com"
           className="flex-[1_1_200px] rounded-full px-4"
         />
-        <Button type="submit" variant="accent" className="min-h-12">
+        <Button type="submit" variant="accent">
           Join the beta
         </Button>
       </form>
@@ -141,7 +141,7 @@ export function SegmentedDemo() {
         <ToggleGroupItem value="tablet">Tablet</ToggleGroupItem>
         <ToggleGroupItem value="desktop">Desktop</ToggleGroupItem>
       </ToggleGroup>
-      <p className="text-muted-foreground m-0 text-[13px]">Showing: {size}</p>
+      <p className="text-muted-foreground text-caption m-0">Showing: {size}</p>
     </div>
   );
 }

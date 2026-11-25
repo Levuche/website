@@ -9,10 +9,7 @@ export function Container({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        'mx-auto w-full max-w-[1240px] px-[clamp(16px,3vw,32px)]',
-        className
-      )}
+      className={cn('max-w-layout px-gutter mx-auto w-full', className)}
       {...props}
     />
   );
@@ -37,11 +34,7 @@ export function Section({
   };
   return (
     <section
-      className={cn(
-        'scroll-mt-4 py-[clamp(56px,7vw,96px)]',
-        tones[tone],
-        className
-      )}
+      className={cn('py-section scroll-mt-4', tones[tone], className)}
       {...props}
     >
       {children}
@@ -55,15 +48,7 @@ export function SectionHeading({
   className,
   ...props
 }: HTMLAttributes<HTMLHeadingElement> & { as?: 'h1' | 'h2' | 'h3' }) {
-  return (
-    <Tag
-      className={cn(
-        'm-0 text-[clamp(30px,4vw,44px)] leading-[1.1] font-bold tracking-[-1px]',
-        className
-      )}
-      {...props}
-    />
-  );
+  return <Tag className={cn('text-h2 m-0', className)} {...props} />;
 }
 
 export type Step = { title: ReactNode; body?: ReactNode };
@@ -86,15 +71,15 @@ export function StepList({
       {steps.map((step, i) => (
         <li
           key={i}
-          className="bg-lv-card border-lv-border flex flex-col gap-3 rounded-[20px] border p-7"
+          className="bg-lv-card border-lv-border rounded-card flex flex-col gap-2.5 border p-6"
         >
           <span
             aria-hidden
-            className="bg-lv-brand text-lv-on-brand flex size-11 items-center justify-center rounded-full font-bold"
+            className="bg-lv-brand text-lv-on-brand flex size-9 items-center justify-center rounded-full text-sm font-bold"
           >
             {i + 1}
           </span>
-          <h3 className="m-0 text-[22px] font-bold">{step.title}</h3>
+          <h3 className="m-0 text-lg font-bold">{step.title}</h3>
           {step.body ? (
             <p className="text-lv-text-2 m-0 text-base leading-relaxed">
               {step.body}
@@ -124,10 +109,10 @@ export function FeatureList({
       )}
     >
       {features.map((feature, i) => (
-        <div key={i} className="border-lv-border border-b py-[22px]">
-          <dt className="text-[19px] font-bold">{feature.title}</dt>
+        <div key={i} className="border-lv-border border-b py-4">
+          <dt className="text-base font-bold">{feature.title}</dt>
           {feature.body ? (
-            <dd className="text-lv-text-2 mx-0 mt-1.5 leading-relaxed">
+            <dd className="text-lv-text-2 text-ui mx-0 mt-1 leading-relaxed">
               {feature.body}
             </dd>
           ) : null}
@@ -148,7 +133,7 @@ export type Quote = {
 /** A testimonial: the quote, then who said it. */
 export function QuoteCard({ quote, name, role, avatar }: Quote) {
   return (
-    <figure className="bg-lv-card border-lv-border m-0 flex h-full flex-col gap-4 rounded-[20px] border p-7">
+    <figure className="bg-lv-card border-lv-border rounded-card m-0 flex h-full flex-col gap-4 border p-7">
       <blockquote className="text-lv-text-2 m-0 text-base leading-relaxed">
         “{quote}”
       </blockquote>

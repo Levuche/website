@@ -65,7 +65,7 @@ export function PricingPlans({
         <div
           className={cn(
             'grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-5',
-            offers.length === 1 && 'max-w-[440px]'
+            offers.length === 1 && 'max-w-narrow'
           )}
         >
           {offers.map((offer, index) => {
@@ -93,21 +93,19 @@ export function PricingPlans({
                 className={cn(
                   'rounded-3xl',
                   main
-                    ? 'border-primary bg-muted border-2 p-[23px]'
+                    ? 'border-primary bg-muted border-2 p-5.75'
                     : 'bg-background p-6'
                 )}
               >
                 <CardHeader>
                   <CardTitle>
-                    <h2 className="m-0 text-xl font-bold">{offer.name}</h2>
+                    <h2 className="m-0 text-lg font-bold">{offer.name}</h2>
                   </CardTitle>
                   {offer.badge && <Badge>{offer.badge}</Badge>}
                 </CardHeader>
                 {price && (
                   <p className="m-0 flex items-baseline gap-1.5">
-                    <span className="text-[40px] font-bold tracking-[-1px] tabular-nums">
-                      {price}
-                    </span>
+                    <span className="text-price tabular-nums">{price}</span>
                     {per && (
                       <span className="text-lv-text-2 text-sm">{per}</span>
                     )}
