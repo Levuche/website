@@ -38,7 +38,7 @@ body {
 }
 
 /*
- * Buildbase SDK components (sign-in dialogs, account screens, the beta form)
+ * Buildbase SDK components (sign-in dialogs, account screens)
  * in Levuche's colours. The SDK reads HSL triplets on its own .saas-os-ui
  * root; these mirror the --lv-* tokens above. Keep them in step.
  */
@@ -232,17 +232,4 @@ body {
 }
 .lv-plan-features a {
   color: var(--lv-link);
-}
-
-/*
- * Buildbase's beta form pads its own box (24 px a side from 640 px up), which
- * pushed the hero's form in from the heading above it. Line it up with the
- * text instead, and give its fields and button the site's control height
- * (40 px with a mouse, 44 px on touch).
- */
-.lv-beta-form .saas-os-ui > div {
-  padding: 0;
-}
-.lv-beta-form .saas-os-ui :is(input, button) {
-  height: var(--spacing-control);
 }

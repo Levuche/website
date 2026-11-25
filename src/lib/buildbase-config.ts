@@ -20,7 +20,7 @@ export const buildbase = {
   analytics: process.env.NEXT_PUBLIC_BUILDBASE_ANALYTICS === 'on',
 };
 
-/** Sign-in and the beta form need the org and its sign-in client. */
+/** Sign-in needs the org and its sign-in client. */
 export const isAuthConfigured = Boolean(
   /^[0-9a-f]{24}$/i.test(buildbase.orgId) &&
   buildbase.clientId &&

@@ -36,7 +36,7 @@ Every setting is listed in `.env.example`. Copy it to `.env.local` and fill in w
 
 ## Buildbase
 
-Sign-in, the beta list, the contact form and all editable copy (blog, docs, FAQs, testimonials, legal pages, and the home and pricing lists) come from [Buildbase](https://buildbase.app) through `@buildbase/sdk`. Use a development environment for local work and previews and production for levuche.com. Setup, the content model and every slug: [docs/BUILDBASE.md](docs/BUILDBASE.md). Seed text: `content/buildbase/`.
+Sign-in, buying the add-on, the contact form and all editable copy (blog, docs, FAQs, testimonials, legal pages, and the home and pricing lists) come from [Buildbase](https://buildbase.app) through `@buildbase/sdk`. Use a development environment for local work and previews and production for levuche.com. Setup, the content model and every slug: [docs/BUILDBASE.md](docs/BUILDBASE.md). Seed text: `content/buildbase/`.
 
 ## Help and feedback
 

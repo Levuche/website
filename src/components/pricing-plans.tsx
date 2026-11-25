@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
+import { GetStarted } from '@/components/auth-buttons';
 import { BuyAddOn } from '@/components/buy-add-on';
 import { Badge } from '@/components/ui/badge';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import type { Offer } from '@/lib/billing';
@@ -132,14 +132,11 @@ export function PricingPlans({
                     })}
                   />
                 ) : (
-                  <Button
-                    asChild
+                  <GetStarted
                     variant={variant}
                     size={size}
                     className="mt-auto w-full"
-                  >
-                    <Link href="/#beta">Join the beta</Link>
-                  </Button>
+                  />
                 )}
               </Card>
             );
