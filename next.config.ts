@@ -11,8 +11,9 @@ const isIndexable =
 const nextConfig: NextConfig = {
   // No `x-powered-by: Next.js` header.
   poweredByHeader: false,
-  // The component library ships TypeScript source (github.com/Levuche/ui).
-  transpilePackages: ['@levuche/ui'],
+  // Both packages ship TypeScript source (github.com/Levuche/ui and
+  // github.com/Levuche/kit).
+  transpilePackages: ['@levuche/ui', '@levuche/kit'],
   async headers() {
     return isIndexable
       ? []

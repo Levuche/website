@@ -1,52 +1,6 @@
-import { clsx, type ClassValue } from 'clsx';
-import { extendTailwindMerge } from 'tailwind-merge';
-
 /*
- * tailwind-merge has to know the size presets in src/app/globals.css (and the
- * ones @levuche/ui shares), or it reads text-h1 as a colour and drops the
- * real colour next to it. Keep these lists in step with the @theme blocks.
+ * cn() joins class names, with later Tailwind classes winning. It comes from
+ * @levuche/kit, which knows the size presets (text-h1, py-section and so on)
+ * in the shared theme, so the website and the app merge classes the same way.
  */
-const twMerge = extendTailwindMerge({
-  extend: {
-    theme: {
-      text: [
-        'display',
-        'h1',
-        'h2',
-        'h3',
-        'h4',
-        'lead',
-        'body',
-        'ui',
-        'caption',
-        'price',
-        'logo',
-      ],
-      spacing: [
-        'gutter',
-        'section',
-        'hero',
-        'card',
-        'split',
-        'control',
-        'control-md',
-        'control-lg',
-      ],
-      container: [
-        'layout',
-        'article',
-        'form',
-        'narrow',
-        'measure',
-        'site',
-        'site-wide',
-      ],
-      radius: ['tile', 'card', 'panel', 'device'],
-      shadow: ['lift'],
-    },
-  },
-});
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+export { cn } from '@levuche/kit';
