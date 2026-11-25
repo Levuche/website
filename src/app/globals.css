@@ -74,9 +74,12 @@
 /*
  * shadcn/ui's colour names, mapped onto the Levuche tokens so shadcn
  * components (src/components/ui, added with `npx shadcn add`) come out in
- * Levuche's colours in both modes without editing them.
+ * Levuche's colours in both modes without editing them. Set again on every
+ * [data-lv] element, so a section themed on its own (a dark panel inside a
+ * light page) resolves them against its own tokens.
  */
-:root {
+:root,
+[data-lv] {
   --background: var(--lv-bg);
   --foreground: var(--lv-text);
   --card: var(--lv-card);
