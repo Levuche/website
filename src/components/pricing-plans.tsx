@@ -160,6 +160,7 @@ export function PricingPlans({
                 {offer.addOnSlug ? (
                   <BuyAddOn
                     slug={offer.addOnSlug}
+                    payerType={offer.payerType}
                     currency={currency}
                     label={`Get ${offer.name}`}
                     className={button}

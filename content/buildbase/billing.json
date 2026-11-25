@@ -6,7 +6,7 @@
       "slug": "levuche",
       "name": "Levuche",
       "description": "Your site at yourname.levuche.page\nA small fee per sale, only when you sell, plus Stripe fees\nStorage and extras from prepaid credits\nYour own domain, when you want it",
-      "payerType": "user",
+      "payerType": "workspace",
       "shape": "lifetime",
       "items": [],
       "maxPerSubject": 1,

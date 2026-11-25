@@ -90,12 +90,12 @@ them for five minutes. The catalog is changed only by a person in the
 console; development is tested against a Stripe sandbox, production uses
 live keys.
 
-| Where on the site          | Buildbase Billing                                                             |
-| -------------------------- | ----------------------------------------------------------------------------- |
-| Pricing cards, home card   | Add-ons on sale, in catalog order (the first on home)                         |
-| Pricing cards, after those | Plans in the pricing group `levuche`, when it exists                          |
-| Compare table              | The group's products (features, limits, quotas), shown with two or more plans |
-| Buy button                 | Buys the add-on for the signed-in person (Stripe Checkout), signing in first  |
+| Where on the site          | Buildbase Billing                                                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Pricing cards, home card   | Add-ons on sale, in catalog order (the first on home)                                                                                 |
+| Pricing cards, after those | Plans in the pricing group `levuche`, when it exists                                                                                  |
+| Compare table              | The group's products (features, limits, quotas), shown with two or more plans                                                         |
+| Buy button                 | Buys the add-on (Stripe Checkout), signing in first: for the person, or their current workspace when the add-on is sold to workspaces |
 
 An add-on card shows its name, its USD price ("$9 once"), its badge, and
 its description one point per line. The fee per sale and other selling
@@ -109,7 +109,7 @@ Console setup, in order (development first, then production):
 3. Billing, Product categories, then Products: what the offer grants
    (e.g. `site`, "Your site at yourname.levuche.page").
 4. Billing, Add-ons: "Levuche" (slug `levuche`), shape lifetime, bought by
-   a person, $9 USD one-time, granting `site`; publish it.
+   a workspace, $9 USD one-time, granting `site`; publish it.
 5. Only for plans that renew: Billing, Plans, then Pricing groups with
    slug `levuche`, published.
 

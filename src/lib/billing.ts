@@ -38,8 +38,10 @@ export interface Offer {
   /** Monthly and yearly in minor units, for the "save N%" switch. */
   monthlyMinor: number | null;
   yearlyMinor: number | null;
-  /** An add-on a person buys from the card; null for a plan. */
+  /** An add-on bought from the card; null for a plan. */
   addOnSlug: string | null;
+  /** Who an add-on is sold to: a person, or their workspace. */
+  payerType: 'user' | 'workspace';
   isFree: boolean;
 }
 
@@ -160,6 +162,7 @@ export function addOnOffer(addOn: IAddOn): Offer | null {
     monthlyMinor: monthly ?? null,
     yearlyMinor: yearly ?? null,
     addOnSlug: addOn.slug,
+    payerType: addOn.payerType,
     isFree: false,
   };
 }
@@ -191,6 +194,7 @@ export function planOffer(plan: PublicPlanVersion): Offer | null {
     monthlyMinor: monthly ?? null,
     yearlyMinor: yearly ?? null,
     addOnSlug: null,
+    payerType: 'workspace',
     isFree: free,
   };
 }
