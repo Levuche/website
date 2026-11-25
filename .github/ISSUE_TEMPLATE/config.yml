@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a question or share an idea
+    url: https://github.com/Levuche/website/discussions
+    about: Questions, ideas and show and tell go in Discussions.
+  - name: Report a security problem
+    url: https://github.com/Levuche/website/security/advisories/new
+    about: Report vulnerabilities privately, never in a public issue.
+  - name: Help with your Levuche account, an order or a payout
+    url: https://levuche.com/contact
+    about: The team can look at your account there. GitHub is public.

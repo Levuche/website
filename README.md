@@ -38,6 +38,15 @@ Every setting is listed in `.env.example`. Copy it to `.env.local` and fill in w
 
 Sign-in, the beta list, the contact form and all editable copy (blog, docs, FAQs, testimonials, legal pages, and the home and pricing lists) come from [Buildbase](https://buildbase.app) through `@buildbase/sdk`. Use a development environment for local work and previews and production for levuche.com. Setup, the content model and every slug: [docs/BUILDBASE.md](docs/BUILDBASE.md). Seed text: `content/buildbase/`.
 
+## Help and feedback
+
+- Questions and ideas: [Discussions](https://github.com/Levuche/website/discussions)
+- Bugs and requests: [Issues](https://github.com/Levuche/website/issues/new/choose)
+- Security problems: privately, see [SECURITY.md](SECURITY.md)
+- Your own account, an order or a payout: [levuche.com/contact](https://levuche.com/contact)
+
+How issues are handled and how the team works: [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## License and ownership
 
 Everything in this repository belongs to Jagodana LLC. It's public so you can see it, not so you can reuse it. You may not copy, modify, redistribute, use commercially or use as AI training data any part of it without written permission. See [LICENSE](LICENSE).

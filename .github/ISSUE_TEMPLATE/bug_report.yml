@@ -1,0 +1,59 @@
+name: Bug report
+description: Something in this repository doesn't work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Issues, discussions and pull requests are public. Never post passwords, API keys, card or bank details, order numbers, or anyone's personal information, your own included. Security problems go privately through the Security tab.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you see, and what did you expect to see instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Tap ...
+        3. See ...
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: The page, screen, component or file.
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      multiple: true
+      options:
+        - Phone
+        - Tablet
+        - Desktop
+        - Not applicable
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Safari 19 on iOS, Chrome 142 on Windows
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots, recordings or logs
+      description: Cover anything private first.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you send
+      options:
+        - label: I searched the open and closed issues and this isn't one of them.
+          required: true
+        - label: I removed passwords, keys, payment details and personal information.
+          required: true
