@@ -18,6 +18,9 @@ const MESSAGES: Record<string, string> = {
   rate_limited: 'Too many messages just now. Please try again in a minute.',
   not_configured:
     'The form isn’t open yet. Please email us at the address above.',
+  captcha_failed:
+    'We couldn’t check that you’re not a bot. Please try again, or email us.',
+  email_refused: 'Please use a different email address.',
 };
 
 /**
