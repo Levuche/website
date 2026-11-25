@@ -2,6 +2,7 @@
 
 import { useSaaSAuth } from '@buildbase/sdk/react';
 import Link from 'next/link';
+import { useReferralHref } from '@/components/referral-capture';
 import { buttonVariants } from '@/components/ui/button';
 import { isAuthConfigured } from '@/lib/buildbase-config';
 import { goal } from '@/lib/goals';
@@ -27,10 +28,13 @@ export function AuthButtons() {
 
 function AuthButtonsInner() {
   const { isAuthenticated, isLoading, signIn } = useSaaSAuth();
+  // An affiliate's code goes along into the app, and through sign-in.
+  const dashboardHref = useReferralHref(appUrl);
+  const afterSignIn = useReferralHref(DASHBOARD_PATH);
 
   if (isAuthenticated) {
     return (
-      <a href={appUrl} className={buttonVariants()}>
+      <a href={dashboardHref} className={buttonVariants()}>
         Dashboard
       </a>
     );
@@ -44,7 +48,7 @@ function AuthButtonsInner() {
           className={textLink}
           onClick={() =>
             // The SDK logs a refused sign-in only in development builds.
-            signIn(DASHBOARD_PATH).catch((error: unknown) => {
+            signIn(afterSignIn).catch((error: unknown) => {
               console.error('Sign-in refused:', error);
             })
           }
@@ -77,10 +81,11 @@ export function GetStarted({
   label = 'Get started',
 }: GetStartedProps) {
   const classes = cn(buttonVariants({ size, variant }), className);
+  const href = useReferralHref(DASHBOARD_PATH);
   if (!isAuthConfigured) {
     return (
       <Link
-        href={DASHBOARD_PATH}
+        href={href}
         prefetch={false}
         className={classes}
         onClick={() => goal('get_started', { page: window.location.pathname })}
@@ -89,27 +94,32 @@ export function GetStarted({
       </Link>
     );
   }
-  return <GetStartedWithBuildbase classes={classes} label={label} />;
+  return (
+    <GetStartedWithBuildbase classes={classes} label={label} href={href} />
+  );
 }
 
 function GetStartedWithBuildbase({
   classes,
   label,
+  href,
 }: {
   classes: string;
   label: string;
+  /** /dashboard, with the affiliate's ?ref= when there is one. */
+  href: string;
 }) {
   const { isAuthenticated, isLoading, signIn } = useSaaSAuth();
   return (
     <a
-      href={DASHBOARD_PATH}
+      href={href}
       className={classes}
       onClick={(event) => {
         goal('get_started', { page: window.location.pathname });
         // Signed in, or not known yet: the link itself goes to the dashboard.
         if (isAuthenticated || isLoading) return;
         event.preventDefault();
-        signIn(DASHBOARD_PATH).catch((error: unknown) => {
+        signIn(href).catch((error: unknown) => {
           console.error('Sign-in refused:', error);
         });
       }}

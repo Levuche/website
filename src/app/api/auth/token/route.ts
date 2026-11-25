@@ -1,11 +1,12 @@
 // Trades the one-time code from the hosted sign-in page for a session, and
-// stores it in an httpOnly cookie. The only file that reads the client secret.
+// stores it in an httpOnly cookie shared with the Levuche app. The only file that reads the client secret.
 import { AuthCodeExchangeError, refuseCrossSiteAuthPost } from '@buildbase/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { exchangeCode, SESSION_COOKIE_NAME } from '@/lib/buildbase';
+import { exchangeCode } from '@/lib/buildbase';
 import { buildbase, isAuthConfigured } from '@/lib/buildbase-config';
 import { rateLimited } from '@/lib/rate-limit';
+import { setSessionCookie } from '@/lib/session-cookie';
 
 export async function POST(request: NextRequest) {
   // Only this app's own JSON call: a form another site submits must not sign
@@ -33,15 +34,8 @@ export async function POST(request: NextRequest) {
       clientSecret: process.env.BUILDBASE_CLIENT_SECRET ?? '',
     });
     const response = NextResponse.json({ sessionId });
-    response.cookies.set(SESSION_COOKIE_NAME, sessionId, {
-      httpOnly: true,
-      // From the request, not NODE_ENV: `next start` on a plain-http host is
-      // production, and a browser drops a Secure cookie sent over http.
-      secure: request.nextUrl.protocol === 'https:',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30,
-    });
+    // Shared with the Levuche app, so the sign-in counts there too.
+    setSessionCookie(response, request, sessionId);
     return response;
   } catch (error) {
     // The platform's status and reason ("Invalid client secret", "Invalid or

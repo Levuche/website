@@ -74,6 +74,51 @@ test('/dashboard sends people on to the Levuche app', async ({ request }) => {
   );
 });
 
+test('/dashboard passes an affiliate code on to the app', async ({
+  request,
+}) => {
+  const kept = await request.get('/dashboard?ref=MAYA_1', { maxRedirects: 0 });
+  expect(kept.status()).toBe(307);
+  const target = new URL(kept.headers()['location']);
+  expect(target.hostname).toMatch(/^app(-dev)?\.levuche\.com$/);
+  expect(target.searchParams.get('ref')).toBe('MAYA_1');
+
+  // Anything that is not an affiliate code is dropped.
+  const dropped = await request.get('/dashboard?ref=%3Cx%3E', {
+    maxRedirects: 0,
+  });
+  expect(dropped.headers()['location']).toMatch(
+    /^https:\/\/app(-dev)?\.levuche\.com\/?$/
+  );
+});
+
+test('signing out clears a cookie for this host only off levuche.com', async ({
+  request,
+  baseURL,
+}) => {
+  const response = await request.post('/api/auth/signout', {
+    headers: {
+      'Content-Type': 'application/json',
+      Origin: new URL(baseURL!).origin,
+    },
+    data: {},
+  });
+  expect(response.status()).toBe(200);
+  const cookies = response
+    .headersArray()
+    .filter((h) => h.name.toLowerCase() === 'set-cookie')
+    .map((h) => h.value);
+  expect(cookies.some((c) => /^bb-session-id[^=]*=;/.test(c))).toBe(true);
+  for (const cookie of cookies) {
+    expect(cookie).toMatch(/Max-Age=0/i);
+    // levuche.com hosts share it; a test host keeps its own.
+    const host = new URL(baseURL!).hostname;
+    if (host !== 'levuche.com' && !host.endsWith('.levuche.com')) {
+      expect(cookie).not.toMatch(/Domain=/i);
+    }
+  }
+});
+
 test('footer links lead to real pages', async ({ page, request }) => {
   await page.goto('/');
   const footer = page.getByRole('navigation', { name: 'Footer' });
