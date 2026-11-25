@@ -1,10 +1,14 @@
 @import 'tailwindcss';
 
 /*
- * Levuche design tokens v1.0 (Levuche/design, tokens/levuche-tokens.css,
- * locked 2026-11-25). The theme provider sets data-lv="light" or "dark" on
- * <html>, so these apply page-wide. Marketing pages use only --lv-* tokens;
- * --site-* is the sample creator brand used in the phone preview.
+ * Levuche design tokens v1.1 (Levuche/design, tokens/levuche-tokens.css).
+ * --lv-* is Levuche's own UI (this website and the app); the theme provider
+ * sets data-lv="light" or "dark" on <html>. The website's own components are
+ * in src/components/ui.
+ *
+ * --site-* is a creator's brand on their levuche.page site. Those tokens and
+ * the page blocks (profile, links, packs, video) come from @levuche/ui
+ * (github.com/Levuche/ui), used here for the phone preview on the home page.
  */
 :root:not([data-lv]),
 [data-lv='light'] {
@@ -61,30 +65,10 @@
   --lv-canvas: #090a1c;
   color-scheme: dark;
 }
-[data-site='light'] {
-  --site-bg: #ffffff;
-  --site-surface: #fff4ec;
-  --site-surface-2: #ffe6d4;
-  --site-border: #f1dfd2;
-  --site-text: #1a1325;
-  --site-text-2: #4b4458;
-  --site-link: #9a3412;
-  --site-accent: #c2410c;
-  --site-on-accent: #ffffff;
-  color-scheme: light;
-}
-[data-site='dark'] {
-  --site-bg: #0f1020;
-  --site-surface: #1b1c33;
-  --site-surface-2: #2a2b4a;
-  --site-border: #23244a;
-  --site-text: #f4f4f8;
-  --site-text-2: #c2c3d8;
-  --site-link: #ffb27a;
-  --site-accent: #ff8a3d;
-  --site-on-accent: #0f1020;
-  color-scheme: dark;
-}
+
+@import '@levuche/ui/tokens.css';
+/* Let Tailwind see the classes the page blocks use. */
+@source '../../node_modules/@levuche/ui/src';
 
 @theme inline {
   --font-sans: var(--font-sora), 'Helvetica Neue', Arial, sans-serif;
@@ -99,21 +83,18 @@
   --color-lv-link: var(--lv-link);
   --color-lv-brand: var(--lv-brand);
   --color-lv-on-brand: var(--lv-on-brand);
+  --color-lv-brand-2: var(--lv-brand-2);
   --color-lv-accent: var(--lv-accent);
   --color-lv-on-accent: var(--lv-on-accent);
   --color-lv-accent-soft: var(--lv-accent-soft);
   --color-lv-on-accent-soft: var(--lv-on-accent-soft);
   --color-lv-primary: var(--lv-primary);
   --color-lv-on-primary: var(--lv-on-primary);
+  --color-lv-success-bg: var(--lv-success-bg);
   --color-lv-success: var(--lv-success);
   --color-lv-danger: var(--lv-danger);
-  --color-site-bg: var(--site-bg);
-  --color-site-surface: var(--site-surface);
-  --color-site-surface-2: var(--site-surface-2);
-  --color-site-text: var(--site-text);
-  --color-site-text-2: var(--site-text-2);
-  --color-site-accent: var(--site-accent);
-  --color-site-on-accent: var(--site-on-accent);
+  --color-lv-danger-border: var(--lv-danger-border);
+  --color-lv-canvas: var(--lv-canvas);
   --shadow-lv: var(--lv-shadow);
   /* About 68 characters a line, for legal text. */
   --container-measure: 68ch;

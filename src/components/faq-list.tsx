@@ -1,4 +1,5 @@
 import type { Faq } from '@buildbase/sdk/server';
+import { Accordion, AccordionItem } from '@/components/ui/disclosure';
 import { ArticleHtml } from '@/components/article-html';
 import { renderMarkdown } from '@/lib/markdown';
 
@@ -11,22 +12,19 @@ export function FaqList({
   openFirst?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-2.5">
+    <Accordion>
       {faqs.map((item, i) => (
-        <details
+        <AccordionItem
           key={`${i}-${item.question}`}
-          open={openFirst && i === 0}
-          className="bg-lv-surface rounded-2xl px-4 py-3.5"
+          title={item.question}
+          defaultOpen={openFirst && i === 0}
         >
-          <summary className="min-h-6 cursor-pointer text-[15px] font-semibold">
-            {item.question}
-          </summary>
           <ArticleHtml
             html={renderMarkdown(item.answer).html}
-            className="mt-2.5 text-sm [&_p]:my-2"
+            className="text-sm [&_p]:my-2"
           />
-        </details>
+        </AccordionItem>
       ))}
-    </div>
+    </Accordion>
   );
 }

@@ -23,3 +23,7 @@ npm-debug.log*
 
 # Buildbase CLI state (claim links, blueprint outputs)
 .buildbase/
+
+# Playwright
+/test-results/
+/playwright-report/
