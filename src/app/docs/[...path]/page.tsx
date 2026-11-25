@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { DocsNav } from '@/components/content/docs-nav';
 import { EntryPage } from '@/components/content/entry-page';
 import { SiteShell } from '@/components/site-shell';
-import { getEntry } from '@/lib/content';
+import { getDocPages, getEntry, groupDocs } from '@/lib/content';
 import { pageMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-dynamic';
@@ -28,11 +29,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function DocsEntry({ params }: Props) {
-  const { path, item } = await load(params);
+  const [{ path, item }, docs] = await Promise.all([
+    load(params),
+    getDocPages(),
+  ]);
   if (!item) notFound();
+  const groups = groupDocs(docs);
   return (
     <SiteShell>
-      <EntryPage item={item} path={path} base="/docs" backLabel="All docs" />
+      <div className="mx-auto grid max-w-[1184px] grid-cols-1 items-start md:grid-cols-[240px_minmax(0,1fr)] md:gap-6 md:px-[clamp(16px,3vw,32px)]">
+        <aside className="hidden pt-7 md:block">
+          <DocsNav groups={groups} current={path} />
+        </aside>
+        <EntryPage item={item} path={path} base="/docs" backLabel="All docs" />
+      </div>
     </SiteShell>
   );
 }

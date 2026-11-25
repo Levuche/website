@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { EntryList } from '@/components/content/entry-list';
+import { DocsNav } from '@/components/content/docs-nav';
 import { SiteShell } from '@/components/site-shell';
-import { getDocPages } from '@/lib/content';
+import { getDocPages, groupDocs } from '@/lib/content';
 import { pageMetadata } from '@/lib/metadata';
 
 // Read from Buildbase on each request (cached by the SDK client).
@@ -27,7 +27,9 @@ export default async function DocsIndex() {
           </p>
         </div>
         {items.length > 0 ? (
-          <EntryList items={items} base="/docs" showDate={false} />
+          <div className="max-w-[480px]">
+            <DocsNav groups={groupDocs(items)} current="" />
+          </div>
         ) : (
           <p className="text-lv-text-2 m-0">
             The docs are being written. Check back soon.

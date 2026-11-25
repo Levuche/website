@@ -145,3 +145,30 @@ export async function getEntry(
   const all = kind === 'blogs' ? await getBlogPosts() : await getDocPages();
   return all.find((item) => item.slug === slug && item.published) ?? null;
 }
+
+export interface DocGroup {
+  /** The folder's name, or null for pages not in a folder. */
+  name: string | null;
+  pages: { title: string; path: string }[];
+}
+
+/**
+ * Docs grouped by folder, for the docs index and side navigation. Pages
+ * outside a folder come first; folders follow in name order, and pages in
+ * each keep the list's title order.
+ */
+export function groupDocs(docs: DocPage[]): DocGroup[] {
+  const groups = new Map<string, DocGroup>();
+  for (const doc of docs) {
+    const folder =
+      doc.folder && typeof doc.folder === 'object' ? doc.folder : null;
+    const name = folder?.name?.trim() || null;
+    const key = name ?? '';
+    const group = groups.get(key) ?? { name, pages: [] };
+    group.pages.push({ title: doc.title, path: contentPath(doc) });
+    groups.set(key, group);
+  }
+  return [...groups.values()].sort((a, b) =>
+    a.name === null ? -1 : b.name === null ? 1 : a.name.localeCompare(b.name)
+  );
+}
