@@ -1,5 +1,5 @@
+import { forwardReferral } from '@levuche/kit';
 import { NextRequest, NextResponse } from 'next/server';
-import { isReferralCode, REFERRAL_PARAM } from '@/lib/referral-code';
 import { appUrl } from '@/lib/site';
 
 /**
@@ -9,9 +9,5 @@ import { appUrl } from '@/lib/site';
  * (?ref=) goes along, so the app credits the same affiliate.
  */
 export function GET(request: NextRequest) {
-  const ref = request.nextUrl.searchParams.get(REFERRAL_PARAM);
-  if (!isReferralCode(ref)) return NextResponse.redirect(appUrl, 307);
-  const target = new URL(appUrl);
-  target.searchParams.set(REFERRAL_PARAM, ref);
-  return NextResponse.redirect(target, 307);
+  return NextResponse.redirect(forwardReferral(request.nextUrl, appUrl), 307);
 }
