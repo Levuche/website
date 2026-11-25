@@ -49,7 +49,9 @@ commit.
 
 The slugs are the contract between the console and the code
 (`src/lib/content.ts`). A part with nothing in Buildbase is left out of the
-page. Seed text from the design boards is in `content/buildbase/`.
+page. Seed text from the design boards is in `content/buildbase/`; the home
+and pricing pages show it only while `BUILDBASE_API_TOKEN` is unset, so a
+preview before setup still matches the boards.
 
 | Where on the site                | Buildbase      | Slug or path                |
 | -------------------------------- | -------------- | --------------------------- |

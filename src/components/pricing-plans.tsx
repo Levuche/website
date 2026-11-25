@@ -19,8 +19,11 @@ export interface Plan {
   ctaHref: string;
 }
 
-/** A bare number is shown in dollars; anything else (like "Free") as typed. */
-const isNumber = (value: string) => /^\d/.test(value);
+/**
+ * A price is shown as "$<value> a month" (or "a year"); a word such as
+ * "Free" or "Custom" is shown as typed, with no period.
+ */
+const isNumber = (value: string) => !/^[A-Za-z][A-Za-z ]*$/.test(value);
 const money = (value: string) => (isNumber(value) ? `$${value}` : value);
 
 export function PricingPlans({
@@ -32,6 +35,18 @@ export function PricingPlans({
 }) {
   const hasYearly = plans.some((plan) => plan.yearlyPrice);
   const hasMonthly = plans.some((plan) => plan.monthlyPrice);
+  // "Yearly, save N%": the best saving over twelve monthly payments, when
+  // both prices are numbers.
+  const saving = Math.max(
+    0,
+    ...plans.map((plan) => {
+      const monthly = Number(plan.monthlyPrice);
+      const yearly = Number(plan.yearlyPrice);
+      return monthly > 0 && yearly > 0
+        ? Math.round((1 - yearly / (monthly * 12)) * 100)
+        : 0;
+    })
+  );
   const [period, setPeriod] = useState<Period>(
     hasMonthly || !hasYearly ? 'monthly' : 'yearly'
   );
@@ -89,7 +104,7 @@ export function PricingPlans({
               onClick={() => choose('yearly')}
               className={radio(period === 'yearly')}
             >
-              Yearly
+              {saving > 0 ? `Yearly, save ${saving}%` : 'Yearly'}
             </button>
           </div>
         )}

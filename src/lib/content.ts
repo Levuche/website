@@ -7,6 +7,7 @@ import {
   type Testimonial,
 } from '@buildbase/sdk/server';
 import { buildbase } from '@/lib/buildbase-config';
+import { seedCollection, seedFaqs, seedRichContent } from '@/lib/seed';
 
 /**
  * Every piece of editable copy on levuche.com comes from Buildbase:
@@ -20,9 +21,12 @@ import { buildbase } from '@/lib/buildbase-config';
  *
  * The slugs below are the contract with the console; docs/BUILDBASE.md
  * lists every one with its fields. Reads use the org API token on the
- * server only (BUILDBASE_API_TOKEN, content-reader role). Without a token,
- * or when an entry is missing, a reader returns null or an empty list and
- * the page leaves that part out instead of failing.
+ * server only (BUILDBASE_API_TOKEN, content-reader role). When an entry is
+ * missing, a reader returns null or an empty list and the page leaves that
+ * part out instead of failing. With no token at all (a local run or a
+ * preview before Buildbase is set up) the home and pricing readers return
+ * the seed text in content/buildbase/ (src/lib/seed.ts), so the pages match
+ * the design boards; legal pages, the blog and docs stay empty.
  */
 export const CONTENT = {
   faqs: { home: 'home-faq', pricing: 'pricing-faq' },
@@ -71,6 +75,7 @@ async function read<T>(
 export async function getRichContent(
   slug: string
 ): Promise<RichContent | null> {
+  if (!client) return seedRichContent(slug);
   const entry = await read(`rich content ${slug}`, (c) =>
     c.richContent.get(slug)
   );
@@ -78,6 +83,7 @@ export async function getRichContent(
 }
 
 export async function getFaqs(collection: string): Promise<Faq[]> {
+  if (!client) return seedFaqs(collection);
   const faqs = await read(`faqs ${collection}`, (c) =>
     c.faqs.questions(collection)
   );
@@ -95,6 +101,7 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 export async function getCollection<T extends Record<string, unknown>>(
   slug: string
 ): Promise<T[]> {
+  if (!client) return seedCollection(slug) as T[];
   const records = await read(`collection ${slug}`, (c) =>
     c.collections.data<T>(slug)
   );

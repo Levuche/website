@@ -163,16 +163,18 @@ export default async function HomePage() {
             {pricingHtml ? (
               <ArticleHtml
                 html={pricingHtml}
-                className="flex flex-col gap-[18px] [&_p]:my-0 [&_ul]:my-0"
+                className="flex flex-col gap-[18px] [&_li]:my-0 [&_p]:my-0 [&_p:first-child]:flex [&_p:first-child]:items-baseline [&_p:first-child]:gap-2.5 [&_p:first-child_strong]:text-[56px] [&_p:first-child_strong]:leading-none [&_p:first-child_strong]:font-bold [&_ul]:my-0 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2.5 [&_ul]:pl-5 [&_ul]:leading-normal"
               />
             ) : (
-              <p className="text-lv-text-2 m-0 text-lg leading-relaxed">
-                See the plans and what each one includes.
-              </p>
+              <>
+                <p className="text-lv-text-2 m-0 text-lg leading-relaxed">
+                  See the plans and what each one includes.
+                </p>
+                <Link href="/pricing" className="text-lv-link font-semibold">
+                  Pricing details
+                </Link>
+              </>
             )}
-            <Link href="/pricing" className="text-lv-link font-semibold">
-              Pricing details
-            </Link>
             <Link
               href="/#beta"
               className="bg-lv-primary text-lv-on-primary rounded-full p-4 text-center font-bold no-underline"
