@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { DocsNav } from '@/components/content/docs-nav';
 import { SiteShell } from '@/components/site-shell';
-import { getDocPages, groupDocs } from '@/lib/content';
+import { getContentTree } from '@/lib/content';
 import { pageMetadata } from '@/lib/metadata';
 
 // Read from Buildbase on each request (cached by the SDK client).
@@ -14,7 +14,7 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function DocsIndex() {
-  const items = await getDocPages();
+  const tree = await getContentTree('docs');
   return (
     <SiteShell>
       <div className="mx-auto flex max-w-[1184px] flex-col gap-8 px-[clamp(16px,3vw,32px)] pt-7 pb-16">
@@ -26,9 +26,9 @@ export default async function DocsIndex() {
             How to set up and run your Levuche site.
           </p>
         </div>
-        {items.length > 0 ? (
+        {tree.all.length > 0 ? (
           <div className="max-w-[480px]">
-            <DocsNav groups={groupDocs(items)} current="" />
+            <DocsNav tree={tree} current="" />
           </div>
         ) : (
           <p className="text-lv-text-2 m-0">

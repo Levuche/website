@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { EntryList } from '@/components/content/entry-list';
+import { EntryList, FolderList } from '@/components/content/entry-list';
 import { SiteShell } from '@/components/site-shell';
-import { getBlogPosts } from '@/lib/content';
+import { getContentTree } from '@/lib/content';
 import { pageMetadata } from '@/lib/metadata';
 
 // Read from Buildbase on each request (cached by the SDK client).
@@ -14,7 +14,9 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function BlogIndex() {
-  const items = await getBlogPosts();
+  // Every published post, newest first, with the blog's folders above them.
+  const tree = await getContentTree('blogs');
+  const items = tree.all;
   return (
     <SiteShell>
       <div className="mx-auto flex max-w-[1184px] flex-col gap-8 px-[clamp(16px,3vw,32px)] pt-7 pb-16">
@@ -26,6 +28,13 @@ export default async function BlogIndex() {
             News, guides and stories from Levuche.
           </p>
         </div>
+        {tree.folders.length > 0 ? (
+          <FolderList
+            folders={tree.folders}
+            base="/blog"
+            noun={{ one: 'post', many: 'posts' }}
+          />
+        ) : null}
         {items.length > 0 ? (
           <EntryList items={items} base="/blog" showDate={true} />
         ) : (
