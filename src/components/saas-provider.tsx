@@ -1,7 +1,7 @@
 'use client';
 
 import { ApiVersion } from '@buildbase/sdk';
-import { SaaSOSProvider } from '@buildbase/sdk/react';
+import { CookieBanner, SaaSOSProvider } from '@buildbase/sdk/react';
 import { buildbase, isAuthConfigured } from '@/lib/buildbase-config';
 
 /**
@@ -61,6 +61,13 @@ export function SaaSProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
+      {/* With analytics on, visitors are asked first: the banner shows once,
+          remembers the answer in the bb_consent cookie, and "Cookie settings"
+          in the footer opens it again. The site has no marketing tags, so it
+          asks about analytics only. */}
+      {buildbase.analytics && (
+        <CookieBanner privacyHref="/privacy" categories={['analytics']} />
+      )}
     </SaaSOSProvider>
   );
 }

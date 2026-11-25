@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { FaqList } from '@/components/faq-list';
 import { PricingPlans } from '@/components/pricing-plans';
 import { SiteShell } from '@/components/site-shell';
+import { TrackGoal } from '@/components/track-goal';
 import {
   BILLING,
   addOnOffer,
@@ -46,6 +47,7 @@ export default async function PricingPage() {
 
   return (
     <SiteShell current="pricing">
+      <TrackGoal name="pricing_view" />
       <div
         className={cn(
           'max-w-layout px-gutter mx-auto flex flex-col gap-7 pt-7 pb-16',
