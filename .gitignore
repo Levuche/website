@@ -1,0 +1,22 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+
+# env files: only the example is committed. Never commit real keys.
+.env*
+!.env.example
+
+# Cloudflare / OpenNext
+.open-next/
+.wrangler/
+.dev.vars*

@@ -1,0 +1,39 @@
+Copyright (c) 2026 Jagodana LLC. All rights reserved.
+
+This repository and everything in it (source code, page copy, designs,
+design tokens, logos, icons, images and text) is the property of
+Jagodana LLC, except for the third-party material listed below.
+
+This repository is public so that people can see how the levuche.com
+website is built. That is the only reason. Viewing these files on GitHub,
+and the copy that GitHub's own Terms of Service allow when someone forks a
+public repository, are the only permissions granted. No other right or
+licence is given, whether stated, implied or by estoppel.
+
+Without prior written permission from Jagodana LLC, you may not:
+
+  - copy, download for reuse, or reproduce any part of this repository;
+  - modify it or make works based on it;
+  - publish, distribute, sublicense or sell it;
+  - use it in any product, service or website, commercial or not;
+  - use it to train, fine-tune or evaluate machine learning or AI models,
+    or include it in any dataset.
+
+To ask for permission, contact Jagodana LLC through https://jagodana.com.
+
+Trademarks: Levuche, the Levuche logo, levuche.com and levuche.page are
+trademarks of Jagodana LLC. This licence grants no trademark rights.
+See TRADEMARKS.md.
+
+Third-party material, which stays under its own licence:
+
+  - The Sora font files in src/fonts/ are licensed by The Sora Project
+    Authors under the SIL Open Font License 1.1 (see src/fonts/OFL.txt).
+  - Parts of the project setup and some helper code are adapted from an
+    MIT-licensed Next.js starter. Its copyright and permission notice are
+    in THIRD_PARTY_NOTICES.md, and that notice applies to those parts.
+  - npm packages installed from package.json keep their own licences.
+
+THE MATERIAL IN THIS REPOSITORY IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+KIND. IN NO EVENT SHALL JAGODANA LLC BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY ARISING FROM IT OR ITS USE.

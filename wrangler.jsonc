@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // levuche.com on Cloudflare Workers, built with OpenNext (`npm run cf:deploy`).
+  // Add "account_id" and the levuche.com custom domain route before the first
+  // deploy. No secrets belong in this file.
+  "name": "levuche-website",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Next.js inlines the next-themes no-flash script into the HTML, where
+  // esbuild's __name helper does not exist, so keep_names stays off.
+  "keep_names": false,
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
+  "observability": { "enabled": true },
+}
