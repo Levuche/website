@@ -6,14 +6,13 @@ import { FaqList } from '@/components/faq-list';
 import { JsonLd } from '@/components/json-ld';
 import { SiteShell } from '@/components/site-shell';
 import { Testimonials } from '@/components/testimonials';
+import { addOnOffer, getAddOns, type Offer } from '@/lib/billing';
 import {
   CONTENT,
   getCollection,
   getFaqs,
-  getRichContent,
   getTestimonials,
 } from '@/lib/content';
-import { renderMarkdown } from '@/lib/markdown';
 import { pageMetadata } from '@/lib/metadata';
 import { absoluteUrl, site } from '@/lib/site';
 
@@ -39,8 +38,8 @@ const organization = {
   },
 };
 
-// The steps, features, pricing card, testimonials and questions come from
-// Buildbase on each request (see src/lib/content.ts and docs/BUILDBASE.md).
+// The steps, features, testimonials and questions come from Buildbase
+// Content, and the pricing card from Buildbase Billing, on each request (see src/lib/content.ts and docs/BUILDBASE.md).
 // A section with nothing in Buildbase is left out.
 export const dynamic = 'force-dynamic';
 
@@ -51,14 +50,16 @@ const sectionY = 'py-[clamp(56px,7vw,96px)]';
 const h2 = 'm-0 text-[clamp(30px,4vw,44px)] font-bold tracking-[-1px]';
 
 export default async function HomePage() {
-  const [steps, features, pricing, testimonials, faqs] = await Promise.all([
+  const [steps, features, addOns, testimonials, faqs] = await Promise.all([
     getCollection<Item>(CONTENT.collections.homeSteps),
     getCollection<Item>(CONTENT.collections.homeFeatures),
-    getRichContent(CONTENT.rich.homePricing),
+    getAddOns(),
     getTestimonials(),
     getFaqs(CONTENT.faqs.home),
   ]);
-  const pricingHtml = pricing ? renderMarkdown(pricing.content).html : '';
+  // The home card shows the first add-on on sale (Buildbase Billing).
+  const offer =
+    addOns.map(addOnOffer).find((o): o is Offer => o !== null) ?? null;
 
   return (
     <SiteShell>
@@ -160,21 +161,31 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="bg-lv-card border-lv-border flex flex-col gap-[18px] rounded-[28px] border p-[clamp(24px,3vw,36px)]">
-            {pricingHtml ? (
-              <ArticleHtml
-                html={pricingHtml}
-                className="flex flex-col gap-[18px] [&_li]:my-0 [&_p]:my-0 [&_p:first-child]:flex [&_p:first-child]:items-baseline [&_p:first-child]:gap-2.5 [&_p:first-child_strong]:text-[56px] [&_p:first-child_strong]:leading-none [&_p:first-child_strong]:font-bold [&_ul]:my-0 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2.5 [&_ul]:pl-5 [&_ul]:leading-normal"
-              />
-            ) : (
+            {offer ? (
               <>
-                <p className="text-lv-text-2 m-0 text-lg leading-relaxed">
-                  See the plans and what each one includes.
+                <p className="m-0 flex items-baseline gap-2.5">
+                  <strong className="text-[56px] leading-none font-bold">
+                    {offer.once || offer.monthly || offer.yearly}
+                  </strong>
+                  <span className="text-lv-text-2 text-lg">
+                    {offer.once ? 'once' : offer.monthly ? 'a month' : 'a year'}
+                  </span>
                 </p>
-                <Link href="/pricing" className="text-lv-link font-semibold">
-                  Pricing details
-                </Link>
+                {offer.featuresHtml && (
+                  <ArticleHtml
+                    html={offer.featuresHtml}
+                    className="[&_li]:my-0 [&_ul]:my-0 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2.5 [&_ul]:pl-5 [&_ul]:leading-normal"
+                  />
+                )}
               </>
+            ) : (
+              <p className="text-lv-text-2 m-0 text-lg leading-relaxed">
+                See the plans and what each one includes.
+              </p>
             )}
+            <Link href="/pricing" className="text-lv-link font-semibold">
+              Pricing details
+            </Link>
             <Link
               href="/#beta"
               className="bg-lv-primary text-lv-on-primary rounded-full p-4 text-center font-bold no-underline"

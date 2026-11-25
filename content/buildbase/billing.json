@@ -1,0 +1,16 @@
+{
+  "note": "Sample billing for local runs and previews with no Buildbase org set (NEXT_PUBLIC_BUILDBASE_ORG_ID). Once the org is set, prices come only from Buildbase Billing (add-ons and the pricing group), never from here. Shapes follow GET /api/v1/public/{orgId}/add-ons.",
+  "addOns": [
+    {
+      "id": "seed-levuche",
+      "slug": "levuche",
+      "name": "Levuche",
+      "description": "Your site at yourname.levuche.page\nA small fee per sale, only when you sell, plus Stripe fees\nStorage and extras from prepaid credits\nYour own domain, when you want it",
+      "payerType": "user",
+      "shape": "lifetime",
+      "items": [],
+      "maxPerSubject": 1,
+      "pricingVariants": [{ "currency": "usd", "prices": { "oneTime": 900 } }]
+    }
+  ]
+}
