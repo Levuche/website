@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { Avatar } from './avatar';
+import { Avatar, AvatarFallback, AvatarImage, initials } from './ui/avatar';
 
 /** The 1240 px page column with fluid side padding. */
 export function Container({
@@ -59,19 +59,6 @@ export function SectionHeading({
     <Tag
       className={cn(
         'm-0 text-[clamp(30px,4vw,44px)] leading-[1.1] font-bold tracking-[-1px]',
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
-/** A bordered card on the page background. */
-export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn(
-        'bg-lv-card border-lv-border rounded-[20px] border p-7',
         className
       )}
       {...props}
@@ -166,7 +153,10 @@ export function QuoteCard({ quote, name, role, avatar }: Quote) {
         “{quote}”
       </blockquote>
       <figcaption className="mt-auto flex items-center gap-3">
-        <Avatar name={name} src={avatar} size={40} />
+        <Avatar aria-hidden>
+          {avatar ? <AvatarImage src={avatar} alt="" /> : null}
+          <AvatarFallback>{initials(name)}</AvatarFallback>
+        </Avatar>
         <span className="flex flex-col">
           <span className="text-lv-text font-bold">{name}</span>
           {role ? <span className="text-lv-text-3 text-sm">{role}</span> : null}

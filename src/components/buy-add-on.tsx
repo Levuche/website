@@ -6,10 +6,15 @@ import {
   useSaaSWorkspaces,
   usePurchaseAddOn,
 } from '@buildbase/sdk/react';
+import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
-import { Alert } from '@/components/ui/feedback';
-import { SelectField } from '@/components/ui/field';
+import { useEffect, useId, useRef, useState } from 'react';
+import { Alert } from '@/components/ui/alert';
+import { Field, FieldLabel } from '@/components/ui/field';
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from '@/components/ui/native-select';
 import { isAuthConfigured } from '@/lib/buildbase-config';
 
 const BUY_PARAM = 'buy';
@@ -68,24 +73,26 @@ function BuyWithBuildbase({
   const { purchaseAddOn, loading } = usePurchaseAddOn(subject);
   const noWorkspace =
     isAuthenticated && payerType === 'workspace' && !workspaceId;
-  const [failed, setFailed] = useState(false);
   const resumed = useRef(false);
+  const pickerId = useId();
 
-  const checkout = async () => {
-    try {
+  // Opening Stripe Checkout through Buildbase. Never retried by itself.
+  const checkoutMutation = useMutation({
+    mutationKey: ['add-on', 'checkout', slug],
+    mutationFn: async () => {
       if (!subject) throw new Error('No page to buy for');
       const urls = createAddOnPurchaseRedirectUrls(
         subject,
         `${window.location.origin}/pricing`
       );
       await purchaseAddOn({ offerSlug: slug, currency, ...urls });
-    } catch {
-      setFailed(true);
-    }
-  };
+    },
+  });
+  const checkout = () => checkoutMutation.mutateAsync().catch(() => {});
+  const opening = loading || checkoutMutation.isPending;
 
   const buy = async () => {
-    setFailed(false);
+    checkoutMutation.reset();
     if (!isAuthenticated) {
       await signIn(`/pricing?${BUY_PARAM}=${encodeURIComponent(slug)}`);
       return;
@@ -114,34 +121,37 @@ function BuyWithBuildbase({
   return (
     <>
       {showPicker && workspaceId && (
-        <SelectField
-          label="For which page?"
-          value={workspaceId}
-          onChange={(event) => setPickedId(event.target.value)}
-        >
-          {workspaces.map((w) => (
-            <option key={w._id} value={w._id}>
-              {w.name}
-            </option>
-          ))}
-        </SelectField>
+        <Field>
+          <FieldLabel htmlFor={pickerId}>For which page?</FieldLabel>
+          <NativeSelect
+            id={pickerId}
+            value={workspaceId}
+            onChange={(event) => setPickedId(event.target.value)}
+          >
+            {workspaces.map((w) => (
+              <NativeSelectOption key={w._id} value={w._id}>
+                {w.name}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+        </Field>
       )}
       <button
         type="button"
         onClick={() => void buy()}
-        disabled={loading || isLoading || noWorkspace}
-        aria-busy={loading}
+        disabled={opening || isLoading || noWorkspace}
+        aria-busy={opening || undefined}
         className={`${className} disabled:cursor-wait`}
       >
-        {loading ? 'Opening checkout…' : label}
+        {opening ? 'Opening checkout…' : label}
       </button>
       {noWorkspace && (
         <p className="text-lv-text-2 m-0 text-sm">
           Create your page first, then come back to buy it.
         </p>
       )}
-      {failed && (
-        <Alert tone="danger">
+      {checkoutMutation.isError && (
+        <Alert variant="destructive">
           Checkout didn’t open. Please try again in a moment.
         </Alert>
       )}

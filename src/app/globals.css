@@ -1,10 +1,15 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* Tailwind's dark: variant follows the theme provider's data-lv="dark". */
+@custom-variant dark (&:where([data-lv='dark'], [data-lv='dark'] *));
 
 /*
  * Levuche design tokens v1.1 (Levuche/design, tokens/levuche-tokens.css).
  * --lv-* is Levuche's own UI (this website and the app); the theme provider
  * sets data-lv="light" or "dark" on <html>. The website's own components are
- * in src/components/ui.
+ * shadcn/ui components in src/components/ui; they read shadcn's names
+ * (--background, --primary, ...), which are mapped onto --lv-* below.
  *
  * --site-* is a creator's brand on their levuche.page site. Those tokens and
  * the page blocks (profile, links, packs, video) come from @levuche/ui
@@ -66,12 +71,58 @@
   color-scheme: dark;
 }
 
+/*
+ * shadcn/ui's colour names, mapped onto the Levuche tokens so shadcn
+ * components (src/components/ui, added with `npx shadcn add`) come out in
+ * Levuche's colours in both modes without editing them.
+ */
+:root {
+  --background: var(--lv-bg);
+  --foreground: var(--lv-text);
+  --card: var(--lv-card);
+  --card-foreground: var(--lv-text);
+  --popover: var(--lv-card);
+  --popover-foreground: var(--lv-text);
+  --primary: var(--lv-primary);
+  --primary-foreground: var(--lv-on-primary);
+  --secondary: var(--lv-surface-2);
+  --secondary-foreground: var(--lv-text);
+  --muted: var(--lv-surface);
+  --muted-foreground: var(--lv-text-3);
+  --accent: var(--lv-surface-2);
+  --accent-foreground: var(--lv-text);
+  --destructive: var(--lv-danger);
+  --border: var(--lv-border);
+  --input: var(--lv-border);
+  --ring: var(--lv-primary);
+}
+
 @import '@levuche/ui/tokens.css';
 /* Let Tailwind see the classes the page blocks use. */
 @source '../../node_modules/@levuche/ui/src';
 
 @theme inline {
   --font-sans: var(--font-sora), 'Helvetica Neue', Arial, sans-serif;
+  /* shadcn/ui */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  /* Levuche tokens */
   --color-lv-bg: var(--lv-bg);
   --color-lv-surface: var(--lv-surface);
   --color-lv-surface-2: var(--lv-surface-2);

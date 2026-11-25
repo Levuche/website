@@ -2,9 +2,9 @@ import { expect, test, type Locator } from '@playwright/test';
 import { expectNoA11yViolations } from './a11y';
 
 /*
- * The website's own components (src/components/ui), through the gallery at
- * /ui. Each test runs in the light and the dark panel. The creator page
- * blocks are tested in Levuche/ui.
+ * The website's own components (shadcn/ui, in src/components/ui), through the
+ * gallery at /ui. Each test runs in the light and the dark panel. The creator
+ * page blocks are tested in Levuche/ui.
  */
 
 test.beforeEach(async ({ page }) => {
@@ -112,15 +112,28 @@ for (const mode of ['light', 'dark'] as const) {
       await expect(newsletter).toHaveAttribute('tabindex', '-1');
     });
 
-    test('segmented control presses one option at a time', async () => {
-      const group = panel.getByRole('group', { name: 'Preview size' });
-      const tablet = group.getByRole('button', { name: 'Tablet' });
+    test('segmented control picks one option at a time', async () => {
+      const group = panel.getByRole('radiogroup', { name: 'Preview size' });
+      const tablet = group.getByRole('radio', { name: 'Tablet' });
       await tablet.click();
-      await expect(tablet).toHaveAttribute('aria-pressed', 'true');
+      await expect(tablet).toBeChecked();
       await expect(
-        group.getByRole('button', { name: 'Phone' })
-      ).toHaveAttribute('aria-pressed', 'false');
+        group.getByRole('radio', { name: 'Phone' })
+      ).not.toBeChecked();
       await expect(panel.getByText('Showing: tablet')).toBeVisible();
+      // Pressing the chosen option again keeps it chosen.
+      await tablet.click();
+      await expect(tablet).toBeChecked();
+    });
+
+    test('checkboxes tick from their label', async () => {
+      const reels = panel.getByRole('checkbox', { name: 'Show reels' });
+      await expect(reels).not.toBeChecked();
+      await panel.getByText('Show reels').click();
+      await expect(reels).toBeChecked();
+      await expect(
+        panel.getByRole('checkbox', { name: 'Show prices' })
+      ).toBeChecked();
     });
 
     test('accordion opens and closes from the keyboard', async () => {
