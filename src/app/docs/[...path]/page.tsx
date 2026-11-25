@@ -59,8 +59,8 @@ export default async function DocsEntry({ params }: Props) {
   if (!item && !folder) notFound();
   return (
     <SiteShell>
-      <div className="max-w-content md:px-gutter mx-auto grid grid-cols-1 items-start md:grid-cols-[240px_minmax(0,1fr)] md:gap-6">
-        <aside className="hidden pt-7 md:block">
+      <div className="max-w-layout md:px-gutter mx-auto grid grid-cols-1 items-start md:grid-cols-[240px_minmax(0,1fr)] md:gap-6">
+        <aside className="max-md:border-lv-border max-md:px-gutter pt-7 max-md:order-last max-md:border-t max-md:pb-14">
           <DocsNav tree={tree} current={path} />
         </aside>
         {item ? (

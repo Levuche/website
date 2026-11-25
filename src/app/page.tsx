@@ -188,11 +188,9 @@ export default async function HomePage() {
 
       {faqs.length > 0 && (
         <Section id="faq">
-          <Container className="flex flex-col gap-8">
+          <Container className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-x-12">
             <SectionHeading>Questions</SectionHeading>
-            <div className="max-w-article">
-              <FaqList faqs={faqs} openFirst />
-            </div>
+            <FaqList faqs={faqs} openFirst />
           </Container>
         </Section>
       )}

@@ -206,11 +206,10 @@
   --spacing-card: clamp(20px, 2.5vw, 28px); /* inside a large card */
   --spacing-split: clamp(32px, 5vw, 64px); /* between two columns */
 
-  /* Widths: max-w-layout, max-w-content, max-w-article, max-w-form,
-     max-w-narrow. (max-w-site is @levuche/ui's creator page column.) */
-  --container-layout: 1240px; /* header, footer, home page bands */
-  --container-content: 1184px; /* blog, docs, pricing, legal */
-  --container-article: 820px; /* one post, the FAQ list, contact */
+  /* Widths: max-w-layout, max-w-article, max-w-form, max-w-narrow.
+     (max-w-site is @levuche/ui's creator page column.) */
+  --container-layout: 1240px; /* every page's column, lined up with the header */
+  --container-article: 820px; /* one post, contact, the 404 page */
   --container-form: 520px; /* forms and the hero paragraph */
   --container-narrow: 440px; /* a single pricing card, the docs search */
 
@@ -250,6 +249,9 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keep room for the scrollbar on short pages too, so the header and the
+     page don't shift sideways between a short page and a long one. */
+  scrollbar-gutter: stable;
 }
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -460,4 +462,17 @@ body {
 }
 .lv-plan-features a {
   color: var(--lv-link);
+}
+
+/*
+ * Buildbase's beta form pads its own box (24 px a side from 640 px up), which
+ * pushed the hero's form in from the heading above it. Line it up with the
+ * text instead, and give its fields and button the site's control height
+ * (40 px with a mouse, 44 px on touch).
+ */
+.lv-beta-form .saas-os-ui > div {
+  padding: 0;
+}
+.lv-beta-form .saas-os-ui :is(input, button) {
+  height: var(--spacing-control);
 }

@@ -19,7 +19,7 @@ export default async function BlogIndex() {
   const items = tree.all;
   return (
     <SiteShell>
-      <div className="max-w-content px-gutter mx-auto flex flex-col gap-8 pt-7 pb-16">
+      <div className="max-w-layout px-gutter mx-auto flex flex-col gap-8 pt-7 pb-16">
         <div className="flex flex-col gap-2.5">
           <h1 className="text-h1 m-0">Blog</h1>
           <p className="text-lv-text-2 m-0 text-base leading-relaxed">

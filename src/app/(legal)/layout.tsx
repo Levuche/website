@@ -12,8 +12,8 @@ export default function LegalLayout({
   const security = contact.security;
   return (
     <SiteShell>
-      <div className="max-w-content px-gutter mx-auto grid grid-cols-1 items-start gap-10 pt-7 pb-16 md:grid-cols-[240px_minmax(0,1fr)] md:gap-14">
-        <aside className="flex flex-col gap-5">
+      <div className="max-w-layout px-gutter mx-auto grid grid-cols-1 items-start gap-10 pt-7 pb-16 md:grid-cols-[240px_minmax(0,1fr)] md:gap-14">
+        <aside className="max-md:border-lv-border flex flex-col gap-5 max-md:order-last max-md:border-t max-md:pt-8">
           <LegalNav />
           <div className="border-lv-border flex flex-col gap-2 rounded-2xl border p-4">
             <p className="text-ui m-0 font-bold">Found a security issue?</p>

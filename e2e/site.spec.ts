@@ -101,3 +101,32 @@ test('robots.txt and the sitemap answer', async ({ request }) => {
     isPrivate ? 404 : 200
   );
 });
+
+test.describe('every page fits phone, tablet and desktop screens', () => {
+  const widths = [
+    { name: 'phone', width: 390, height: 844 },
+    { name: 'tablet', width: 820, height: 1180 },
+    { name: 'desktop', width: 1440, height: 900 },
+  ];
+  const pages = ['/', '/pricing', '/blog', '/docs', '/contact', '/terms'];
+
+  for (const { name, width, height } of widths) {
+    test(`no page scrolls sideways at ${name} width`, async ({
+      page,
+      isMobile,
+    }) => {
+      test.skip(isMobile, 'Widths are set here; one run is enough.');
+      await page.setViewportSize({ width, height });
+      for (const path of pages) {
+        await page.goto(path);
+        const overflow = await page.evaluate(
+          () => document.documentElement.scrollWidth - window.innerWidth
+        );
+        expect(
+          overflow,
+          `${path} is wider than the screen`
+        ).toBeLessThanOrEqual(0);
+      }
+    });
+  }
+});
