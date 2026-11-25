@@ -1,6 +1,7 @@
 import { environmentId, refuseCrossSiteAuthPost } from '@buildbase/sdk';
 import { NextResponse } from 'next/server';
 import { buildbase } from '@/lib/buildbase-config';
+import { rateLimited } from '@/lib/rate-limit';
 
 /**
  * The contact form, sent to a form built in the Buildbase console (Content,
@@ -12,7 +13,8 @@ import { buildbase } from '@/lib/buildbase-config';
  * request comes from this site, drops bot submissions (the hidden
  * `company` field) and caps each field's length before forwarding. When the
  * form has Buildbase's built-in spam check on, the browser solves it first
- * (/api/contact/challenge) and the answer goes on as `_captcha`.
+ * (/api/contact/challenge) and the answer goes on as `_captcha`. Each
+ * address can send a few messages a minute (src/lib/rate-limit.ts).
  */
 const FORM_ID = process.env.BUILDBASE_CONTACT_FORM_ID?.trim() ?? '';
 
@@ -25,6 +27,8 @@ function text(value: unknown, max: number): string {
 export async function POST(request: Request) {
   const refused = refuseCrossSiteAuthPost(request);
   if (refused) return refused;
+  const limited = await rateLimited(request, 'CONTACT_LIMITER', 'contact');
+  if (limited) return limited;
 
   if (!FORM_ID || !/^[0-9a-f]{24}$/i.test(buildbase.orgId)) {
     return NextResponse.json({ error: 'not_configured' }, { status: 503 });

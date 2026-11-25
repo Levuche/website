@@ -3,11 +3,14 @@ import { refuseCrossSiteAuthPost } from '@buildbase/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { SESSION_COOKIE_NAME } from '@/lib/buildbase';
+import { rateLimited } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   // Only this app's own JSON call: another site must not sign the visitor out.
   const refused = refuseCrossSiteAuthPost(request);
   if (refused) return refused;
+  const limited = await rateLimited(request, 'AUTH_LIMITER', 'signout');
+  if (limited) return limited;
   const response = NextResponse.json({ success: true });
   response.cookies.set(SESSION_COOKIE_NAME, '', {
     httpOnly: true,

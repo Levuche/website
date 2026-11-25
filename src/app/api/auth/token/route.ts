@@ -5,12 +5,15 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { exchangeCode, SESSION_COOKIE_NAME } from '@/lib/buildbase';
 import { buildbase, isAuthConfigured } from '@/lib/buildbase-config';
+import { rateLimited } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   // Only this app's own JSON call: a form another site submits must not sign
   // the visitor in to someone else's account (login CSRF).
   const refused = refuseCrossSiteAuthPost(request);
   if (refused) return refused;
+  const limited = await rateLimited(request, 'AUTH_LIMITER', 'token');
+  if (limited) return limited;
   if (!isAuthConfigured || !process.env.BUILDBASE_CLIENT_SECRET) {
     return NextResponse.json(
       { error: 'Sign-in is not set up' },

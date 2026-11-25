@@ -1,6 +1,7 @@
 import { environmentId } from '@buildbase/sdk';
 import { NextResponse } from 'next/server';
 import { buildbase } from '@/lib/buildbase-config';
+import { rateLimited } from '@/lib/rate-limit';
 
 /**
  * The contact form's spam check. When the Contact form in Buildbase has
@@ -20,7 +21,9 @@ export const dynamic = 'force-dynamic';
 
 const noStore = { headers: { 'Cache-Control': 'no-store' } };
 
-export async function GET() {
+export async function GET(request: Request) {
+  const limited = await rateLimited(request, 'CONTACT_LIMITER', 'challenge');
+  if (limited) return limited;
   if (!FORM_ID || !/^[0-9a-f]{24}$/i.test(buildbase.orgId)) {
     return NextResponse.json({ captcha: null }, noStore);
   }

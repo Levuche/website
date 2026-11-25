@@ -24,7 +24,10 @@ type Check =
  */
 async function spamCheck(): Promise<string | undefined> {
   const res = await fetch('/api/contact/challenge', { cache: 'no-store' });
-  if (!res.ok) throw new ApiError('unavailable', res.status);
+  if (!res.ok) {
+    const code = res.status === 429 ? 'rate_limited' : 'unavailable';
+    throw new ApiError(code, res.status);
+  }
   const check = (await res.json()) as Check;
   if (check.captcha === 'pow') return solveChallenge(check.challenge);
   if (check.captcha === 'unsupported')

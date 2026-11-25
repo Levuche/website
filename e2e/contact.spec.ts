@@ -108,3 +108,22 @@ test('asks to try again when the spam check fails', async ({ page }) => {
     page.getByRole('alert').filter({ hasText: 'not a bot' })
   ).toBeVisible();
 });
+
+test('says to wait when the spam check is rate limited', async ({ page }) => {
+  await page.route('**/api/contact/challenge', (route) =>
+    route.fulfill({ status: 429, json: { error: 'rate_limited' } })
+  );
+  let sent = false;
+  await page.route('**/api/contact', (route) => {
+    sent = true;
+    return route.fulfill({ status: 200, json: { ok: true } });
+  });
+  await page.getByLabel('Name').fill('Test Person');
+  await page.getByLabel('Email').fill('test@example.com');
+  await page.getByLabel('Message').fill('Hello once more.');
+  await page.getByRole('button', { name: 'Send message' }).click();
+  await expect(
+    page.getByRole('alert').filter({ hasText: 'Too many messages' })
+  ).toBeVisible();
+  expect(sent).toBe(false);
+});
