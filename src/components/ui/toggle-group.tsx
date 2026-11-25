@@ -32,7 +32,7 @@ function ToggleGroupItem({
     <ToggleGroupPrimitive.Item
       data-slot="toggle-group-item"
       className={cn(
-        'text-lv-text-2 data-[state=on]:bg-card data-[state=on]:text-foreground focus-visible:outline-lv-accent min-h-control-sm cursor-pointer rounded-full border-0 bg-transparent px-4 font-[inherit] text-sm outline-none focus-visible:outline-3 focus-visible:outline-offset-2 data-[state=on]:font-semibold',
+        'text-lv-text-2 data-[state=on]:bg-card data-[state=on]:text-foreground focus-visible:outline-lv-accent min-h-control cursor-pointer rounded-full border-0 bg-transparent px-4 font-[inherit] text-sm outline-none focus-visible:outline-3 focus-visible:outline-offset-2 data-[state=on]:font-semibold',
         className
       )}
       {...props}
