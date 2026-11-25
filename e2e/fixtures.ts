@@ -13,8 +13,10 @@ const accessHeaders =
     ? { 'CF-Access-Client-Id': id, 'CF-Access-Client-Secret': secret }
     : undefined;
 
+// Playwright calls the fixture callback `use`; it's named `provide` here so the
+// React hooks lint rule doesn't mistake it for a hook.
 export const test = base.extend({
-  page: async ({ page, baseURL }, use) => {
+  page: async ({ page, baseURL }, provide) => {
     if (accessHeaders && baseURL) {
       const origin = new URL(baseURL).origin;
       await page.route(
@@ -25,15 +27,15 @@ export const test = base.extend({
           })
       );
     }
-    await use(page);
+    await provide(page);
   },
   // For paths on the site under test only.
-  request: async ({ playwright, baseURL }, use) => {
+  request: async ({ playwright, baseURL }, provide) => {
     const request = await playwright.request.newContext({
       baseURL,
       extraHTTPHeaders: accessHeaders,
     });
-    await use(request);
+    await provide(request);
     await request.dispose();
   },
 });
