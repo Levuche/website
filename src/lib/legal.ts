@@ -1,7 +1,8 @@
 /**
  * The legal and trust pages from the MarketingPages board. Their text is
- * the Buildbase rich content entry `legal-<slug>` (see docs/BUILDBASE.md);
- * a page without one says its text is still being written. The text must be
+ * the Buildbase doc `legal/<slug>`, in the Docs folder `legal` (see
+ * docs/BUILDBASE.md); a page without a published doc says its text is
+ * still being written. The text must be
  * reviewed before launch; nothing in this repository is legal advice.
  */
 export type LegalGroup = 'Legal' | 'Trust';

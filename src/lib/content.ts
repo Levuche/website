@@ -15,7 +15,9 @@ import { seedCollection, seedFaqs, seedRichContent } from '@/lib/seed';
  * - Blog posts and docs pages: Content, Blogs and Docs.
  * - FAQs: Content, FAQs, one collection per page.
  * - Testimonials: Content, Testimonials.
- * - Legal and trust pages: Content, Rich content, one entry per page.
+ * - Legal and trust pages: Content, Docs, one page each in the `legal`
+ *   folder (`legal/<page slug>`). They are kept out of /docs and its
+ *   sitemap entries, so each page has one address: /<page slug>.
  * - Lists the CMS has no type for (home steps and features): Content,
  *   Collections.
  *
@@ -30,6 +32,10 @@ import { seedCollection, seedFaqs, seedRichContent } from '@/lib/seed';
  * preview before Buildbase is set up) the home and pricing readers return
  * the seed text in content/buildbase/ (src/lib/seed.ts), so the pages match
  * the design boards; legal pages, the blog and docs stay empty.
+ *
+ * Content blocks (rich content) are for copy the other types don't cover
+ * and that changes often or is shaped per page, such as a changelog entry;
+ * read one with getRichContent.
  */
 export const CONTENT = {
   faqs: { home: 'home-faq', pricing: 'pricing-faq' },
@@ -37,8 +43,8 @@ export const CONTENT = {
     homeSteps: 'home-steps',
     homeFeatures: 'home-features',
   },
-  /** Rich content slug for a legal or trust page: `legal-<page slug>`. */
-  legal: (slug: string) => `legal-${slug}`,
+  /** Docs folder holding the legal and trust pages, one doc per page. */
+  legalFolder: 'legal',
 } as const;
 
 const apiToken = process.env.BUILDBASE_API_TOKEN?.trim() ?? '';
@@ -118,11 +124,41 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
   return page?.docs ?? [];
 }
 
-export async function getDocPages(): Promise<DocPage[]> {
+function folderSlug(item: BlogPost | DocPage): string {
+  return item.folder && typeof item.folder === 'object' ? item.folder.slug : '';
+}
+
+/** A doc filed in the legal folder, shown at /<slug> rather than under /docs. */
+function isLegalDoc(item: DocPage): boolean {
+  return folderSlug(item) === CONTENT.legalFolder;
+}
+
+async function getAllDocPages(): Promise<DocPage[]> {
   const page = await read('docs', (c) =>
     c.docs.list({ limit: 100, sort: { title: 1 } })
   );
   return page?.docs ?? [];
+}
+
+/** The docs shown under /docs: every doc except the legal pages. */
+export async function getDocPages(): Promise<DocPage[]> {
+  return (await getAllDocPages()).filter((doc) => !isLegalDoc(doc));
+}
+
+/**
+ * A legal or trust page's published doc: `legal/<slug>` in Content, Docs.
+ * Null until it is published, and the page then says its text is still
+ * being written.
+ */
+export async function getLegalDoc(slug: string): Promise<DocPage | null> {
+  const path = `${CONTENT.legalFolder}/${slug}`;
+  const found = await read(`docs ${path}`, (c) => c.docs.byPath(path));
+  if (found?.published && isLegalDoc(found)) return found;
+  const all = await getAllDocPages();
+  return (
+    all.find((doc) => doc.slug === slug && doc.published && isLegalDoc(doc)) ??
+    null
+  );
 }
 
 /** A blog post's or doc's path under /blog or /docs: its folder, then its slug. */
@@ -147,6 +183,8 @@ export async function getEntry(
   path: string
 ): Promise<BlogPost | DocPage | null> {
   const found = await read(`${kind} ${path}`, (c) => c[kind].byPath(path));
+  // Legal pages live at /<slug>, never at /docs/legal/<slug>.
+  if (kind === 'docs' && found && isLegalDoc(found)) return null;
   if (found?.published) return found;
   const slug = path.split('/').pop();
   const all = kind === 'blogs' ? await getBlogPosts() : await getDocPages();
