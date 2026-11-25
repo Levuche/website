@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { expectNoA11yViolations } from './a11y';
 
 /*
@@ -61,7 +61,7 @@ test('header link opens the pricing page', async ({ page, isMobile }) => {
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 
-test('footer links lead to real pages', async ({ page }) => {
+test('footer links lead to real pages', async ({ page, request }) => {
   await page.goto('/');
   const footer = page.getByRole('navigation', { name: 'Footer' });
   const hrefs = await footer
@@ -69,7 +69,11 @@ test('footer links lead to real pages', async ({ page }) => {
     .evaluateAll((links) => links.map((a) => a.getAttribute('href') ?? ''));
   expect(hrefs.length).toBeGreaterThan(3);
   for (const href of hrefs) {
-    const response = await page.request.get(href);
+    // Paths on this site go through `request`, which can pass the team
+    // sign-in; other sites never get its token.
+    const response = href.startsWith('/')
+      ? await request.get(href)
+      : await page.request.get(href);
     expect(response.status(), href).toBe(200);
   }
 });
@@ -88,6 +92,12 @@ test('unknown address shows the not-found page', async ({ page }) => {
 });
 
 test('robots.txt and the sitemap answer', async ({ request }) => {
-  expect((await request.get('/robots.txt')).status()).toBe(200);
-  expect((await request.get('/sitemap.xml')).status()).toBe(200);
+  const robots = await request.get('/robots.txt');
+  expect(robots.status()).toBe(200);
+  // levuche.com has a sitemap; the dev site and preview links block every
+  // crawler and have none.
+  const isPrivate = /disallow:\s*\/\s*$/im.test(await robots.text());
+  expect((await request.get('/sitemap.xml')).status()).toBe(
+    isPrivate ? 404 : 200
+  );
 });
