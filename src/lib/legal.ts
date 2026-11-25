@@ -41,6 +41,19 @@ export const legalPages: LegalPage[] = [
     description: 'The terms for people who buy packs on Levuche sites.',
   },
   {
+    slug: 'refunds',
+    title: 'Refund policy',
+    group: 'Legal',
+    description:
+      'When buyers can get their money back for packs bought on Levuche sites.',
+  },
+  {
+    slug: 'fees',
+    title: 'Fees',
+    group: 'Legal',
+    description: 'What Levuche charges creators, and what Stripe charges.',
+  },
+  {
     slug: 'creator-rules',
     title: 'Creator rules',
     group: 'Legal',

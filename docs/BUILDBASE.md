@@ -65,8 +65,8 @@ preview before setup still matches the boards.
 | Legal and trust pages            | Rich content   | `legal-<page>`, below       |
 
 Legal pages: `legal-terms`, `legal-privacy`, `legal-cookies`,
-`legal-pack-terms`, `legal-creator-rules`, `legal-copyright`,
-`legal-security`, `legal-subprocessors`. Until an entry exists its page
+`legal-pack-terms`, `legal-refunds`, `legal-fees`, `legal-creator-rules`,
+`legal-copyright`, `legal-security`, `legal-subprocessors`. Until an entry exists its page
 says the text is still being written and gives the contact address. The
 page shows the entry's last update date.
 
