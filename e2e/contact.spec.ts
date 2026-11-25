@@ -51,7 +51,10 @@ test('shows the reason when sending fails', async ({ page }) => {
   await page.getByLabel('Email').fill('test@example.com');
   await page.getByLabel('Message').fill('Hello again.');
   await page.getByRole('button', { name: 'Send message' }).click();
-  await expect(page.getByRole('alert')).toContainText('Too many messages');
+  // Next.js has its own empty role="alert" route announcer, so look for ours.
+  await expect(
+    page.getByRole('alert').filter({ hasText: 'Too many messages' })
+  ).toBeVisible();
   // The message stays in the form so the visitor can try again.
   await expect(page.getByLabel('Message')).toHaveValue('Hello again.');
 });

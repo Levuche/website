@@ -8,7 +8,10 @@ export function SiteFooter() {
       <div className="text-lv-text-3 mx-auto flex max-w-[1240px] flex-wrap justify-between gap-5 px-[clamp(16px,3vw,32px)] py-8 text-sm">
         <p className="m-0">
           © 2026{' '}
-          <a href={site.owner.url} className="text-lv-link">
+          <a
+            href={site.owner.url}
+            className="text-lv-link underline underline-offset-2"
+          >
             {site.owner.name}
           </a>
           . Levuche is a product managed by {site.owner.name}.
