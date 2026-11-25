@@ -1,9 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ArticleHtml } from '@/components/article-html';
 import { BetaForm } from '@/components/beta-form';
+import { FaqList } from '@/components/faq-list';
 import { JsonLd } from '@/components/json-ld';
 import { SiteShell } from '@/components/site-shell';
-import { betaFormAction } from '@/lib/contact';
+import { Testimonials } from '@/components/testimonials';
+import {
+  CONTENT,
+  getCollection,
+  getFaqs,
+  getRichContent,
+  getTestimonials,
+} from '@/lib/content';
+import { renderMarkdown } from '@/lib/markdown';
 import { pageMetadata } from '@/lib/metadata';
 import { absoluteUrl, site } from '@/lib/site';
 
@@ -29,53 +39,27 @@ const organization = {
   },
 };
 
-const steps = [
-  {
-    title: 'Claim your name',
-    body: 'Pick a handle and get yourname.levuche.page. One name, one site, yours alone.',
-  },
-  {
-    title: 'Drag in sections',
-    body: 'Build your home page from ready-made sections in your own brand. It looks right on every phone.',
-  },
-  {
-    title: 'Sell and get paid',
-    body: 'Add your packs. Buyers pay by card and download straight away. You see every sale.',
-  },
-];
+// The steps, features, pricing card, testimonials and questions come from
+// Buildbase on each request (see src/lib/content.ts and docs/BUILDBASE.md).
+// A section with nothing in Buildbase is left out.
+export const dynamic = 'force-dynamic';
 
-const features = [
-  {
-    title: 'Your brand, not ours',
-    body: 'Set your colours, fonts and logo once; every section follows them in light and dark.',
-  },
-  {
-    title: 'Legal pages written for you',
-    body: 'Privacy, terms, refund and shipping pages from templates you review.',
-  },
-  {
-    title: 'Instant downloads',
-    body: 'Sell prompts, guides and templates. Buyers get secure links the moment they pay.',
-  },
-  {
-    title: 'Forms and newsletter',
-    body: 'Contact, newsletter and waitlist forms land in one inbox.',
-  },
-  {
-    title: 'Tracked short links',
-    body: 'A short link and QR code for every reel, with clicks by source.',
-  },
-  {
-    title: 'Versions you can undo',
-    body: 'Preview a draft, publish when ready, roll back in one click.',
-  },
-];
+type Item = { title?: string; body?: string; order?: number };
 
 const container = 'mx-auto max-w-[1240px] px-[clamp(16px,3vw,32px)]';
 const sectionY = 'py-[clamp(56px,7vw,96px)]';
 const h2 = 'm-0 text-[clamp(30px,4vw,44px)] font-bold tracking-[-1px]';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [steps, features, pricing, testimonials, faqs] = await Promise.all([
+    getCollection<Item>(CONTENT.collections.homeSteps),
+    getCollection<Item>(CONTENT.collections.homeFeatures),
+    getRichContent(CONTENT.rich.homePricing),
+    getTestimonials(),
+    getFaqs(CONTENT.faqs.home),
+  ]);
+  const pricingHtml = pricing ? renderMarkdown(pricing.content).html : '';
+
   return (
     <SiteShell>
       <JsonLd data={organization} />
@@ -92,7 +76,7 @@ export default function HomePage() {
             Levuche turns your Instagram link into a small website that sells
             your packs, prompts and guides. Pay $9 once. No monthly fee.
           </p>
-          <BetaForm action={betaFormAction} />
+          <BetaForm />
           <p className="text-lv-text-3 m-0 text-sm">
             We approve creators in small groups. You will get an email when your
             spot opens.
@@ -103,50 +87,67 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="how" className={`bg-lv-surface ${sectionY} scroll-mt-4`}>
-        <div className={`${container} flex flex-col gap-10`}>
-          <h2 className={h2}>Live in three steps</h2>
-          <ol className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-5 p-0">
-            {steps.map((step, i) => (
-              <li
-                key={step.title}
-                className="bg-lv-card border-lv-border flex flex-col gap-3 rounded-[20px] border p-7"
-              >
-                <span
-                  aria-hidden
-                  className="bg-lv-brand text-lv-on-brand flex size-11 items-center justify-center rounded-full font-bold"
+      {steps.length > 0 && (
+        <section id="how" className={`bg-lv-surface ${sectionY} scroll-mt-4`}>
+          <div className={`${container} flex flex-col gap-10`}>
+            <h2 className={h2}>
+              Live in {steps.length === 3 ? 'three' : steps.length}{' '}
+              {steps.length === 1 ? 'step' : 'steps'}
+            </h2>
+            <ol className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-5 p-0">
+              {steps.map((step, i) => (
+                <li
+                  key={`${i}-${step.title}`}
+                  className="bg-lv-card border-lv-border flex flex-col gap-3 rounded-[20px] border p-7"
                 >
-                  {i + 1}
-                </span>
-                <h3 className="m-0 text-[22px] font-bold">{step.title}</h3>
-                <p className="text-lv-text-2 m-0 text-base leading-relaxed">
-                  {step.body}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+                  <span
+                    aria-hidden
+                    className="bg-lv-brand text-lv-on-brand flex size-11 items-center justify-center rounded-full font-bold"
+                  >
+                    {i + 1}
+                  </span>
+                  <h3 className="m-0 text-[22px] font-bold">{step.title}</h3>
+                  <p className="text-lv-text-2 m-0 text-base leading-relaxed">
+                    {step.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
 
-      <section
-        id="features"
-        className={`${container} ${sectionY} flex scroll-mt-4 flex-col gap-10`}
-      >
-        <h2 className={h2}>Everything a creator store needs</h2>
-        <dl className="border-lv-border m-0 grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-x-12 border-t">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="border-lv-border border-b py-[22px]"
-            >
-              <dt className="text-[19px] font-bold">{feature.title}</dt>
-              <dd className="text-lv-text-2 mx-0 mt-1.5 leading-relaxed">
-                {feature.body}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+      {features.length > 0 && (
+        <section
+          id="features"
+          className={`${container} ${sectionY} flex scroll-mt-4 flex-col gap-10`}
+        >
+          <h2 className={h2}>Everything a creator store needs</h2>
+          <dl className="border-lv-border m-0 grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-x-12 border-t">
+            {features.map((feature, i) => (
+              <div
+                key={`${i}-${feature.title}`}
+                className="border-lv-border border-b py-[22px]"
+              >
+                <dt className="text-[19px] font-bold">{feature.title}</dt>
+                <dd className="text-lv-text-2 mx-0 mt-1.5 leading-relaxed">
+                  {feature.body}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {testimonials.length > 0 && (
+        <section
+          id="creators"
+          className={`${container} ${sectionY} flex scroll-mt-4 flex-col gap-10 pt-0`}
+        >
+          <h2 className={h2}>What creators say</h2>
+          <Testimonials items={testimonials} />
+        </section>
+      )}
 
       <section id="pricing" className={`bg-lv-surface ${sectionY} scroll-mt-4`}>
         <div
@@ -159,16 +160,19 @@ export default function HomePage() {
             </p>
           </div>
           <div className="bg-lv-card border-lv-border flex flex-col gap-[18px] rounded-[28px] border p-[clamp(24px,3vw,36px)]">
-            <p className="m-0 flex items-baseline gap-2.5">
-              <span className="text-lv-text text-[56px] font-bold">$9</span>
-              <span className="text-lv-text-2">once</span>
-            </p>
-            <ul className="text-lv-text-2 m-0 flex flex-col gap-2.5 pl-5 leading-normal">
-              <li>Your site at yourname.levuche.page</li>
-              <li>[YOUR FEE]% per sale, only when you sell</li>
-              <li>Storage and extras from prepaid credits</li>
-              <li>Your own domain, when you want it</li>
-            </ul>
+            {pricingHtml ? (
+              <ArticleHtml
+                html={pricingHtml}
+                className="flex flex-col gap-[18px] [&_p]:my-0 [&_ul]:my-0"
+              />
+            ) : (
+              <p className="text-lv-text-2 m-0 text-lg leading-relaxed">
+                See the plans and what each one includes.
+              </p>
+            )}
+            <Link href="/pricing" className="text-lv-link font-semibold">
+              Pricing details
+            </Link>
             <Link
               href="/#beta"
               className="bg-lv-primary text-lv-on-primary rounded-full p-4 text-center font-bold no-underline"
@@ -178,6 +182,18 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {faqs.length > 0 && (
+        <section
+          id="faq"
+          className={`${container} ${sectionY} flex scroll-mt-4 flex-col gap-8`}
+        >
+          <h2 className={h2}>Questions</h2>
+          <div className="max-w-[820px]">
+            <FaqList faqs={faqs} openFirst />
+          </div>
+        </section>
+      )}
 
       <section className={`bg-lv-brand ${sectionY}`}>
         <div

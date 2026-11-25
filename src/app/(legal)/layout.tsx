@@ -1,6 +1,7 @@
 import { LegalNav } from '@/components/legal-nav';
 import { SiteShell } from '@/components/site-shell';
-import { contact, contactPlaceholder } from '@/lib/contact';
+import Link from 'next/link';
+import { contact } from '@/lib/contact';
 
 /** Sidebar layout for the legal and trust pages (MarketingPages board). */
 export default function LegalLayout({
@@ -18,14 +19,14 @@ export default function LegalLayout({
             <p className="m-0 text-[15px] font-bold">Found a security issue?</p>
             <p className="text-lv-text-2 m-0 text-[13px] leading-[1.55]">
               Tell us privately at{' '}
-              {security ? (
-                <a href={`mailto:${security}`} className="text-lv-link">
-                  {security}
-                </a>
-              ) : (
-                contactPlaceholder.security
-              )}
-              . [Disclosure policy line.]
+              <a href={`mailto:${security}`} className="text-lv-link">
+                {security}
+              </a>
+              . See{' '}
+              <Link href="/security" className="text-lv-link">
+                Security
+              </Link>{' '}
+              for how we handle reports.
             </p>
           </div>
         </aside>

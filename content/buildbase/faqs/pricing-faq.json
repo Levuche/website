@@ -1,0 +1,12 @@
+{
+  "slug": "pricing-faq",
+  "title": "Pricing questions",
+  "faqs": [
+    {
+      "question": "What does Levuche take from a sale?",
+      "answer": "[Answer from the billing terms.]"
+    },
+    { "question": "How do I get paid?", "answer": "[Answer.]" },
+    { "question": "Can I switch or cancel my plan?", "answer": "[Answer.]" }
+  ]
+}

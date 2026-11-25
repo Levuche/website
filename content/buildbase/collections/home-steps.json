@@ -1,0 +1,26 @@
+{
+  "slug": "home-steps",
+  "title": "Home: steps",
+  "fields": [
+    { "slug": "title", "type": "text", "required": true },
+    { "slug": "body", "type": "text", "required": true },
+    { "slug": "order", "type": "integer", "required": true }
+  ],
+  "records": [
+    {
+      "title": "Claim your name",
+      "body": "Pick a handle and get yourname.levuche.page. One name, one site, yours alone.",
+      "order": 1
+    },
+    {
+      "title": "Drag in sections",
+      "body": "Build your home page from ready-made sections in your own brand. It looks right on every phone.",
+      "order": 2
+    },
+    {
+      "title": "Sell and get paid",
+      "body": "Add your packs. Buyers pay by card and download straight away. You see every sale.",
+      "order": 3
+    }
+  ]
+}

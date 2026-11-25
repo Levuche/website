@@ -1,0 +1,14 @@
+{
+  "name": "Contact",
+  "note": "Make it public. Put its public id in BUILDBASE_CONTACT_FORM_ID. The site sends exactly these fields.",
+  "fields": [
+    { "name": "name", "label": "Name", "type": "text", "required": true },
+    { "name": "email", "label": "Email", "type": "email", "required": true },
+    {
+      "name": "message",
+      "label": "Message",
+      "type": "textarea",
+      "required": true
+    }
+  ]
+}

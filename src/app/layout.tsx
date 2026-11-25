@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from 'next';
+import { SaaSProvider } from '@/components/saas-provider';
 import { ThemeProvider } from '@/components/theme-provider';
 import { isIndexable, site, siteUrl } from '@/lib/site';
 import { sora } from './fonts';
+// Buildbase's component styles first, so globals.css can theme them.
+import '@buildbase/sdk/css';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -39,7 +42,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <SaaSProvider>{children}</SaaSProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -20,3 +20,6 @@ npm-debug.log*
 .open-next/
 .wrangler/
 .dev.vars*
+
+# Buildbase CLI state (claim links, blueprint outputs)
+.buildbase/

@@ -1,0 +1,6 @@
+{
+  "slug": "home-faq",
+  "title": "Home questions",
+  "note": "The home page shows a Questions section only when this collection has questions.",
+  "faqs": []
+}

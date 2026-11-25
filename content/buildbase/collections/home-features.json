@@ -1,0 +1,41 @@
+{
+  "slug": "home-features",
+  "title": "Home: features",
+  "fields": [
+    { "slug": "title", "type": "text", "required": true },
+    { "slug": "body", "type": "text", "required": true },
+    { "slug": "order", "type": "integer", "required": true }
+  ],
+  "records": [
+    {
+      "title": "Your brand, not ours",
+      "body": "Set your colours, fonts and logo once; every section follows them in light and dark.",
+      "order": 1
+    },
+    {
+      "title": "Legal pages written for you",
+      "body": "Privacy, terms, refund and shipping pages from templates you review.",
+      "order": 2
+    },
+    {
+      "title": "Instant downloads",
+      "body": "Sell prompts, guides and templates. Buyers get secure links the moment they pay.",
+      "order": 3
+    },
+    {
+      "title": "Forms and newsletter",
+      "body": "Contact, newsletter and waitlist forms land in one inbox.",
+      "order": 4
+    },
+    {
+      "title": "Tracked short links",
+      "body": "A short link and QR code for every reel, with clicks by source.",
+      "order": 5
+    },
+    {
+      "title": "Versions you can undo",
+      "body": "Preview a draft, publish when ready, roll back in one click.",
+      "order": 6
+    }
+  ]
+}

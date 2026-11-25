@@ -1,0 +1,50 @@
+{
+  "slug": "pricing-compare",
+  "title": "Pricing: compare table",
+  "note": "plan_1 to plan_4 are the columns, in the order of the pricing-plans records.",
+  "fields": [
+    { "slug": "feature", "type": "text", "required": true },
+    { "slug": "plan_1", "type": "text", "required": false },
+    { "slug": "plan_2", "type": "text", "required": false },
+    { "slug": "plan_3", "type": "text", "required": false },
+    { "slug": "plan_4", "type": "text", "required": false },
+    { "slug": "order", "type": "integer", "required": true }
+  ],
+  "records": [
+    {
+      "feature": "Packs",
+      "plan_1": "[N]",
+      "plan_2": "[N]",
+      "plan_3": "[N]",
+      "order": 1
+    },
+    {
+      "feature": "Fee per sale",
+      "plan_1": "[FEE]%",
+      "plan_2": "[FEE]%",
+      "plan_3": "[FEE]%",
+      "order": 2
+    },
+    {
+      "feature": "Own domain",
+      "plan_1": "[Value]",
+      "plan_2": "[Value]",
+      "plan_3": "[Value]",
+      "order": 3
+    },
+    {
+      "feature": "Short links",
+      "plan_1": "[Value]",
+      "plan_2": "[Value]",
+      "plan_3": "[Value]",
+      "order": 4
+    },
+    {
+      "feature": "Team members",
+      "plan_1": "[N]",
+      "plan_2": "[N]",
+      "plan_3": "[N]",
+      "order": 5
+    }
+  ]
+}

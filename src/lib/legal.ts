@@ -1,8 +1,8 @@
 /**
- * The legal and trust pages from the MarketingPages board. None has real
- * text yet: every page renders the board's layout with [PLACEHOLDER] copy
- * and a notice saying so. Replace the placeholders with reviewed text before
- * launch; nothing here is legal advice or final wording.
+ * The legal and trust pages from the MarketingPages board. Their text is
+ * the Buildbase rich content entry `legal-<slug>` (see docs/BUILDBASE.md);
+ * a page without one says its text is still being written. The text must be
+ * reviewed before launch; nothing in this repository is legal advice.
  */
 export type LegalGroup = 'Legal' | 'Trust';
 

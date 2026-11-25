@@ -1,53 +1,47 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { BetaForm as BuildbaseBetaForm } from '@buildbase/sdk/react';
+import { useState } from 'react';
+import { isAuthConfigured } from '@/lib/buildbase-config';
 
 /**
- * The hero's "Join the beta" email form. It posts to
- * NEXT_PUBLIC_BETA_FORM_ACTION once that is set; until then it stays on the
- * page and says sign-ups aren't open yet, so no address goes anywhere.
+ * The hero's "Join the beta" form: Buildbase's own beta sign-up form, so
+ * every request lands in the Buildbase console. Until Buildbase is set up in
+ * the environment it says sign-ups aren't open yet, and nothing is sent.
  */
-export function BetaForm({ action }: { action: string | null }) {
-  const id = useId();
-  const [notice, setNotice] = useState<string | null>(null);
+export function BetaForm() {
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (!isAuthConfigured) {
+    return (
+      <p className="text-lv-text-2 m-0 text-base">
+        Beta sign-ups open here soon. Please check back.
+      </p>
+    );
+  }
+
+  if (done) {
+    return (
+      <p role="status" className="text-lv-text m-0 text-base font-semibold">
+        Thanks, you’re on the list. We’ll email you when your invite is ready.
+      </p>
+    );
+  }
 
   return (
-    <div className="flex flex-col gap-3">
-      <form
-        action={action ?? undefined}
-        method="post"
-        onSubmit={(event) => {
-          if (!action) {
-            event.preventDefault();
-            setNotice(
-              "Beta sign-ups aren't open on this page yet. Please check back soon."
-            );
-          }
-        }}
-        className="flex max-w-[520px] flex-wrap gap-3"
-      >
-        <label htmlFor={`${id}-email`} className="sr-only">
-          Email address
-        </label>
-        <input
-          id={`${id}-email`}
-          name="email"
-          type="email"
-          required
-          autoComplete="email"
-          placeholder="you@email.com"
-          className="border-lv-border bg-lv-card text-lv-text min-h-14 flex-[1_1_240px] rounded-full border-2 px-5 text-base"
-        />
-        <button
-          type="submit"
-          className="bg-lv-accent text-lv-on-accent min-h-14 flex-auto cursor-pointer rounded-full border-0 px-7 text-base font-bold"
-        >
-          Join the beta
-        </button>
-      </form>
-      <p role="status" className="text-lv-text-2 m-0 text-sm empty:hidden">
-        {notice}
-      </p>
+    <div className="lv-beta-form flex max-w-[520px] flex-col gap-3">
+      <BuildbaseBetaForm
+        hideLogo
+        hideTitles
+        onSuccess={() => setDone(true)}
+        onError={(message) => setError(message)}
+      />
+      {error && (
+        <p role="alert" className="text-lv-danger m-0 text-sm">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

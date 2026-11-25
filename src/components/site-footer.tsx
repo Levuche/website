@@ -13,7 +13,13 @@ export function SiteFooter() {
           </a>
           . Levuche is a product managed by {site.owner.name}.
         </p>
-        <nav aria-label="Legal" className="flex flex-wrap gap-5">
+        <nav aria-label="Footer" className="flex flex-wrap gap-5">
+          <Link href="/blog" className="text-lv-link">
+            Blog
+          </Link>
+          <Link href="/docs" className="text-lv-link">
+            Docs
+          </Link>
           <Link href="/terms" className="text-lv-link">
             Terms
           </Link>

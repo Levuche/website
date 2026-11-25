@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SiteShell } from '@/components/site-shell';
+import { ContactForm } from '@/components/contact-form';
 import { contact, contactPlaceholder } from '@/lib/contact';
 import { pageMetadata } from '@/lib/metadata';
 import { site } from '@/lib/site';
@@ -12,26 +13,18 @@ export const metadata: Metadata = pageMetadata({
     'How to reach the Levuche team about the beta, your account, privacy or security.',
 });
 
-function Address({
-  value,
-  placeholder,
-}: {
-  value: string | null;
-  placeholder: string;
-}) {
-  return value ? (
+function Address({ value }: { value: string }) {
+  return (
     <a href={`mailto:${value}`} className="text-lv-link font-semibold">
       {value}
     </a>
-  ) : (
-    <span className="font-semibold">{placeholder}</span>
   );
 }
 
 /**
- * Contact page in the marketing pages' style. Addresses come from
- * NEXT_PUBLIC_*_EMAIL (levuche.com addresses only) and show placeholders
- * until they are chosen.
+ * Contact page in the marketing pages' style. The form sends to the Contact
+ * form in Buildbase (see /api/contact); the addresses are hello@levuche.com
+ * unless NEXT_PUBLIC_*_EMAIL names another levuche.com address.
  */
 export default function ContactPage() {
   const card =
@@ -49,23 +42,22 @@ export default function ContactPage() {
           </p>
         </div>
 
+        <section className="bg-lv-card border-lv-border flex flex-col gap-4 rounded-[20px] border p-6">
+          <h2 className="m-0 text-lg font-bold">Send us a message</h2>
+          <ContactForm />
+        </section>
+
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-5">
           <section className={card}>
             <h2 className="m-0 text-lg font-bold">General and support</h2>
             <p className={text}>
-              <Address
-                value={contact.general}
-                placeholder={contactPlaceholder.general}
-              />
+              <Address value={contact.general} />
             </p>
           </section>
           <section className={card}>
             <h2 className="m-0 text-lg font-bold">Privacy</h2>
             <p className={text}>
-              <Address
-                value={contact.privacy}
-                placeholder={contactPlaceholder.privacy}
-              />
+              <Address value={contact.privacy} />
             </p>
             <p className="text-lv-text-3 m-0 text-sm">
               See the{' '}
@@ -78,10 +70,7 @@ export default function ContactPage() {
           <section className={card}>
             <h2 className="m-0 text-lg font-bold">Security</h2>
             <p className={text}>
-              <Address
-                value={contact.security}
-                placeholder={contactPlaceholder.security}
-              />
+              <Address value={contact.security} />
             </p>
             <p className="text-lv-text-3 m-0 text-sm">
               Please report issues privately. See{' '}

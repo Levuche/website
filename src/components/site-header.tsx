@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { LevucheLogo } from '@/components/logo';
-import { signInUrl } from '@/lib/contact';
+import { AuthButtons } from '@/components/auth-buttons';
 import { cn } from '@/lib/utils';
 
 type Current = 'pricing' | null;
@@ -32,14 +32,7 @@ export function SiteHeader({ current = null }: { current?: Current }) {
         >
           Pricing
         </Link>
-        {signInUrl && (
-          <a
-            href={signInUrl}
-            className="text-lv-link font-semibold no-underline"
-          >
-            Sign in
-          </a>
-        )}
+        <AuthButtons />
         <Link
           href="/#beta"
           className="bg-lv-primary text-lv-on-primary inline-flex min-h-11 items-center rounded-full px-5 py-3 font-semibold no-underline"

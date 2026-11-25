@@ -30,7 +30,11 @@ The site runs on http://localhost:3000.
 
 ## Environment
 
-Only public values, all listed in `.env.example`. Never commit real keys or a filled-in `.env` file; `.gitignore` keeps every `.env*` file except the example out of git.
+Every setting is listed in `.env.example`. Copy it to `.env.local` and fill in what you need; the site builds and runs with it copied as is. Never commit real keys or a filled-in `.env` file; `.gitignore` keeps every `.env*` file except the example out of git. Server secrets for Cloudflare go in `wrangler secret put NAME`, never in `wrangler.jsonc`.
+
+## Buildbase
+
+Sign-in, the beta list, the contact form and all editable copy (blog, docs, FAQs, testimonials, legal pages, and the home and pricing lists) come from [Buildbase](https://buildbase.app) through `@buildbase/sdk`. Use a development environment for local work and previews and production for levuche.com. Setup, the content model and every slug: [docs/BUILDBASE.md](docs/BUILDBASE.md). Seed text: `content/buildbase/`.
 
 ## License and ownership
 

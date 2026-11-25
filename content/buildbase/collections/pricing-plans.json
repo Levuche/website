@@ -1,0 +1,75 @@
+{
+  "slug": "pricing-plans",
+  "title": "Pricing: plans",
+  "note": "Draft from the MarketingPages board. The home page says $9 once; this board shows monthly plans. Decide which before entering prices.",
+  "fields": [
+    { "slug": "name", "type": "text", "required": true },
+    {
+      "slug": "monthly_price",
+      "type": "text",
+      "required": false,
+      "helpText": "A number in dollars (9) or a word (Free). Empty hides the price."
+    },
+    {
+      "slug": "yearly_price",
+      "type": "text",
+      "required": false,
+      "helpText": "As monthly_price. The Monthly/Yearly switch shows only when plans have both."
+    },
+    {
+      "slug": "fee_note",
+      "type": "text",
+      "required": false,
+      "helpText": "One line under the price, such as the fee per sale."
+    },
+    {
+      "slug": "features",
+      "type": "rich-text",
+      "required": false,
+      "helpText": "One feature per line."
+    },
+    { "slug": "recommended", "type": "bool", "required": false },
+    {
+      "slug": "cta_label",
+      "type": "text",
+      "required": false,
+      "helpText": "Button text. Empty: Join the beta."
+    },
+    {
+      "slug": "cta_url",
+      "type": "text",
+      "required": false,
+      "helpText": "A path on the site (/#beta) or an https link. Empty: /#beta."
+    },
+    { "slug": "order", "type": "integer", "required": true }
+  ],
+  "records": [
+    {
+      "name": "[Plan 1]",
+      "monthly_price": "[PRICE]",
+      "yearly_price": "[PRICE]",
+      "fee_note": "[FEE]% per sale, plus Stripe fees",
+      "features": "Your handle.levuche.page site\n[N] packs\nInbox and short links",
+      "recommended": false,
+      "order": 1
+    },
+    {
+      "name": "[Plan 2]",
+      "monthly_price": "[PRICE]",
+      "yearly_price": "[PRICE]",
+      "fee_note": "[FEE]% per sale, plus Stripe fees",
+      "features": "Everything in [Plan 1]\nYour own domain\nVersion history and rollback\nAPI keys",
+      "recommended": true,
+      "order": 2
+    },
+    {
+      "name": "[Plan 3]",
+      "monthly_price": "[PRICE]",
+      "yearly_price": "[PRICE]",
+      "fee_note": "[FEE]% per sale, plus Stripe fees",
+      "features": "Everything in [Plan 2]\n[N] team members\n[Extra feature]",
+      "recommended": false,
+      "order": 3
+    }
+  ]
+}
