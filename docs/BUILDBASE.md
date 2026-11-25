@@ -37,6 +37,10 @@ commit.
   httpOnly cookie. Both open Buildbase's hosted page, where new creators
   sign up, and come back to `/dashboard`, which sends them on to the app at
   `NEXT_PUBLIC_APP_URL`. Signed in, the header shows **Dashboard**.
+  The sign-in is shared with the app: see
+  [Shared sign-in with the app](#shared-sign-in-with-the-app).
+- **Affiliate links** (`?ref=`): org id. See
+  [Affiliate links](#affiliate-links).
 - **Contact form** (`/contact`): org id and `BUILDBASE_CONTACT_FORM_ID`. Make
   a public form named Contact with the fields in
   `content/buildbase/forms/contact.json` (`name`, `email`, `message`).
@@ -56,6 +60,47 @@ commit.
   `BUILDBASE_WEBHOOK_SECRET`. On Cloudflare each worker instance keeps its
   own cache, so an edit can take up to a minute to reach every visitor.
 
+## Shared sign-in with the app
+
+The website and the Levuche app share one sign-in. `/api/auth/token` sets
+the session cookie with `Domain=levuche.com` (`src/lib/session-cookie.ts`),
+so it reaches levuche.com, app.levuche.com and every other host under it:
+sign in on either and the other shows you signed in; sign out on either and
+both sign out. On any other host (localhost, a preview link) the cookie
+stays on that host, as before. Creators' storefronts are on levuche.page
+and their own domains, so they never receive it.
+
+For the app to read the same sign-in it must:
+
+- read and write the same cookie: `bb-session-id` in production,
+  `bb-session-id-<environment key>` in development, httpOnly, `Path=/`,
+  `SameSite=Lax`, `Domain=levuche.com`, and clear it the same way on
+  sign-out;
+- use the same Buildbase org and environment as the website (production
+  with production, development with development);
+- have its own sign-in client with its own redirect URLs
+  (`https://app.levuche.com`, `https://app-dev.levuche.com`). Buildbase's
+  docs don't say whether a session started through one client is accepted
+  by another in the same environment, so check it once both are live: sign
+  in on the website, open the app, and it should show you signed in.
+
+## Affiliate links
+
+A link with `?ref=<code>` (any page) is turned into a signed referral by
+Buildbase's `captureReferral()` (`src/lib/referral.ts`) and kept in this
+browser for the program's window; the Buy button sends it with checkout.
+Buildbase keeps it in local storage, which only the site that wrote it can
+read, so the app cannot see the website's copy. Links into the app carry
+the code along instead: **Dashboard**, **Get started** and **Sign in** add
+`?ref=<code>`, and `/dashboard` passes it on to the app, which must call
+`captureReferral()` on landing too.
+
+Nothing is kept until affiliate programs are turned on in the console
+(**Billing > Selling > Settings > Affiliates**): an unknown code keeps
+nothing. A referral is marketing storage, so before turning programs on,
+list `bb_referral:<org id>` on the **Cookies** page and add the `marketing`
+category to the cookie banner.
+
 ## Web analytics, goals and the cookie banner
 
 Off until `NEXT_PUBLIC_BUILDBASE_ANALYTICS=on` (the GitHub variable
@@ -63,7 +108,11 @@ Off until `NEXT_PUBLIC_BUILDBASE_ANALYTICS=on` (the GitHub variable
 set up too, since it runs inside the Buildbase provider. To turn it on:
 
 1. Console, **Settings > Analytics**: under **Domains**, **Track**
-   `levuche.com` and `dev.levuche.com`, then turn on **Only listed domains**.
+   `levuche.com` and `app.levuche.com` in production, and `dev.levuche.com`
+   and `app-dev.levuche.com` in development, then turn on **Only listed
+   domains**. The visitor and consent cookies (`bb_vid`, `bb_sid`,
+   `bb_consent`) are written for all of levuche.com, so someone who moves
+   from the website to the app is one visitor with one cookie answer.
 2. Update the **Cookies** and **Privacy** docs in the `legal` folder (below),
    in the same environment, so they don't say there is no analytics.
 3. Set the variable to `on` and deploy. Check visits arrive as Buildbase's
