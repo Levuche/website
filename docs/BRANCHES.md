@@ -12,8 +12,11 @@
    `feature/`, `fix/`, `hotfix/`, `chore/`, `docs/` or `ci/`, for example
    `feature/beta-signup` or `fix/contact-form`.
    (`git switch -c feature/beta-signup origin/dev`)
-2. **Open a pull request into `dev`.** CI runs on it.
-3. **A developer or tester reviews and approves it.** GitHub never lets the
+2. **Open a pull request into `dev`.** CI runs on it, and a comment on it
+   gives the pull request's own preview link
+   (`https://pr-<number>-levuche-com-dev.<subdomain>.workers.dev`).
+3. **A developer or tester tries the preview link, then reviews and
+   approves it.** GitHub never lets the
    author approve their own pull request, so the approval comes from someone
    else. Pull requests opened by tasks are authored by the account the task
    pushes with, so approve those from a different account.
