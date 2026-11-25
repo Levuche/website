@@ -304,6 +304,44 @@ once for each Worker (`levuche-com` and `levuche-com-dev`):
 
 Source: Cloudflare, Workers Logs, "Alert on application events".
 
+## 13. Rate limits
+
+Two layers slow down a burst of requests from one address on the routes that
+call Buildbase.
+
+**In the Worker (already on).** `wrangler.jsonc` gives each Worker two rate
+limiting bindings, and `src/lib/rate-limit.ts` checks them by the visitor's
+address:
+
+| Binding           | Routes                                      | Limit per address |
+| ----------------- | ------------------------------------------- | ----------------- |
+| `CONTACT_LIMITER` | `/api/contact` and `/api/contact/challenge` | 5 a minute each   |
+| `AUTH_LIMITER`    | `/api/auth/token` and `/api/auth/signout`   | 20 a minute each  |
+
+Over the limit, the route answers 429 and the contact form says "Too many
+messages just now". The counts are approximate and kept per Cloudflare
+location. `/api/auth/session` has no limit: it only reads this site's cookie
+and runs on every page load. Nothing needs setting up; the bindings deploy
+with the Worker. Each Worker has its own `namespace_id`, and those numbers
+must not be used by another Worker in the account.
+
+**At the edge (dashboard, once).** A rate limiting rule on the `levuche.com`
+zone blocks a flood before the Worker runs, so it costs nothing. It covers
+levuche.com and dev.levuche.com, not preview links. In the dashboard: the
+`levuche.com` zone, then **Security** > **Security rules** > **Create rule** >
+**Rate limiting rules**:
+
+1. Name: `API burst`.
+2. **Edit expression**:
+   `(http.request.uri.path eq "/api/contact" or starts_with(http.request.uri.path, "/api/auth/")) and http.request.method eq "POST"`
+3. **With the same characteristics**: IP.
+4. **When rate exceeds**: 10 requests per 10 seconds.
+5. **Then take action**: Block, for 10 seconds.
+6. **Deploy**.
+
+These are the Free plan's values (one rule, 10-second periods). On Pro or
+above, use 1 minute and Managed Challenge instead.
+
 ## Sources
 
 Cloudflare docs, read November 2026:
@@ -313,4 +351,5 @@ Cloudflare docs, read November 2026:
 - [Workers as the Cloudflare for SaaS fallback origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/) and [Cloudflare for SaaS plans](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/plans/)
 - [OpenNext on Cloudflare: deploying](https://opennext.js.org/cloudflare/howtos/dev-deploy)
 - [Version URLs](https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/) and [Cloudflare Access for Workers](https://developers.cloudflare.com/workers/configuration/cloudflare-access/)
+- [Workers rate limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) and [rate limiting rules](https://developers.cloudflare.com/waf/rate-limiting-rules/)
 - [Self-hosted Access applications](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/self-hosted-public-app/), [Access service tokens](https://developers.cloudflare.com/cloudflare-one/access-controls/service-credentials/service-tokens/) and [static asset headers](https://developers.cloudflare.com/workers/static-assets/headers/)
