@@ -4,7 +4,7 @@ import { useSaaSAuth } from '@buildbase/sdk/react';
 import { isAuthConfigured } from '@/lib/buildbase-config';
 
 const link =
-  'text-lv-link min-h-10 pointer-coarse:min-h-11 cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold';
+  'text-lv-link min-h-control cursor-pointer border-0 bg-transparent p-0 text-sm font-semibold';
 
 /**
  * "Sign in" in the header, through Buildbase's hosted sign-in page. Signed

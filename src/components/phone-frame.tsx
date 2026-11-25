@@ -22,7 +22,7 @@ export function PhoneFrame({
       data-site={scheme}
       aria-label={label}
       className={cn(
-        'border-lv-text bg-site-bg text-site-text shadow-lv m-0 box-border flex w-[min(100%,320px)] flex-col gap-3.5 rounded-[40px] border-[10px] px-5 py-[26px]',
+        'border-lv-text bg-site-bg text-site-text shadow-lv rounded-device m-0 box-border flex w-full max-w-80 flex-col gap-3.5 border-[10px] px-5 py-6.5',
         className
       )}
     >

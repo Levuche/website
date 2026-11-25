@@ -141,7 +141,7 @@ export function SegmentedDemo() {
         <ToggleGroupItem value="tablet">Tablet</ToggleGroupItem>
         <ToggleGroupItem value="desktop">Desktop</ToggleGroupItem>
       </ToggleGroup>
-      <p className="text-muted-foreground m-0 text-[13px]">Showing: {size}</p>
+      <p className="text-muted-foreground text-caption m-0">Showing: {size}</p>
     </div>
   );
 }

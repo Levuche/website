@@ -20,12 +20,10 @@ export function FolderPage({
 }) {
   const isBlog = base === '/blog';
   return (
-    <div className="mx-auto flex w-full max-w-[1184px] min-w-0 flex-col gap-8 px-[clamp(16px,3vw,32px)] pt-7 pb-16">
+    <div className="max-w-content px-gutter mx-auto flex w-full min-w-0 flex-col gap-8 pt-7 pb-16">
       <div className="flex flex-col gap-2.5">
         <Breadcrumbs crumbs={crumbs} />
-        <h1 className="m-0 text-[clamp(30px,3.5vw,40px)] leading-[1.1] font-bold tracking-[-0.8px]">
-          {folder.name}
-        </h1>
+        <h1 className="text-h1 m-0">{folder.name}</h1>
       </div>
       {folder.folders.length > 0 ? (
         <FolderList

@@ -65,13 +65,11 @@ export function Gallery() {
   return (
     <main
       id="main-content"
-      className="bg-lv-canvas text-lv-text flex min-h-screen flex-col gap-6 p-[clamp(12px,3vw,40px)] font-sans"
+      className="bg-lv-canvas text-lv-text p-gutter flex min-h-screen flex-col gap-6 font-sans"
     >
       <header id="top" className="flex flex-col gap-2">
-        <h1 className="m-0 text-[clamp(26px,3vw,36px)] font-bold tracking-[-0.6px]">
-          Levuche app components
-        </h1>
-        <p className="text-lv-text-2 m-0 max-w-[60ch]">
+        <h1 className="text-h2 m-0">Levuche app components</h1>
+        <p className="text-lv-text-2 max-w-measure m-0">
           The website’s and app’s own components: shadcn/ui components in
           src/components/ui, in Levuche’s colours from the Atoms, Molecules and
           Organisms boards. Light on the left, dark on the right (stacked on
@@ -101,7 +99,7 @@ function Group({
       data-testid={id.replace(/^(light|dark)-/, '')}
       className="flex flex-col gap-3.5"
     >
-      <h3 id={id} className="m-0 text-[17px] font-bold">
+      <h3 id={id} className="text-h4 m-0">
         {title}
       </h3>
       {children}
@@ -118,20 +116,16 @@ function Panel({ mode }: { mode: 'light' | 'dark' }) {
       data-lv={mode}
       data-testid={`gallery-${mode}`}
       aria-labelledby={g('title')}
-      className="bg-lv-bg text-lv-text border-lv-border flex min-w-0 flex-col gap-10 rounded-3xl border p-[clamp(16px,3vw,40px)]"
+      className="bg-lv-bg text-lv-text border-lv-border p-gutter flex min-w-0 flex-col gap-10 rounded-3xl border"
     >
-      <h2 id={g('title')} className="m-0 text-[28px] tracking-[-0.5px]">
+      <h2 id={g('title')} className="text-h2 m-0">
         {label}
       </h2>
 
       <Group id={g('type')} title="Type">
-        <p className="m-0 text-[48px] leading-[1.08] font-bold tracking-[-1.2px]">
-          Display
-        </p>
-        <p className="m-0 text-[36px] leading-[1.15] font-bold tracking-[-0.6px]">
-          Heading 1
-        </p>
-        <p className="text-lv-text-2 m-0 max-w-[60ch] text-base leading-[1.6]">
+        <p className="text-display m-0">Display</p>
+        <p className="text-h1 m-0">Heading 1</p>
+        <p className="text-lv-text-2 max-w-measure text-body m-0">
           Body text at 16 px with 1.6 line height, held to about 65 characters
           per line.
         </p>
@@ -240,7 +234,7 @@ function Panel({ mode }: { mode: 'light' | 'dark' }) {
         <div>
           <Item>
             <ItemMedia>
-              <span className="bg-secondary block size-12 rounded-[10px]" />
+              <span className="bg-secondary rounded-tile block size-12" />
             </ItemMedia>
             <ItemContent>
               <ItemTitle>Origins reel pack</ItemTitle>

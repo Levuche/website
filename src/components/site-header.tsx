@@ -10,16 +10,18 @@ type Current = 'pricing' | null;
 export function SiteHeader({ current = null }: { current?: Current }) {
   const link = 'text-lv-text-2 no-underline hover:text-lv-text';
   return (
-    <header className="mx-auto flex w-full max-w-[1240px] flex-wrap items-center justify-between gap-4 px-[clamp(16px,3vw,32px)] py-3.5">
+    <header className="max-w-page px-gutter mx-auto flex w-full flex-wrap items-center justify-between gap-4 py-3.5">
       <LevucheLogo />
       <nav
         aria-label="Main"
         className="flex flex-wrap items-center gap-x-[clamp(12px,2vw,24px)] gap-y-2 text-sm"
       >
-        <Link href="/#how" className={link}>
+        {/* Phones get Pricing, Sign in and the beta button on one row; the
+            home page's own sections are a scroll away. */}
+        <Link href="/#how" className={cn(link, 'max-sm:hidden')}>
           How it works
         </Link>
-        <Link href="/#features" className={link}>
+        <Link href="/#features" className={cn(link, 'max-sm:hidden')}>
           Features
         </Link>
         <Link

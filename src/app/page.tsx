@@ -77,16 +77,11 @@ export default async function HomePage() {
     <SiteShell>
       <JsonLd data={organization} />
 
-      <section
-        id="beta"
-        className="scroll-mt-4 pt-[clamp(20px,3vw,40px)] pb-[clamp(44px,5.5vw,72px)]"
-      >
-        <Container className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] items-center gap-[clamp(32px,5vw,64px)]">
+      <section id="beta" className="pt-hero pb-section scroll-mt-4">
+        <Container className="gap-split grid grid-cols-[repeat(auto-fit,minmax(min(100%,340px),1fr))] items-center">
           <div className="flex flex-col gap-5">
-            <h1 className="m-0 text-[clamp(34px,4.5vw,48px)] leading-[1.08] font-bold tracking-[-1.2px]">
-              Your link in bio, now a shop.
-            </h1>
-            <p className="text-lv-text-2 m-0 max-w-[520px] text-[clamp(16px,1.6vw,18px)] leading-relaxed">
+            <h1 className="text-display m-0">Your link in bio, now a shop.</h1>
+            <p className="text-lv-text-2 max-w-form text-lead m-0">
               Levuche turns your Instagram link into a small website that sells
               your packs, prompts and guides. Pay $9 once. No monthly fee.
             </p>
@@ -152,11 +147,11 @@ export default async function HomePage() {
               No monthly fee just to keep your page online.
             </p>
           </div>
-          <Card className="flex flex-col gap-4 rounded-3xl p-[clamp(20px,2.5vw,28px)]">
+          <Card className="rounded-panel p-card flex flex-col gap-4">
             {offer ? (
               <>
                 <p className="m-0 flex items-baseline gap-2.5">
-                  <strong className="text-[44px] leading-none font-bold">
+                  <strong className="text-price">
                     {offer.once || offer.monthly || offer.yearly}
                   </strong>
                   <span className="text-lv-text-2 text-base">
@@ -195,7 +190,7 @@ export default async function HomePage() {
         <Section id="faq">
           <Container className="flex flex-col gap-8">
             <SectionHeading>Questions</SectionHeading>
-            <div className="max-w-[820px]">
+            <div className="max-w-article">
               <FaqList faqs={faqs} openFirst />
             </div>
           </Container>
@@ -204,7 +199,7 @@ export default async function HomePage() {
 
       <Section tone="brand">
         <Container className="flex flex-wrap items-center justify-between gap-7">
-          <SectionHeading className="text-lv-on-brand text-[clamp(28px,3.5vw,40px)] tracking-[-0.8px]">
+          <SectionHeading className="text-lv-on-brand text-h1">
             Say “I’ll take it.”
           </SectionHeading>
           <Button asChild variant="accent" size="lg">

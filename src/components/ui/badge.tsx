@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 /** shadcn/ui Badge: a small status pill (Live, Draft, Handled, Failed). */
 const badgeVariants = cva(
-  'inline-flex w-fit shrink-0 items-center justify-center gap-1 rounded-full px-3 py-[5px] text-[13px] leading-none font-semibold whitespace-nowrap [&>svg]:size-3',
+  'inline-flex w-fit shrink-0 items-center justify-center gap-1 rounded-full px-3 py-1.25 text-caption leading-none font-semibold whitespace-nowrap [&>svg]:size-3',
   {
     variants: {
       variant: {

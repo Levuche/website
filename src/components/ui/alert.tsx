@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
  * the others politely (role="status").
  */
 const alertVariants = cva(
-  'flex w-full flex-wrap items-center gap-2.5 rounded-xl px-3.5 py-3 text-sm font-semibold [&>svg]:size-[18px] [&>svg]:shrink-0',
+  'flex w-full flex-wrap items-center gap-2.5 rounded-xl px-3.5 py-3 text-sm font-semibold [&>svg]:size-4.5 [&>svg]:shrink-0',
   {
     variants: {
       variant: {

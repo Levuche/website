@@ -9,7 +9,7 @@ function PageLink({ entry, current }: { entry: EntryLink; current: string }) {
       href={`/docs/${entry.path}`}
       aria-current={active ? 'page' : undefined}
       className={cn(
-        'rounded-[10px] px-3 py-2.5 no-underline',
+        'rounded-tile px-3 py-2.5 no-underline',
         active
           ? 'bg-lv-surface-2 text-lv-text font-semibold'
           : 'text-lv-text-2 hover:text-lv-text'
@@ -45,7 +45,7 @@ function FolderSection({
         className={cn(
           'no-underline',
           depth === 0
-            ? 'text-lv-text-3 hover:text-lv-text mb-2 text-xs font-bold tracking-[0.5px] uppercase'
+            ? 'text-lv-text-3 hover:text-lv-text mb-2 text-xs font-bold tracking-wide uppercase'
             : 'text-lv-text-2 hover:text-lv-text mt-1 px-3 py-1.5 text-sm font-semibold',
           active && 'text-lv-text'
         )}
@@ -79,7 +79,7 @@ export function DocsNav({
   current: string;
 }) {
   return (
-    <nav aria-label="Docs" className="flex flex-col gap-0.5 text-[15px]">
+    <nav aria-label="Docs" className="text-ui flex flex-col gap-0.5">
       {tree.entries.map((entry) => (
         <PageLink key={entry.id} entry={entry} current={current} />
       ))}

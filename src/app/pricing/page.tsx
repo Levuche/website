@@ -44,13 +44,13 @@ export default async function PricingPage() {
 
   return (
     <SiteShell current="pricing">
-      <div className="mx-auto flex max-w-[1184px] flex-col gap-7 px-[clamp(16px,3vw,32px)] pt-7 pb-16">
+      <div className="max-w-content px-gutter mx-auto flex flex-col gap-7 pt-7 pb-16">
         <PricingPlans
           offers={offers}
           currency={BILLING.currency}
           intro={
-            <div className="flex max-w-[640px] flex-col gap-2.5">
-              <h1 className="m-0 text-[clamp(30px,3.5vw,40px)] leading-[1.1] font-bold tracking-[-0.8px]">
+            <div className="max-w-form flex flex-col gap-2.5">
+              <h1 className="text-h1 m-0">
                 Pick a plan when you’re ready to sell
               </h1>
               {onlyOnce && (
@@ -98,12 +98,12 @@ export default async function PricingPage() {
                       >
                         <th
                           scope="row"
-                          className="text-lv-text px-2 py-[11px] text-left font-semibold"
+                          className="text-lv-text px-2 py-2.75 text-left font-semibold"
                         >
                           {row.name}
                         </th>
                         {row.values.map((value, i) => (
-                          <td key={i} className="px-2 py-[11px]">
+                          <td key={i} className="px-2 py-2.75">
                             {value}
                           </td>
                         ))}
@@ -116,7 +116,7 @@ export default async function PricingPage() {
           )}
           {questions.length > 0 && (
             <section className="flex flex-col gap-2.5">
-              <h2 className="m-0 mb-0.5 text-[22px] font-bold">Questions</h2>
+              <h2 className="text-h3 m-0 mb-0.5">Questions</h2>
               <FaqList faqs={questions} openFirst />
             </section>
           )}

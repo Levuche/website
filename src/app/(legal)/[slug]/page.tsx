@@ -58,17 +58,15 @@ export default async function LegalPage({ params }: Props) {
         : contact.general;
 
   return (
-    <article className="max-w-measure flex flex-col gap-[18px]">
+    <article className="max-w-measure flex flex-col gap-4.5">
       <p className="text-lv-text-3 m-0 text-sm">
         {page.group} / {page.title}
       </p>
-      <h1 className="m-0 text-[clamp(28px,3.5vw,38px)] leading-[1.12] font-bold tracking-[-0.8px]">
-        {entry?.title || page.title}
-      </h1>
+      <h1 className="text-h1 m-0">{entry?.title || page.title}</h1>
       {updated ? (
         <p className="text-lv-text-2 m-0 text-sm">Last updated {updated}</p>
       ) : null}
-      <p className="text-lv-text-2 m-0 text-base leading-[1.7]">
+      <p className="text-lv-text-2 text-body m-0">
         Levuche is operated by{' '}
         <a href={site.owner.url} className="text-lv-link">
           {site.owner.name}
@@ -91,13 +89,10 @@ export default async function LegalPage({ params }: Props) {
         </p>
       )}
 
-      <h2
-        id="contact"
-        className="mt-2.5 mb-0 scroll-mt-4 text-xl font-bold tracking-[-0.3px]"
-      >
+      <h2 id="contact" className="text-h3 mt-2.5 mb-0 scroll-mt-4">
         Contact
       </h2>
-      <p className="text-lv-text-2 m-0 text-base leading-[1.7]">
+      <p className="text-lv-text-2 text-body m-0">
         <a href={`mailto:${address}`} className="text-lv-link">
           {address}
         </a>

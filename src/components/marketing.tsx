@@ -9,10 +9,7 @@ export function Container({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        'mx-auto w-full max-w-[1240px] px-[clamp(16px,3vw,32px)]',
-        className
-      )}
+      className={cn('max-w-page px-gutter mx-auto w-full', className)}
       {...props}
     />
   );
@@ -37,11 +34,7 @@ export function Section({
   };
   return (
     <section
-      className={cn(
-        'scroll-mt-4 py-[clamp(44px,5.5vw,72px)]',
-        tones[tone],
-        className
-      )}
+      className={cn('py-section scroll-mt-4', tones[tone], className)}
       {...props}
     >
       {children}
@@ -55,15 +48,7 @@ export function SectionHeading({
   className,
   ...props
 }: HTMLAttributes<HTMLHeadingElement> & { as?: 'h1' | 'h2' | 'h3' }) {
-  return (
-    <Tag
-      className={cn(
-        'm-0 text-[clamp(26px,3vw,36px)] leading-[1.15] font-bold tracking-[-0.6px]',
-        className
-      )}
-      {...props}
-    />
-  );
+  return <Tag className={cn('text-h2 m-0', className)} {...props} />;
 }
 
 export type Step = { title: ReactNode; body?: ReactNode };
@@ -86,7 +71,7 @@ export function StepList({
       {steps.map((step, i) => (
         <li
           key={i}
-          className="bg-lv-card border-lv-border flex flex-col gap-2.5 rounded-[20px] border p-6"
+          className="bg-lv-card border-lv-border rounded-card flex flex-col gap-2.5 border p-6"
         >
           <span
             aria-hidden
@@ -127,7 +112,7 @@ export function FeatureList({
         <div key={i} className="border-lv-border border-b py-4">
           <dt className="text-base font-bold">{feature.title}</dt>
           {feature.body ? (
-            <dd className="text-lv-text-2 mx-0 mt-1 text-[15px] leading-relaxed">
+            <dd className="text-lv-text-2 text-ui mx-0 mt-1 leading-relaxed">
               {feature.body}
             </dd>
           ) : null}
@@ -148,7 +133,7 @@ export type Quote = {
 /** A testimonial: the quote, then who said it. */
 export function QuoteCard({ quote, name, role, avatar }: Quote) {
   return (
-    <figure className="bg-lv-card border-lv-border m-0 flex h-full flex-col gap-4 rounded-[20px] border p-7">
+    <figure className="bg-lv-card border-lv-border rounded-card m-0 flex h-full flex-col gap-4 border p-7">
       <blockquote className="text-lv-text-2 m-0 text-base leading-relaxed">
         “{quote}”
       </blockquote>

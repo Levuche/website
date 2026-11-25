@@ -33,7 +33,7 @@ export function EntryList({
           <li key={item.id} className="m-0">
             <Link
               href={`${base}/${item.path}`}
-              className="bg-lv-card border-lv-border text-lv-text hover:border-lv-brand flex h-full flex-col gap-2 rounded-[20px] border p-6 no-underline"
+              className="bg-lv-card border-lv-border text-lv-text hover:border-lv-brand rounded-card flex h-full flex-col gap-2 border p-6 no-underline"
             >
               {date ? (
                 <span className="text-lv-text-3 text-sm">{date}</span>
@@ -70,7 +70,7 @@ export function FolderList({
           <li key={folder.id} className="m-0">
             <Link
               href={`${base}/${folder.path}`}
-              className="bg-lv-card border-lv-border text-lv-text hover:border-lv-brand inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[15px] font-semibold no-underline"
+              className="bg-lv-card border-lv-border text-lv-text hover:border-lv-brand text-ui inline-flex items-center gap-2 rounded-full border px-4 py-2 font-semibold no-underline"
             >
               {folder.name}
               <span className="text-lv-text-3 font-normal">

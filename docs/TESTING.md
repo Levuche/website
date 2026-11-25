@@ -14,8 +14,15 @@ rather than components, are in `src/components/`.
   set up). shadcn's colour names (`--background`, `--primary`, `--muted`...)
   are mapped onto the Levuche `--lv-*` tokens in `src/app/globals.css`, so a
   new component comes out in Levuche's colours in light and dark. Then give
-  it Levuche's shapes: pill buttons, 12 px fields, and 40 px controls that
-  grow to 44 px on touch screens (`pointer-coarse:min-h-11`).
+  it Levuche's shapes: pill buttons, 12 px fields, and `min-h-control` (40 px
+  with a mouse, 44 px on touch screens).
+- Size things with the presets in `src/app/globals.css`, not pixel values:
+  `text-display`, `text-h1` to `text-h4`, `text-lead`, `text-body`,
+  `text-ui`, `text-caption`; `px-gutter`, `py-section`, `p-card`,
+  `gap-split`; `max-w-page`, `max-w-content`, `max-w-article`, `max-w-form`,
+  `max-w-narrow`; `rounded-tile`, `rounded-card`, `rounded-panel`. Each text
+  preset sets its line height, letter spacing and weight too. Tailwind's own
+  steps (`text-sm`, `gap-3`, `p-6`) are presets as well and are fine.
 - Reach for an existing component before writing markup with its own
   styles, so the site stays consistent.
 

@@ -10,14 +10,14 @@ import { Spinner } from './spinner';
  * amber call to action.
  */
 const buttonVariants = cva(
-  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full font-[inherit] whitespace-nowrap no-underline transition-[box-shadow,transform,border-color] duration-150 outline-none focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-lv-accent disabled:pointer-events-none disabled:cursor-not-allowed motion-reduce:transition-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[18px]",
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-full font-[inherit] whitespace-nowrap no-underline transition-[box-shadow,transform,border-color] duration-150 outline-none focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-lv-accent disabled:pointer-events-none disabled:cursor-not-allowed motion-reduce:transition-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5",
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground font-bold hover:-translate-y-px hover:shadow-[0_6px_16px_rgba(20,21,74,0.28)] disabled:bg-secondary disabled:text-muted-foreground',
+          'bg-primary text-primary-foreground font-bold hover:-translate-y-px hover:shadow-lift disabled:bg-secondary disabled:text-muted-foreground',
         accent:
-          'bg-lv-accent text-lv-on-accent font-bold hover:-translate-y-px hover:shadow-[0_6px_16px_rgba(20,21,74,0.28)] disabled:bg-secondary disabled:text-muted-foreground',
+          'bg-lv-accent text-lv-on-accent font-bold hover:-translate-y-px hover:shadow-lift disabled:bg-secondary disabled:text-muted-foreground',
         outline:
           'border-border text-lv-link hover:border-lv-link border-2 bg-transparent font-semibold disabled:text-muted-foreground',
         destructive:
@@ -27,9 +27,9 @@ const buttonVariants = cva(
         link: 'text-lv-link bg-transparent font-semibold underline-offset-4 hover:underline',
       },
       size: {
-        default: 'min-h-10 pointer-coarse:min-h-11 px-4 text-sm',
-        lg: 'min-h-11 px-6 text-base',
-        icon: 'border-border hover:border-lv-link size-10 pointer-coarse:size-11 rounded-xl border-2',
+        default: 'min-h-control px-4 text-sm',
+        lg: 'min-h-control-lg px-6 text-base',
+        icon: 'border-border hover:border-lv-link size-control rounded-xl border-2',
       },
     },
     defaultVariants: { variant: 'default', size: 'default' },

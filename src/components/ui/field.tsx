@@ -29,7 +29,7 @@ function Field({
       data-orientation={orientation}
       className={cn(
         orientation === 'horizontal'
-          ? 'flex min-h-10 items-center gap-2 text-sm pointer-coarse:min-h-11 [&>[data-slot=label]]:font-normal'
+          ? 'min-h-control flex items-center gap-2 text-sm [&>[data-slot=label]]:font-normal'
           : 'flex flex-col gap-1.5',
         className
       )}
@@ -52,7 +52,7 @@ function FieldDescription({ className, ...props }: ComponentProps<'p'>) {
   return (
     <p
       data-slot="field-description"
-      className={cn('text-muted-foreground m-0 text-[13px]', className)}
+      className={cn('text-muted-foreground text-caption m-0', className)}
       {...props}
     />
   );
@@ -63,7 +63,7 @@ function FieldError({ className, ...props }: ComponentProps<'p'>) {
     <p
       data-slot="field-error"
       className={cn(
-        'text-destructive m-0 text-[13px] font-semibold',
+        'text-destructive text-caption m-0 font-semibold',
         className
       )}
       {...props}

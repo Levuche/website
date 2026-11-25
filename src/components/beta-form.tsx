@@ -30,7 +30,7 @@ export function BetaForm() {
   }
 
   return (
-    <div className="lv-beta-form flex max-w-[520px] flex-col gap-3">
+    <div className="lv-beta-form max-w-form flex flex-col gap-3">
       <BuildbaseBetaForm
         hideLogo
         hideTitles

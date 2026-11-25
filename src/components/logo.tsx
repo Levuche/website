@@ -59,7 +59,7 @@ export function LevucheLogo({ className }: { className?: string }) {
       )}
     >
       <LevucheIcon size={32} title="" />
-      <span className="text-[22px] font-bold tracking-[-0.4px]">levuche</span>
+      <span className="text-logo">levuche</span>
       <span className="sr-only">home</span>
     </Link>
   );
