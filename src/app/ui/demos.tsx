@@ -81,7 +81,7 @@ export function EmailSignupDemo() {
           placeholder="you@email.com"
           className="flex-[1_1_200px] rounded-full px-4"
         />
-        <Button type="submit" variant="accent" className="min-h-12">
+        <Button type="submit" variant="accent">
           Join the beta
         </Button>
       </form>

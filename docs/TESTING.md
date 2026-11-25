@@ -14,8 +14,8 @@ rather than components, are in `src/components/`.
   set up). shadcn's colour names (`--background`, `--primary`, `--muted`...)
   are mapped onto the Levuche `--lv-*` tokens in `src/app/globals.css`, so a
   new component comes out in Levuche's colours in light and dark. Then give
-  it Levuche's shapes: pill buttons, 12 px fields, and at least 44 px for
-  anything tapped.
+  it Levuche's shapes: pill buttons, 12 px fields, and 40 px controls that
+  grow to 44 px on touch screens (`pointer-coarse:min-h-11`).
 - Reach for an existing component before writing markup with its own
   styles, so the site stays consistent.
 

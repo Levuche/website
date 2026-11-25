@@ -68,15 +68,15 @@ export function EntryPage({
   };
 
   return (
-    <article className="mx-auto flex max-w-[820px] flex-col gap-5 px-[clamp(16px,3vw,32px)] pt-7 pb-16">
+    <article className="mx-auto flex max-w-[820px] flex-col gap-5 px-[clamp(16px,3vw,32px)] pt-6 pb-14">
       <JsonLd data={jsonLd} />
       <Breadcrumbs crumbs={crumbs} />
-      <h1 className="m-0 text-[clamp(34px,4.5vw,46px)] leading-[1.08] font-bold tracking-[-1.2px]">
+      <h1 className="m-0 text-[clamp(28px,3.5vw,38px)] leading-[1.12] font-bold tracking-[-0.8px]">
         {item.title}
       </h1>
       {date ? <p className="text-lv-text-3 m-0 text-sm">{date}</p> : null}
       {item.description ? (
-        <p className="text-lv-text-2 m-0 text-lg leading-relaxed">
+        <p className="text-lv-text-2 m-0 text-base leading-relaxed">
           {item.description}
         </p>
       ) : null}

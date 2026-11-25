@@ -7,7 +7,7 @@ function Item({ className, ...props }: ComponentProps<'div'>) {
     <div
       data-slot="item"
       className={cn(
-        'border-border flex min-h-16 items-center gap-3.5 border-b py-3 last:border-b-0',
+        'border-border flex min-h-14 items-center gap-3 border-b py-3 last:border-b-0',
         className
       )}
       {...props}

@@ -29,7 +29,7 @@ function Field({
       data-orientation={orientation}
       className={cn(
         orientation === 'horizontal'
-          ? 'flex min-h-11 items-center gap-2 text-[15px] [&>[data-slot=label]]:font-normal'
+          ? 'flex min-h-10 items-center gap-2 text-sm pointer-coarse:min-h-11 [&>[data-slot=label]]:font-normal'
           : 'flex flex-col gap-1.5',
         className
       )}

@@ -38,7 +38,7 @@ export function Section({
   return (
     <section
       className={cn(
-        'scroll-mt-4 py-[clamp(56px,7vw,96px)]',
+        'scroll-mt-4 py-[clamp(44px,5.5vw,72px)]',
         tones[tone],
         className
       )}
@@ -58,7 +58,7 @@ export function SectionHeading({
   return (
     <Tag
       className={cn(
-        'm-0 text-[clamp(30px,4vw,44px)] leading-[1.1] font-bold tracking-[-1px]',
+        'm-0 text-[clamp(26px,3vw,36px)] leading-[1.15] font-bold tracking-[-0.6px]',
         className
       )}
       {...props}
@@ -86,15 +86,15 @@ export function StepList({
       {steps.map((step, i) => (
         <li
           key={i}
-          className="bg-lv-card border-lv-border flex flex-col gap-3 rounded-[20px] border p-7"
+          className="bg-lv-card border-lv-border flex flex-col gap-2.5 rounded-[20px] border p-6"
         >
           <span
             aria-hidden
-            className="bg-lv-brand text-lv-on-brand flex size-11 items-center justify-center rounded-full font-bold"
+            className="bg-lv-brand text-lv-on-brand flex size-9 items-center justify-center rounded-full text-sm font-bold"
           >
             {i + 1}
           </span>
-          <h3 className="m-0 text-[22px] font-bold">{step.title}</h3>
+          <h3 className="m-0 text-lg font-bold">{step.title}</h3>
           {step.body ? (
             <p className="text-lv-text-2 m-0 text-base leading-relaxed">
               {step.body}
@@ -124,10 +124,10 @@ export function FeatureList({
       )}
     >
       {features.map((feature, i) => (
-        <div key={i} className="border-lv-border border-b py-[22px]">
-          <dt className="text-[19px] font-bold">{feature.title}</dt>
+        <div key={i} className="border-lv-border border-b py-4">
+          <dt className="text-base font-bold">{feature.title}</dt>
           {feature.body ? (
-            <dd className="text-lv-text-2 mx-0 mt-1.5 leading-relaxed">
+            <dd className="text-lv-text-2 mx-0 mt-1 text-[15px] leading-relaxed">
               {feature.body}
             </dd>
           ) : null}

@@ -68,7 +68,7 @@ export function Gallery() {
       className="bg-lv-canvas text-lv-text flex min-h-screen flex-col gap-6 p-[clamp(12px,3vw,40px)] font-sans"
     >
       <header id="top" className="flex flex-col gap-2">
-        <h1 className="m-0 text-[clamp(30px,4vw,44px)] font-bold tracking-[-1px]">
+        <h1 className="m-0 text-[clamp(26px,3vw,36px)] font-bold tracking-[-0.6px]">
           Levuche app components
         </h1>
         <p className="text-lv-text-2 m-0 max-w-[60ch]">
@@ -125,14 +125,14 @@ function Panel({ mode }: { mode: 'light' | 'dark' }) {
       </h2>
 
       <Group id={g('type')} title="Type">
-        <p className="m-0 text-[56px] leading-[1.05] font-bold tracking-[-1.5px]">
+        <p className="m-0 text-[48px] leading-[1.08] font-bold tracking-[-1.2px]">
           Display
         </p>
-        <p className="m-0 text-[36px] leading-[1.15] font-bold tracking-[-0.8px]">
+        <p className="m-0 text-[36px] leading-[1.15] font-bold tracking-[-0.6px]">
           Heading 1
         </p>
-        <p className="text-lv-text-2 m-0 max-w-[60ch] text-[17px] leading-[1.6]">
-          Body text at 17 px with 1.6 line height, held to about 65 characters
+        <p className="text-lv-text-2 m-0 max-w-[60ch] text-base leading-[1.6]">
+          Body text at 16 px with 1.6 line height, held to about 65 characters
           per line.
         </p>
       </Group>

@@ -50,16 +50,16 @@ export default async function PricingPage() {
           currency={BILLING.currency}
           intro={
             <div className="flex max-w-[640px] flex-col gap-2.5">
-              <h1 className="m-0 text-[clamp(36px,5vw,48px)] leading-[1.05] font-bold tracking-[-1.4px]">
+              <h1 className="m-0 text-[clamp(30px,3.5vw,40px)] leading-[1.1] font-bold tracking-[-0.8px]">
                 Pick a plan when you’re ready to sell
               </h1>
               {onlyOnce && (
-                <p className="text-lv-text-2 m-0 text-[17px] leading-relaxed">
+                <p className="text-lv-text-2 m-0 text-base leading-relaxed">
                   Pay once. No monthly fee.
                 </p>
               )}
               {offers.length === 0 && (
-                <p className="text-lv-text-2 m-0 text-[17px] leading-relaxed">
+                <p className="text-lv-text-2 m-0 text-base leading-relaxed">
                   Plans are being finalised. Join the beta and we’ll email you
                   when they’re ready.
                 </p>
@@ -71,7 +71,7 @@ export default async function PricingPage() {
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
           {rows.length > 0 && columns.length > 0 && (
             <section className="flex flex-col gap-3">
-              <h2 className="m-0 text-[22px] font-bold">Compare plans</h2>
+              <h2 className="m-0 text-xl font-bold">Compare plans</h2>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-sm">
                   <thead>

@@ -230,7 +230,7 @@ body {
    sanitised in src/lib/markdown.ts; these rules give it the site's type. */
 .lv-prose {
   color: var(--lv-text-2);
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.7;
   overflow-wrap: anywhere;
 }
@@ -246,13 +246,13 @@ body {
   scroll-margin-top: 1rem;
 }
 .lv-prose h2 {
-  margin: 2.25rem 0 0.75rem;
-  font-size: 1.5rem;
+  margin: 2rem 0 0.75rem;
+  font-size: 1.375rem;
   letter-spacing: -0.3px;
 }
 .lv-prose h3 {
-  margin: 1.75rem 0 0.5rem;
-  font-size: 1.2rem;
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.125rem;
 }
 .lv-prose h4 {
   margin: 1.5rem 0 0.5rem;

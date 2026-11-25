@@ -102,7 +102,7 @@ export function ContactForm() {
       <Button
         type="submit"
         loading={send.isPending}
-        className="min-h-12 self-start px-7"
+        className="self-start px-6"
       >
         {send.isPending ? 'Sending…' : 'Send message'}
       </Button>

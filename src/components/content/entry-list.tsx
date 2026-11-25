@@ -38,7 +38,7 @@ export function EntryList({
               {date ? (
                 <span className="text-lv-text-3 text-sm">{date}</span>
               ) : null}
-              <span className="text-xl font-bold">{item.title}</span>
+              <span className="text-lg font-bold">{item.title}</span>
               {item.description ? (
                 <span className="text-lv-text-2 text-base leading-relaxed">
                   {item.description}

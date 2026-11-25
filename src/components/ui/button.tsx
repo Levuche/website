@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 import { Spinner } from './spinner';
 
 /*
- * shadcn/ui Button, in Levuche's styles: pill-shaped, at least 44 px tall
- * (WCAG 2.5.8). `default` is navy on light and amber on dark; `accent` is the
+ * shadcn/ui Button, in Levuche's styles: pill-shaped, 40 px tall with a
+ * mouse and 44 px on touch screens. `default` is navy on light and amber on dark; `accent` is the
  * amber call to action.
  */
 const buttonVariants = cva(
@@ -27,9 +27,9 @@ const buttonVariants = cva(
         link: 'text-lv-link bg-transparent font-semibold underline-offset-4 hover:underline',
       },
       size: {
-        default: 'min-h-11 px-5 text-[15px]',
-        lg: 'min-h-[52px] px-8 text-lg',
-        icon: 'border-border hover:border-lv-link size-11 rounded-xl border-2',
+        default: 'min-h-10 pointer-coarse:min-h-11 px-4 text-sm',
+        lg: 'min-h-11 px-6 text-base',
+        icon: 'border-border hover:border-lv-link size-10 pointer-coarse:size-11 rounded-xl border-2',
       },
     },
     defaultVariants: { variant: 'default', size: 'default' },

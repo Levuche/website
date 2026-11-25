@@ -54,12 +54,12 @@ export function LevucheLogo({ className }: { className?: string }) {
     <Link
       href="/"
       className={cn(
-        'text-lv-text flex items-center gap-2.5 no-underline',
+        'text-lv-text flex items-center gap-2 no-underline',
         className
       )}
     >
-      <LevucheIcon title="" />
-      <span className="text-[26px] font-bold tracking-[-0.5px]">levuche</span>
+      <LevucheIcon size={32} title="" />
+      <span className="text-[22px] font-bold tracking-[-0.4px]">levuche</span>
       <span className="sr-only">home</span>
     </Link>
   );

@@ -19,10 +19,10 @@ export default async function DocsIndex() {
     <SiteShell>
       <div className="mx-auto flex max-w-[1184px] flex-col gap-8 px-[clamp(16px,3vw,32px)] pt-7 pb-16">
         <div className="flex flex-col gap-2.5">
-          <h1 className="m-0 text-[clamp(36px,5vw,48px)] leading-[1.05] font-bold tracking-[-1.4px]">
+          <h1 className="m-0 text-[clamp(30px,3.5vw,40px)] leading-[1.1] font-bold tracking-[-0.8px]">
             Docs
           </h1>
-          <p className="text-lv-text-2 m-0 text-[17px] leading-relaxed">
+          <p className="text-lv-text-2 m-0 text-base leading-relaxed">
             How to set up and run your Levuche site.
           </p>
         </div>

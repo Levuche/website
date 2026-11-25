@@ -99,13 +99,13 @@ export function PricingPlans({
               >
                 <CardHeader>
                   <CardTitle>
-                    <h2 className="m-0 text-xl font-bold">{offer.name}</h2>
+                    <h2 className="m-0 text-lg font-bold">{offer.name}</h2>
                   </CardTitle>
                   {offer.badge && <Badge>{offer.badge}</Badge>}
                 </CardHeader>
                 {price && (
                   <p className="m-0 flex items-baseline gap-1.5">
-                    <span className="text-[40px] font-bold tracking-[-1px] tabular-nums">
+                    <span className="text-[34px] font-bold tracking-[-0.8px] tabular-nums">
                       {price}
                     </span>
                     {per && (
