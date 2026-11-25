@@ -52,17 +52,21 @@ function safeHref(value: unknown) {
 
 /**
  * A plan's features, one per line. The field may be plain text, Markdown
- * bullets or rich-text HTML; tags are dropped and React escapes the rest.
+ * bullets or rich-text HTML; tags and stray angle brackets are dropped, and
+ * React escapes the rest.
  */
 function featureLines(value: unknown): string[] {
-  return text(value)
-    .replace(/<\/(p|li|div)>|<br\s*\/?>/gi, '\n')
-    .replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .split('\n')
-    .map((line) => line.replace(/^\s*[-*•]\s*/, '').trim())
-    .filter(Boolean);
+  return (
+    text(value)
+      .replace(/<\/(p|li|div)>|<br\s*\/?>/gi, '\n')
+      .replace(/<[^>]*>/g, '')
+      // Drop any angle bracket left over, so no tag can survive in parts.
+      .replace(/[<>]/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .split('\n')
+      .map((line) => line.replace(/^\s*[-*•]\s*/, '').trim())
+      .filter(Boolean)
+  );
 }
 
 function toPlan(record: PlanRecord): Plan | null {
