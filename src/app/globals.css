@@ -6,6 +6,7 @@
  * <html>, so these apply page-wide. Marketing pages use only --lv-* tokens;
  * --site-* is the sample creator brand used in the phone preview.
  */
+:root:not([data-lv]),
 [data-lv='light'] {
   --lv-bg: #ffffff;
   --lv-surface: #f6f7fd;
