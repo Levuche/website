@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { FaqList } from '@/components/faq-list';
 import { PricingPlans } from '@/components/pricing-plans';
@@ -41,10 +42,20 @@ export default async function PricingPage() {
   const columns = planOffers.map((o) => o.name);
   const rows = columns.length > 1 ? compareRows(plans, group.items) : [];
   const onlyOnce = offers.length > 0 && offers.every((o) => o.once);
+  const compare = rows.length > 0 && columns.length > 0;
 
   return (
     <SiteShell current="pricing">
-      <div className="max-w-content px-gutter mx-auto flex flex-col gap-7 pt-7 pb-16">
+      <div
+        className={cn(
+          'max-w-layout px-gutter mx-auto flex flex-col gap-7 pt-7 pb-16',
+          // With nothing to compare, the questions sit beside the plans on a
+          // desktop instead of under them, so the page isn't all on the left.
+          // The heading spans both columns.
+          !compare &&
+            'lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start lg:gap-x-12 lg:[&>:first-child]:col-span-2'
+        )}
+      >
         <PricingPlans
           offers={offers}
           currency={BILLING.currency}
@@ -68,8 +79,13 @@ export default async function PricingPage() {
           }
         />
 
-        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-          {rows.length > 0 && columns.length > 0 && (
+        <div
+          className={cn(
+            'grid grid-cols-1 items-start gap-8',
+            compare && 'lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]'
+          )}
+        >
+          {compare && (
             <section className="flex flex-col gap-3">
               <h2 className="m-0 text-xl font-bold">Compare plans</h2>
               <div className="overflow-x-auto">

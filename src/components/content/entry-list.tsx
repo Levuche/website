@@ -26,7 +26,7 @@ export function EntryList({
   showDate: boolean;
 }) {
   return (
-    <ul className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-5 p-0">
+    <ul className="m-0 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => {
         const date = showDate ? formatDate(item.publishedAt) : null;
         return (

@@ -34,7 +34,6 @@ const twMerge = extendTailwindMerge({
       ],
       container: [
         'layout',
-        'content',
         'article',
         'form',
         'narrow',

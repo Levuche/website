@@ -19,7 +19,7 @@ rather than components, are in `src/components/`.
 - Size things with the presets in `src/app/globals.css`, not pixel values:
   `text-display`, `text-h1` to `text-h4`, `text-lead`, `text-body`,
   `text-ui`, `text-caption`; `px-gutter`, `py-section`, `p-card`,
-  `gap-split`; `max-w-layout`, `max-w-content`, `max-w-article`, `max-w-form`,
+  `gap-split`; `max-w-layout`, `max-w-article`, `max-w-form`,
   `max-w-narrow`; `rounded-tile`, `rounded-card`, `rounded-panel`. Each text
   preset sets its line height, letter spacing and weight too. Tailwind's own
   steps (`text-sm`, `gap-3`, `p-6`) are presets as well and are fine.

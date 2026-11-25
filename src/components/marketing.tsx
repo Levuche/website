@@ -64,7 +64,7 @@ export function StepList({
   return (
     <ol
       className={cn(
-        'm-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-5 p-0',
+        'm-0 grid list-none grid-cols-1 gap-5 p-0 md:grid-cols-3',
         className
       )}
     >
@@ -104,7 +104,7 @@ export function FeatureList({
   return (
     <dl
       className={cn(
-        'border-lv-border m-0 grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-x-12 border-t',
+        'border-lv-border m-0 grid grid-cols-1 gap-x-12 border-t md:grid-cols-2',
         className
       )}
     >
@@ -162,7 +162,7 @@ export function QuoteGrid({
   return (
     <ul
       className={cn(
-        'm-0 grid list-none grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-5 p-0',
+        'm-0 grid list-none grid-cols-1 gap-5 p-0 md:grid-cols-2 lg:grid-cols-3',
         className
       )}
     >

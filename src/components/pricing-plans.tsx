@@ -64,8 +64,10 @@ export function PricingPlans({
       {offers.length > 0 && (
         <div
           className={cn(
-            'grid grid-cols-[repeat(auto-fit,minmax(min(100%,280px),1fr))] gap-5',
-            offers.length === 1 && 'max-w-narrow'
+            'grid grid-cols-1 gap-5',
+            offers.length === 1 && 'max-w-narrow',
+            offers.length === 2 && 'sm:grid-cols-2',
+            offers.length >= 3 && 'md:grid-cols-3'
           )}
         >
           {offers.map((offer, index) => {

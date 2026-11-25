@@ -45,7 +45,7 @@ export default function ContactPage() {
           <ContactForm />
         </section>
 
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <section className={card}>
             <h2 className="m-0 text-lg font-bold">General and support</h2>
             <p className={text}>
