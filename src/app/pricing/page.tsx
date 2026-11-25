@@ -49,11 +49,11 @@ export default async function PricingPage() {
       <div
         className={cn(
           'max-w-layout px-gutter mx-auto flex flex-col gap-7 pt-7 pb-16',
-          // With one plan and nothing to compare, the questions sit beside
-          // the plan on a desktop instead of under it, so the page isn't all
-          // on the left.
+          // With nothing to compare, the questions sit beside the plans on a
+          // desktop instead of under them, so the page isn't all on the left.
+          // The heading spans both columns.
           !compare &&
-            'lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start lg:gap-x-12'
+            'lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start lg:gap-x-12 lg:[&>:first-child]:col-span-2'
         )}
       >
         <PricingPlans
