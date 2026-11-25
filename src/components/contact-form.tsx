@@ -1,5 +1,8 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { Alert } from '@/components/ui/feedback';
+import { TextAreaField, TextField } from '@/components/ui/field';
 import { useId, useState } from 'react';
 
 type State = 'idle' | 'sending' | 'sent' | 'error';
@@ -48,65 +51,36 @@ export function ContactForm() {
 
   if (state === 'sent') {
     return (
-      <p
-        role="status"
-        className="bg-lv-success-bg text-lv-success m-0 rounded-2xl p-5 font-semibold"
-      >
+      <Alert tone="success" className="p-5 text-base">
         Thanks, your message is on its way. We’ll reply by email.
-      </p>
+      </Alert>
     );
   }
 
-  const label = 'text-sm font-semibold';
-  const input =
-    'border-lv-border bg-lv-card text-lv-text min-h-12 rounded-xl border-2 px-4 text-base';
-
   return (
-    <form
-      onSubmit={onSubmit}
-      className="flex flex-col gap-4"
-      noValidate={false}
-    >
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor={`${id}-name`} className={label}>
-          Name
-        </label>
-        <input
-          id={`${id}-name`}
-          name="name"
-          required
-          maxLength={200}
-          autoComplete="name"
-          className={input}
-        />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor={`${id}-email`} className={label}>
-          Email
-        </label>
-        <input
-          id={`${id}-email`}
-          name="email"
-          type="email"
-          required
-          maxLength={320}
-          autoComplete="email"
-          className={input}
-        />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor={`${id}-message`} className={label}>
-          Message
-        </label>
-        <textarea
-          id={`${id}-message`}
-          name="message"
-          required
-          rows={6}
-          maxLength={5000}
-          className={`${input} py-3`}
-        />
-      </div>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+      <TextField
+        label="Name"
+        name="name"
+        required
+        maxLength={200}
+        autoComplete="name"
+      />
+      <TextField
+        label="Email"
+        name="email"
+        type="email"
+        required
+        maxLength={320}
+        autoComplete="email"
+      />
+      <TextAreaField
+        label="Message"
+        name="message"
+        required
+        rows={6}
+        maxLength={5000}
+      />
       {/* Left empty by people; bots tend to fill it. */}
       <div aria-hidden className="hidden">
         <label htmlFor={`${id}-company`}>Company</label>
@@ -117,18 +91,14 @@ export function ContactForm() {
           autoComplete="off"
         />
       </div>
-      {error && (
-        <p role="alert" className="text-lv-danger m-0 text-sm font-semibold">
-          {error}
-        </p>
-      )}
-      <button
+      {error && <Alert tone="danger">{error}</Alert>}
+      <Button
         type="submit"
-        disabled={state === 'sending'}
-        className="bg-lv-primary text-lv-on-primary min-h-12 cursor-pointer self-start rounded-full border-0 px-7 font-bold disabled:opacity-60"
+        loading={state === 'sending'}
+        className="min-h-12 self-start px-7"
       >
         {state === 'sending' ? 'Sending…' : 'Send message'}
-      </button>
+      </Button>
     </form>
   );
 }

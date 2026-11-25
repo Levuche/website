@@ -8,6 +8,8 @@ import {
 } from '@buildbase/sdk/react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { Alert } from '@/components/ui/feedback';
+import { SelectField } from '@/components/ui/field';
 import { isAuthConfigured } from '@/lib/buildbase-config';
 
 const BUY_PARAM = 'buy';
@@ -112,27 +114,24 @@ function BuyWithBuildbase({
   return (
     <>
       {showPicker && workspaceId && (
-        <label className="text-lv-text-2 flex flex-col gap-1.5 text-sm">
-          For which page?
-          <select
-            value={workspaceId}
-            onChange={(event) => setPickedId(event.target.value)}
-            className="border-lv-border bg-lv-card text-lv-text min-h-11 rounded-xl border px-3 text-base"
-          >
-            {workspaces.map((w) => (
-              <option key={w._id} value={w._id}>
-                {w.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <SelectField
+          label="For which page?"
+          value={workspaceId}
+          onChange={(event) => setPickedId(event.target.value)}
+        >
+          {workspaces.map((w) => (
+            <option key={w._id} value={w._id}>
+              {w.name}
+            </option>
+          ))}
+        </SelectField>
       )}
       <button
         type="button"
         onClick={() => void buy()}
         disabled={loading || isLoading || noWorkspace}
         aria-busy={loading}
-        className={`${className} cursor-pointer border-0 disabled:cursor-wait disabled:opacity-70`}
+        className={`${className} disabled:cursor-wait`}
       >
         {loading ? 'Opening checkout…' : label}
       </button>
@@ -142,9 +141,9 @@ function BuyWithBuildbase({
         </p>
       )}
       {failed && (
-        <p role="alert" className="text-lv-text-2 m-0 text-sm">
+        <Alert tone="danger">
           Checkout didn’t open. Please try again in a moment.
-        </p>
+        </Alert>
       )}
     </>
   );

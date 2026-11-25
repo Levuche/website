@@ -13,5 +13,7 @@ export default defineConfig([
     '.open-next/**',
     '.wrangler/**',
     'cloudflare-env.d.ts',
+    'playwright-report/**',
+    'test-results/**',
   ]),
 ]);

@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { BuyAddOn } from '@/components/buy-add-on';
+import { Badge } from '@/components/ui/badge';
+import { buttonClasses } from '@/components/ui/button';
 import type { Offer } from '@/lib/billing';
 import { cn } from '@/lib/utils';
 
@@ -119,12 +121,12 @@ export function PricingPlans({
                 : price === offer.yearly && period === 'yearly'
                   ? 'a year'
                   : 'a month';
-            const button = cn(
-              'mt-auto rounded-full text-center no-underline',
-              main || offers.length === 1
-                ? 'bg-lv-primary text-lv-on-primary p-4 font-bold'
-                : 'border-lv-border text-lv-link border-2 bg-transparent p-3.5 font-semibold'
-            );
+            const lead = main || offers.length === 1;
+            const button = buttonClasses({
+              variant: lead ? 'primary' : 'secondary',
+              size: lead ? 'lg' : 'md',
+              className: 'mt-auto w-full',
+            });
             return (
               <article
                 key={offer.key}
@@ -138,9 +140,9 @@ export function PricingPlans({
                 <div className="flex items-center justify-between gap-2">
                   <h2 className="m-0 text-xl font-bold">{offer.name}</h2>
                   {offer.badge && (
-                    <span className="bg-lv-accent text-lv-on-accent rounded-full px-2.5 py-1 text-xs font-bold">
+                    <Badge className="bg-lv-accent text-lv-on-accent font-bold">
                       {offer.badge}
-                    </span>
+                    </Badge>
                   )}
                 </div>
                 {price && (

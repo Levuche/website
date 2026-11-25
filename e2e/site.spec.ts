@@ -1,0 +1,93 @@
+import { expect, test } from '@playwright/test';
+import { expectNoA11yViolations } from './a11y';
+
+/*
+ * The marketing pages. Content comes from Buildbase where it is set up, so
+ * these check the page structure, not the copy that editors change.
+ */
+
+test.describe('home page', () => {
+  test('shows the hero, the header and the closing call to action', async ({
+    page,
+  }) => {
+    const response = await page.goto('/');
+    expect(response?.status()).toBe(200);
+    await expect(
+      page.getByRole('heading', { level: 1, name: /link in bio/i })
+    ).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
+    await expect(
+      page.getByRole('figure', { name: 'Example creator site on Levuche' })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Get early access' })
+    ).toHaveAttribute('href', '/#beta');
+    // Only one h1: the creator name in the phone preview is not a heading.
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+  });
+
+  test('skip link moves focus to the main content', async ({ page }) => {
+    await page.goto('/');
+    await page.keyboard.press('Tab');
+    const skip = page.getByRole('link', { name: 'Skip to content' });
+    await expect(skip).toBeFocused();
+    await skip.press('Enter');
+    await expect(page.locator('#main-content')).toBeFocused();
+  });
+
+  test('has no serious accessibility problems, light and dark', async ({
+    page,
+  }) => {
+    for (const colorScheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme });
+      await page.goto('/');
+      await expect(page.locator('html')).toHaveAttribute(
+        'data-lv',
+        colorScheme
+      );
+      await expectNoA11yViolations(page);
+    }
+  });
+});
+
+test('header link opens the pricing page', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Same link on phones; covered on desktop.');
+  await page.goto('/');
+  await page
+    .getByRole('navigation', { name: 'Main' })
+    .getByRole('link', { name: 'Pricing' })
+    .click();
+  await expect(page).toHaveURL(/\/pricing$/);
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+});
+
+test('footer links lead to real pages', async ({ page }) => {
+  await page.goto('/');
+  const footer = page.getByRole('navigation', { name: 'Footer' });
+  const hrefs = await footer
+    .getByRole('link')
+    .evaluateAll((links) => links.map((a) => a.getAttribute('href') ?? ''));
+  expect(hrefs.length).toBeGreaterThan(3);
+  for (const href of hrefs) {
+    const response = await page.request.get(href);
+    expect(response.status(), href).toBe(200);
+  }
+});
+
+test('legal page renders with its own heading', async ({ page }) => {
+  await page.goto('/terms');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+});
+
+test('unknown address shows the not-found page', async ({ page }) => {
+  const response = await page.goto('/this-page-does-not-exist');
+  expect(response?.status()).toBe(404);
+  await expect(
+    page.getByRole('heading', { name: 'Page not found' })
+  ).toBeVisible();
+});
+
+test('robots.txt and the sitemap answer', async ({ request }) => {
+  expect((await request.get('/robots.txt')).status()).toBe(200);
+  expect((await request.get('/sitemap.xml')).status()).toBe(200);
+});

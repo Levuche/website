@@ -25,13 +25,14 @@ The site runs on http://localhost:3000.
 | `npm run dev`           | Local development server                                                                   |
 | `npm run build`         | Production build                                                                           |
 | `npm run check`         | Lint, formatting and type check                                                            |
+| `npm run e2e`           | End-to-end tests in Chromium (after `npm run build`; `docs/TESTING.md`)                    |
 | `npm run cf:preview`    | Build for Cloudflare Workers and preview locally                                           |
 | `npm run cf:deploy`     | Build and deploy levuche.com by hand (GitHub Actions normally does this; `docs/DEPLOY.md`) |
 | `npm run cf:deploy:dev` | Build and deploy the dev site, dev.levuche.com, by hand                                    |
 
 ## Environment
 
-Every setting is listed in `.env.example`. Copy it to `.env.local` and fill in what you need; the site builds and runs with it copied as is. Never commit real keys or a filled-in `.env` file; `.gitignore` keeps every `.env*` file except the example out of git. Server secrets for Cloudflare go in `wrangler secret put NAME`, never in `wrangler.jsonc`. Cloudflare setup and domains: `docs/DEPLOY.md`. Branches (feature > `dev` > `main`) and GitHub rules: `docs/BRANCHES.md`.
+Every setting is listed in `.env.example`. Copy it to `.env.local` and fill in what you need; the site builds and runs with it copied as is. Never commit real keys or a filled-in `.env` file; `.gitignore` keeps every `.env*` file except the example out of git. Server secrets for Cloudflare go in `wrangler secret put NAME`, never in `wrangler.jsonc`. Cloudflare setup and domains: `docs/DEPLOY.md`. Branches (feature > `dev` > `main`) and GitHub rules: `docs/BRANCHES.md`. Components and tests: `docs/TESTING.md`.
 
 ## Buildbase
 
