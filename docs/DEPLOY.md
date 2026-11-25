@@ -266,6 +266,22 @@ Search engines have probably not listed the dev site, since it has sent
 noindex from the start. If it ever shows up in Google, add `dev.levuche.com`
 in Search Console and use **Removals**.
 
+## 11. Security headers
+
+Every page sends a Content-Security-Policy, `Strict-Transport-Security`,
+`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` and
+`Permissions-Policy` (`next.config.ts`). The policy allows only this site, the
+Buildbase API and https images from Buildbase Content.
+
+The dev site and preview links send it as
+`Content-Security-Policy-Report-Only`: anything it would block shows as a
+warning in the browser console and still loads. Before a release to main,
+open the dev site's pages, sign in, buy and send the contact form with the
+console open. If nothing is reported, the `levuche.com` build enforces the
+same policy. When you add a tracking tag in Buildbase (Settings > Tracking &
+tags), add its hosts to the policy first; Buildbase's _Providers_ page lists
+them.
+
 ## Sources
 
 Cloudflare docs, read November 2026:

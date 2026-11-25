@@ -104,6 +104,26 @@ test('unknown address shows the not-found page', async ({ page }) => {
   ).toBeVisible();
 });
 
+test('pages send the security headers', async ({ request }) => {
+  for (const path of ['/', '/pricing', '/contact']) {
+    const headers = (await request.get(path)).headers();
+    // Enforced on levuche.com, report-only on the dev site and previews.
+    const csp =
+      headers['content-security-policy'] ??
+      headers['content-security-policy-report-only'];
+    expect(csp, path).toContain("default-src 'self'");
+    expect(csp, path).toContain("frame-ancestors 'none'");
+    expect(csp, path).toContain("object-src 'none'");
+    expect(headers['strict-transport-security'], path).toContain('max-age=');
+    expect(headers['x-content-type-options'], path).toBe('nosniff');
+    expect(headers['x-frame-options'], path).toBe('DENY');
+    expect(headers['referrer-policy'], path).toBe(
+      'strict-origin-when-cross-origin'
+    );
+    expect(headers['permissions-policy'], path).toContain('camera=()');
+  }
+});
+
 test('robots.txt and the sitemap answer', async ({ request }) => {
   const robots = await request.get('/robots.txt');
   expect(robots.status()).toBe(200);
