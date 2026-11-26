@@ -467,7 +467,9 @@ export function plainText(markdown: string | undefined): string {
       .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
       .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
       .replace(/^\s{0,3}(#{1,6}|>|[-*+]|\d+\.)\s+/gm, '')
-      .replace(/[*_`~|]+/g, ' ')
+      // Emphasis markers go, so **bold**, stays next to its comma.
+      .replace(/[*`~]+/g, '')
+      .replace(/[_|]+/g, ' ')
       // Table rules (| --- |) and horizontal rules.
       .replace(/(^|\s):?-{3,}:?(?=\s|$)/g, ' ')
       .replace(/\s+/g, ' ')
