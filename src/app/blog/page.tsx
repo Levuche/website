@@ -11,6 +11,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = pageMetadata({
   path: '/blog',
   title: 'Blog',
+  image: '/og/blog.png',
   description: 'News, guides and stories from Levuche.',
 });
 

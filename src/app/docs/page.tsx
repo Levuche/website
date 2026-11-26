@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = pageMetadata({
   path: '/docs',
   title: 'Docs',
+  image: '/og/docs.png',
   description: 'How to set up and run your Levuche site.',
 });
 
