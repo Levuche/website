@@ -207,6 +207,18 @@ navigation nests the same way. Add, rename or move folders and posts in the
 console and the site follows on the next request; only published posts are
 shown, and folders with nothing published are left out.
 
+Search: Buildbase has no content search, so the site searches the
+published posts itself, from the same cached list reads. The search box on
+`/blog`, every docs page and each folder's page goes to `/blog/search` or
+`/docs/search` (`?q=` words, `?tag=` a tag's slug, `?in=` a folder's path).
+Every word has to appear in a post's title, tags, folder names, description
+or text, and titles count most. Matching folders and tags are listed above
+the posts. Tags come from Manage tags in Blogs or Docs; public, unarchived
+tags show under each post and link to the others that carry them. Result
+pages are not indexed by search engines. A folder with the slug `search` at
+the top of the blog or docs would be hidden by the search page, so don't
+use that slug.
+
 Legal pages are docs in a Docs folder with the slug `legal`, one published
 page each, with these slugs: `terms`, `privacy`, `cookies`, `pack-terms`,
 `refunds`, `fees`, `creator-rules`, `copyright`, `security`,

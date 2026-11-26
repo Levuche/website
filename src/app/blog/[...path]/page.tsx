@@ -9,6 +9,8 @@ import {
   findFolder,
   getContentTree,
   getEntry,
+  getTags,
+  tagsOf,
 } from '@/lib/content';
 import { entryImage, pageMetadata } from '@/lib/metadata';
 
@@ -64,6 +66,10 @@ export default async function BlogEntry({ params }: Props) {
   const path = await pathOf(params);
   const { tree, item, folder, parents } = await load(path);
   if (item) {
+    const link = tree.all.find((entry) => entry.id === item._id);
+    const tags = link?.tagIds.length
+      ? tagsOf(link.tagIds, await getTags('blogs'))
+      : [];
     return (
       <SiteShell>
         <EntryPage
@@ -71,6 +77,7 @@ export default async function BlogEntry({ params }: Props) {
           path={path}
           base="/blog"
           crumbs={folderCrumbs('/blog', 'Blog', parents)}
+          tags={tags}
         />
       </SiteShell>
     );
