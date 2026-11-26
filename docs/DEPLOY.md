@@ -87,7 +87,10 @@ In GitHub, `Levuche/website` > **Settings**:
    | `BUILDBASE_ORG_ID`      | Levuche org id                    | Levuche org id                       |
    | `BUILDBASE_ENVIRONMENT` | the development environment's key | not used (production is the default) |
    | `BUILDBASE_CLIENT_ID`   | development sign-in client id     | production sign-in client id         |
-   | `BUILDBASE_ANALYTICS`   | `on` when wanted                  | `on` when wanted                     |
+   | `BUILDBASE_ANALYTICS`   | not used (always on)              | `on` when wanted                     |
+
+   Web analytics is always on for the dev site and preview builds, behind the
+   cookie banner, so `BUILDBASE_ANALYTICS` is read only by production.
 
    The site address and sign-in redirect are fixed in the workflow
    (`https://dev.levuche.com` and `https://levuche.com`), so the dev site can
