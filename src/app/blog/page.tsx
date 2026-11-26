@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
+import { RssIcon } from 'lucide-react';
 import { EntryList, FolderList } from '@/components/content/entry-list';
 import { SiteShell } from '@/components/site-shell';
 import { getContentTree } from '@/lib/content';
-import { pageMetadata } from '@/lib/metadata';
+import { BLOG_FEED, pageMetadata } from '@/lib/metadata';
 
 // Read from Buildbase on each request (cached by the SDK client).
 export const dynamic = 'force-dynamic';
@@ -26,6 +27,15 @@ export default async function BlogIndex() {
           <p className="text-lv-text-2 m-0 text-base leading-relaxed">
             News, guides and stories from Levuche.
           </p>
+          {/* A file, not a page: a plain link, so the browser downloads or
+              hands it to a feed reader. */}
+          <a
+            href={BLOG_FEED.url}
+            className="text-lv-link text-ui inline-flex w-fit items-center gap-1.5 font-semibold"
+          >
+            <RssIcon aria-hidden="true" className="size-4" />
+            RSS feed
+          </a>
         </div>
         {tree.folders.length > 0 ? (
           <FolderList

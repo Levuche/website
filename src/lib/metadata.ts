@@ -21,6 +21,12 @@ export function entryImage(image: string | undefined, fallback: string) {
   return /^https:\/\//.test(image ?? '') ? (image as string) : fallback;
 }
 
+/** The blog's RSS feed (src/app/blog/rss.xml), linked in every page's head. */
+export const BLOG_FEED = {
+  url: '/blog/rss.xml',
+  title: `${site.name} Blog`,
+} as const;
+
 /**
  * Full metadata for one page: title, description, canonical URL, Open Graph
  * and Twitter card. Next.js does not deep-merge `openGraph`, `twitter` or
@@ -51,7 +57,10 @@ export function pageMetadata({
   return {
     title: absoluteTitle ? { absolute: title } : title,
     description,
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      types: { 'application/rss+xml': [BLOG_FEED] },
+    },
     openGraph: {
       type: 'website',
       siteName: site.name,
