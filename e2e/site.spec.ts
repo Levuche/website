@@ -162,6 +162,10 @@ test('pages send the security headers', async ({ request }) => {
     // The hosts of the tags attached in the Buildbase console.
     expect(csp, path).toContain('https://www.googletagmanager.com');
     expect(csp, path).toContain('https://connect.facebook.net');
+    // Blocked scripts and requests are reported to the site's own route.
+    expect(csp, path).toContain('report-uri /api/csp-report');
+    expect(csp, path).toContain('report-to csp');
+    expect(headers['reporting-endpoints'], path).toBe('csp="/api/csp-report"');
     expect(headers['strict-transport-security'], path).toContain('max-age=');
     expect(headers['x-content-type-options'], path).toBe('nosniff');
     expect(headers['x-frame-options'], path).toBe('DENY');
@@ -210,4 +214,34 @@ test.describe('every page fits phone, tablet and desktop screens', () => {
       }
     });
   }
+});
+
+test('the CSP report route takes both report shapes', async ({ request }) => {
+  const older = await request.post('/api/csp-report', {
+    headers: { 'Content-Type': 'application/csp-report' },
+    data: JSON.stringify({
+      'csp-report': {
+        'document-uri': 'https://levuche.com/',
+        'effective-directive': 'script-src-elem',
+        'blocked-uri': 'https://example.com/tag.js',
+      },
+    }),
+  });
+  expect(older.status()).toBe(204);
+  const current = await request.post('/api/csp-report', {
+    headers: { 'Content-Type': 'application/reports+json' },
+    data: JSON.stringify([
+      {
+        type: 'csp-violation',
+        body: {
+          documentURL: 'https://levuche.com/',
+          effectiveDirective: 'connect-src',
+          blockedURL: 'https://example.com/collect',
+        },
+      },
+    ]),
+  });
+  expect(current.status()).toBe(204);
+  const junk = await request.post('/api/csp-report', { data: 'not json' });
+  expect(junk.status()).toBe(204);
 });
