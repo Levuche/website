@@ -29,6 +29,11 @@ export function SaaSProvider({ children }: { children: React.ReactNode }) {
       // with cookies off; every other tag waits for the visitor's yes in the
       // cookie banner. With nothing attached, nothing loads.
       tracking={{}}
+      // No full-screen "Redirecting..." / "Signing you in..." overlay. It
+      // covered the whole page with a bare line of text in the middle, and
+      // nothing took it down when someone came Back from the hosted page.
+      // The header already waits on useSaaSAuth().isLoading instead.
+      fullScreenLoader={false}
       auth={{
         clientId: buildbase.clientId,
         redirectUrl: buildbase.redirectUrl,
