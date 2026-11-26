@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { ArticleHtml } from '@/components/article-html';
 import { JsonLd } from '@/components/json-ld';
 import { formatDate } from '@/components/content/entry-list';
+import { SearchBox } from '@/components/content/search-box';
+import { TagList } from '@/components/content/tag-list';
+import type { TagLink } from '@/lib/content';
 import { renderMarkdown } from '@/lib/markdown';
 import { absoluteUrl, site } from '@/lib/site';
 
@@ -39,12 +42,15 @@ export function EntryPage({
   path,
   base,
   crumbs,
+  tags = [],
 }: {
   item: BlogPost | DocPage;
   path: string;
   base: '/blog' | '/docs';
   /** The index and the folders above this page, outermost first. */
   crumbs: Crumb[];
+  /** Its public tags, each linking to the others that carry it. */
+  tags?: TagLink[];
 }) {
   const body = renderMarkdown(item.content);
   const date = base === '/blog' ? formatDate(item.publishedAt) : null;
@@ -88,6 +94,11 @@ export function EntryPage({
         />
       ) : null}
       <ArticleHtml html={body.html} />
+      <TagList tags={tags} base={base} />
+      {/* The docs have a search box beside every page; the blog has it here. */}
+      {base === '/blog' ? (
+        <SearchBox base="/blog" className="border-lv-border border-t pt-6" />
+      ) : null}
     </article>
   );
 }

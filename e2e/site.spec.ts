@@ -303,3 +303,59 @@ test('the blog has an RSS feed, linked from every page', async ({
     '/blog/rss.xml'
   );
 });
+
+test.describe('blog and docs search', () => {
+  for (const [base, label] of [
+    ['/blog', 'Search the blog'],
+    ['/docs', 'Search the docs'],
+  ] as const) {
+    test(`${base}/search shows a search box and stays out of search engines`, async ({
+      page,
+    }) => {
+      const response = await page.goto(`${base}/search`);
+      expect(response?.status()).toBe(200);
+      const form = page.getByRole('search');
+      await expect(form).toHaveAttribute('action', `${base}/search`);
+      await expect(page.getByRole('searchbox', { name: label })).toBeVisible();
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+        'content',
+        /noindex/
+      );
+    });
+
+    test(`${base}/search says when nothing matches`, async ({ page }) => {
+      await page.goto(`${base}/search?q=zzqxnomatchzzqx`);
+      await expect(page.getByRole('heading', { level: 1 })).toContainText(
+        'zzqxnomatchzzqx'
+      );
+      await expect(page.getByRole('status')).toContainText('Nothing matched');
+      await expect(page.getByRole('searchbox', { name: label })).toHaveValue(
+        'zzqxnomatchzzqx'
+      );
+    });
+
+    test(`${base}/search copes with an unknown tag or folder and a long query`, async ({
+      request,
+    }) => {
+      for (const query of [
+        'tag=no-such-tag',
+        'in=no/such/folder&q=hello',
+        `q=${'a'.repeat(500)}`,
+      ]) {
+        const response = await request.get(`${base}/search?${query}`);
+        expect(response.status(), query).toBe(200);
+      }
+    });
+  }
+
+  test('a search from the box lands on the results page', async ({ page }) => {
+    await page.goto('/docs/search');
+    const box = page.getByRole('searchbox', { name: 'Search the docs' });
+    await box.fill('levuche');
+    await box.press('Enter');
+    await expect(page).toHaveURL(/\/docs\/search\?q=levuche/);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(
+      'levuche'
+    );
+  });
+});

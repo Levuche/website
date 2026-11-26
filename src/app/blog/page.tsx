@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { RssIcon } from 'lucide-react';
 import { EntryList, FolderList } from '@/components/content/entry-list';
+import { SearchBox } from '@/components/content/search-box';
 import { SiteShell } from '@/components/site-shell';
 import { getContentTree } from '@/lib/content';
 import { BLOG_FEED, pageMetadata } from '@/lib/metadata';
@@ -37,6 +38,7 @@ export default async function BlogIndex() {
             RSS feed
           </a>
         </div>
+        {items.length > 0 ? <SearchBox base="/blog" /> : null}
         {tree.folders.length > 0 ? (
           <FolderList
             folders={tree.folders}

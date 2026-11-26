@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { DocsNav } from '@/components/content/docs-nav';
+import { SearchBox } from '@/components/content/search-box';
 import { SiteShell } from '@/components/site-shell';
 import { getContentTree } from '@/lib/content';
 import { pageMetadata } from '@/lib/metadata';
@@ -26,7 +27,8 @@ export default async function DocsIndex() {
           </p>
         </div>
         {tree.all.length > 0 ? (
-          <div className="max-w-narrow">
+          <div className="max-w-narrow flex flex-col gap-6">
+            <SearchBox base="/docs" />
             <DocsNav tree={tree} current="" />
           </div>
         ) : (

@@ -142,6 +142,8 @@ export interface EntryLink {
   updatedAt: string | null;
   /** Path under /blog or /docs: folder path, then slug. */
   path: string;
+  /** Ids of its tags (Content, Blogs or Docs, Manage tags). */
+  tagIds: string[];
 }
 
 export interface FolderNode {
@@ -181,6 +183,13 @@ function folderId(item: Entry): string | null {
 /** A doc filed in the legal folder, shown at /<slug> rather than under /docs. */
 function isLegalDoc(item: DocPage): boolean {
   return folderOf(item)?.slug === CONTENT.legalFolder;
+}
+
+/** Its tags' ids, whether the read returned ids or whole tags. */
+function tagIdsOf(item: Entry): string[] {
+  return (Array.isArray(item.tags) ? item.tags : [])
+    .map((tag) => (typeof tag === 'string' ? tag : (tag?._id ?? '')))
+    .filter(Boolean);
 }
 
 function isLive(item: Entry): boolean {
@@ -307,6 +316,7 @@ export async function getContentTree(kind: ContentKind): Promise<ContentTree> {
       publishedAt: item.publishedAt ?? null,
       updatedAt: typeof item.updatedAt === 'string' ? item.updatedAt : null,
       path: [folder?.path, item.slug].filter(Boolean).join('/'),
+      tagIds: tagIdsOf(item),
     };
     (folder ? folder.entries : tree.entries).push(link);
     tree.all.push(link);
@@ -405,5 +415,62 @@ export async function getLegalDoc(slug: string): Promise<DocPage | null> {
   return (
     all.find((doc) => doc.slug === slug && isLive(doc) && isLegalDoc(doc)) ??
     null
+  );
+}
+
+/** A tag as the site shows it: its name and the slug its search link uses. */
+export interface TagLink {
+  id: string;
+  title: string;
+  slug: string;
+}
+
+/**
+ * The blog's or the docs' public tags (Content, Blogs or Docs, Manage tags).
+ * Archived and private tags are left out.
+ */
+export async function getTags(kind: ContentKind): Promise<TagLink[]> {
+  const page = await read(`${kind} tags`, (c) => c[kind].tags({ limit: 100 }));
+  return (page?.docs ?? [])
+    .filter((tag) => tag.public !== false && tag.archived !== true)
+    .map((tag) => ({ id: tag._id, title: tag.title, slug: tag.slug }))
+    .filter((tag) => tag.id && tag.slug && tag.title);
+}
+
+/** The tags among `tags` that an entry carries, in the entry's order. */
+export function tagsOf(tagIds: string[], tags: TagLink[]): TagLink[] {
+  const byId = new Map(tags.map((tag) => [tag.id, tag]));
+  return tagIds
+    .map((id) => byId.get(id))
+    .filter((tag): tag is TagLink => tag !== undefined);
+}
+
+/**
+ * The text of every published post, by id, for search: its Markdown with the
+ * markup taken out. One list read, cached like the others.
+ */
+export async function getEntryTexts(
+  kind: ContentKind
+): Promise<Map<string, string>> {
+  const items = await listEntries(kind);
+  return new Map(
+    items.filter(isLive).map((item) => [item._id, plainText(item.content)])
+  );
+}
+
+/** Markdown as plain words: no links' addresses, markup or HTML. */
+export function plainText(markdown: string | undefined): string {
+  return (
+    (markdown ?? '')
+      .replace(/```[^\n]*/g, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/^\s{0,3}(#{1,6}|>|[-*+]|\d+\.)\s+/gm, '')
+      .replace(/[*_`~|]+/g, ' ')
+      // Table rules (| --- |) and horizontal rules.
+      .replace(/(^|\s):?-{3,}:?(?=\s|$)/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
   );
 }
