@@ -47,6 +47,7 @@ PAGES = [
     ("copyright", "Legal", "Copyright and takedowns", "How to report content that infringes your copyright."),
     ("security", "Trust", "Security", "How Levuche protects accounts and data, and how to report a security issue."),
     ("subprocessors", "Trust", "Subprocessors", "The third-party services that process data for Levuche."),
+    ("accessibility", "Trust", "Accessibility statement", "How Levuche works to be usable by everyone, and how to report a barrier."),
 ]
 
 
