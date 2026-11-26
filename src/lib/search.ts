@@ -58,8 +58,17 @@ function snippetFor(text: string, words: string[], fallback: string): string {
     .filter((index) => index >= 0)
     .sort((a, b) => a - b)[0];
   if (at === undefined) return fallback;
-  const start = Math.max(0, at - 60);
-  const end = Math.min(text.length, at + 120);
+  let start = Math.max(0, at - 60);
+  let end = Math.min(text.length, at + 120);
+  // Cut between words, never inside one.
+  if (start > 0) {
+    const space = text.indexOf(' ', start);
+    start = space >= 0 && space < at ? space + 1 : start;
+  }
+  if (end < text.length) {
+    const space = text.lastIndexOf(' ', end);
+    end = space > at ? space : end;
+  }
   return `${start > 0 ? '…' : ''}${text.slice(start, end).trim()}${
     end < text.length ? '…' : ''
   }`;
