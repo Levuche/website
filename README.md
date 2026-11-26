@@ -16,6 +16,7 @@ New to this repository, as a developer or an AI agent? Read these in order:
 
 Ground rules that apply to every change:
 
+- Levuche ships in small releases, tracked as milestones (R1 Launch, R2 Polish, and so on; plan in [Levuche/app#45](https://github.com/Levuche/app/issues/45)). Work only on issues in the current milestone, check an issue's milestone before you start it, and add no new features to a release that's under way.
 - Never commit a key, token or secret, or a filled-in `.env` file. Only names go in the repo; values live where the table under [Settings and secrets](#settings-and-secrets) says.
 - Work on a `type/short-name` branch from `dev` and open the pull request into `dev`. Nothing goes into `main` except a release from `dev`.
 - Don't push to `dev` or `main` directly, and don't skip or disable a test to get a check green.
