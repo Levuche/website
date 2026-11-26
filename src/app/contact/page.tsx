@@ -9,6 +9,7 @@ import { site } from '@/lib/site';
 export const metadata: Metadata = pageMetadata({
   path: '/contact',
   title: 'Contact',
+  image: '/og/contact.png',
   description:
     'How to reach the Levuche team about your page, your account, privacy or security.',
 });

@@ -6,7 +6,7 @@ import { EntryPage, folderCrumbs } from '@/components/content/entry-page';
 import { FolderPage } from '@/components/content/folder-page';
 import { SiteShell } from '@/components/site-shell';
 import { findFolder, getContentTree, getEntry } from '@/lib/content';
-import { pageMetadata } from '@/lib/metadata';
+import { entryImage, pageMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,6 +41,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       path: `/docs/${path}`,
       title: item.seo?.title || item.title,
       description: item.seo?.description || item.description || DESCRIPTION,
+      // The thumbnail set on it in Buildbase, else the docs' image.
+      image: entryImage(item.image, '/og/docs.png'),
     });
   }
   if (folder) {
@@ -48,6 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       path: `/docs/${path}`,
       title: `${folder.folder.name} · Docs`,
       description: DESCRIPTION,
+      image: '/og/docs.png',
     });
   }
   return {};

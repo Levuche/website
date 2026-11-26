@@ -1,5 +1,6 @@
 import { expect, test } from './fixtures';
 import { expectNoA11yViolations } from './a11y';
+import { legalPages } from '../src/lib/legal';
 
 /*
  * The marketing pages. Content comes from Buildbase where it is set up, so
@@ -209,5 +210,36 @@ test.describe('every page fits phone, tablet and desktop screens', () => {
         ).toBeLessThanOrEqual(0);
       }
     });
+  }
+});
+
+test('each page has its own share image', async ({ page, request }) => {
+  const pages = {
+    '/': '/og.png',
+    '/pricing': '/og/pricing.png',
+    '/blog': '/og/blog.png',
+    '/docs': '/og/docs.png',
+    '/contact': '/og/contact.png',
+    '/terms': '/og/terms.png',
+  };
+  for (const [path, image] of Object.entries(pages)) {
+    await page.goto(path);
+    const og = page.locator('meta[property="og:image"]').first();
+    await expect(og, path).toHaveAttribute('content', new RegExp(`${image}$`));
+    const twitter = page.locator('meta[name="twitter:image"]').first();
+    await expect(twitter, path).toHaveAttribute(
+      'content',
+      new RegExp(`${image}$`)
+    );
+    const file = await request.get(image);
+    expect(file.status(), image).toBe(200);
+    expect(file.headers()['content-type'], image).toBe('image/png');
+  }
+});
+
+test('every legal and trust page has a share image', async ({ request }) => {
+  for (const { slug } of legalPages) {
+    const file = await request.get(`/og/${slug}.png`);
+    expect(file.status(), slug).toBe(200);
   }
 });

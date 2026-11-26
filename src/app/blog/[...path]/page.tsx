@@ -10,7 +10,7 @@ import {
   getContentTree,
   getEntry,
 } from '@/lib/content';
-import { pageMetadata } from '@/lib/metadata';
+import { entryImage, pageMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,6 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       path: `/blog/${path}`,
       title: item.seo?.title || item.title,
       description: item.seo?.description || item.description || DESCRIPTION,
+      // The thumbnail set on it in Buildbase, else the blog's image.
+      image: entryImage(item.image, '/og/blog.png'),
     });
   }
   if (folder) {
@@ -52,6 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       path: `/blog/${path}`,
       title: `${folder.folder.name} · Blog`,
       description: DESCRIPTION,
+      image: '/og/blog.png',
     });
   }
   return {};
