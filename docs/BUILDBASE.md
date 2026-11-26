@@ -210,7 +210,7 @@ shown, and folders with nothing published are left out.
 Legal pages are docs in a Docs folder with the slug `legal`, one published
 page each, with these slugs: `terms`, `privacy`, `cookies`, `pack-terms`,
 `refunds`, `fees`, `creator-rules`, `copyright`, `security`,
-`subprocessors`. Each shows at `/<slug>` (for example `legal/fees` is
+`subprocessors`, `accessibility`. Each shows at `/<slug>` (for example `legal/fees` is
 `/fees`), and the `legal` folder is left out of `/docs` and the sitemap's
 docs. Until a page is published, its page says the text is still being
 written and gives the contact address. The page shows the doc's last update
