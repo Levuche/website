@@ -14,6 +14,17 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    # Skip majors the site's tools can't use yet. Remove a line once they can.
+    ignore:
+      # eslint-config-next's plugins support eslint 9 at most.
+      - dependency-name: eslint
+        versions: ['>=10']
+      # Next and typescript-eslint need TypeScript 6 or older.
+      - dependency-name: typescript
+        versions: ['>=7']
+      # The site builds and runs on Node 22, so its types stay on 22 or older.
+      - dependency-name: '@types/node'
+        versions: ['>=23']
 
   - package-ecosystem: github-actions
     directory: /
