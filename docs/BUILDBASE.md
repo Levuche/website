@@ -101,8 +101,9 @@ environment id come from `@levuche/kit` (`withReferral()`,
 Nothing is kept until affiliate programs are turned on in the console
 (**Billing > Selling > Settings > Affiliates**): an unknown code keeps
 nothing. A referral is marketing storage, so before turning programs on,
-list `bb_referral:<org id>` on the **Cookies** page and add the `marketing`
-category to the cookie banner.
+list `bb_referral:<org id>` on the **Cookies** page. The banner shows its
+**Marketing** switch only once an ad pixel is attached (below), so check that
+it asks about marketing before affiliates go live.
 
 ## Web analytics, goals and the cookie banner
 
@@ -141,10 +142,42 @@ Goals (`src/lib/goals.ts`), sent only while analytics is on:
 | `buy_add_on`   | A Buy button for the add-on is pressed |
 | `contact_sent` | The contact form sends a message       |
 
-Sign-up, login, checkout and payment are counted by Buildbase itself. Adding
-a tag under **Settings > Tracking & tags** also needs its hosts in the
-Content-Security-Policy (`next.config.ts`) and, for a marketing tag, the
-`marketing` category on the banner.
+Sign-up, login, checkout and payment are counted by Buildbase itself.
+
+## Ad pixels and other tags
+
+The site loads whatever tags are attached to its sign-in client in the
+console, through the provider's `tracking` option. Nothing is set in code or
+in environment variables. To add one, for example GA4, Google Ads or the
+Meta pixel:
+
+1. Console, **Settings > Tracking & tags**: add the tag with its ID. For
+   Google Ads, fill in the conversion labels for sign-up and purchase.
+2. **User management > Access > Authentication > Settings**, **Edit** on the
+   website's client, **Tracking & tags**: attach it. While you are there, set
+   the **Consent** default (denied in the EEA, the UK and Switzerland,
+   granted elsewhere is Buildbase's suggestion; the choice is ours).
+3. Attach the same Google tags to the app's client too, so a visitor who
+   clicks an ad on levuche.com and signs up in the app is one conversion.
+4. Update the **Cookies** and **Privacy** docs: name each vendor, and list
+   `bb_attr` (ad click IDs and campaign tags, 90 days, kept only after a yes
+   to marketing). **Settings > Tracking & tags** writes the vendor paragraph
+   for the Privacy doc.
+5. On dev.levuche.com, check the tag loads as Buildbase's _Verify and
+   troubleshoot_ page describes, and that the browser console reports no
+   refused host. The policy there is report-only, so a missing host shows
+   without breaking the page; add it in `next.config.ts` before production,
+   where the policy is enforced.
+
+The cookie banner asks only about what is on the page: **Analytics** while
+web analytics is on or an analytics tag is attached, and **Marketing** once an
+ad pixel is. Google's tags load straight away with cookies off; every other
+tag waits for a yes. With nothing attached and analytics off, there is no
+banner and no **Cookie settings** link.
+
+The Content-Security-Policy (`next.config.ts`) takes the tags' script hosts
+from the SDK (`TAG_SCRIPT_ORIGINS`), plus the reporting hosts Buildbase lists
+for Google, Meta and X.
 
 ## Content model
 

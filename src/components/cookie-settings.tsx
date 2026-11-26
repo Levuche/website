@@ -1,15 +1,23 @@
 'use client';
 
 import { openCookieBanner } from '@buildbase/sdk/react';
-import { buildbase, isAuthConfigured } from '@/lib/buildbase-config';
+import { useConsentCategories } from '@/hooks/use-consent-categories';
+import { isAuthConfigured } from '@/lib/buildbase-config';
 
 /**
  * "Cookie settings" in the footer: shows the cookie banner again with the
  * visitor's current answer, so they can change or withdraw it. Only there
- * while web analytics is on, since there is nothing to choose otherwise.
+ * while something needs consent (web analytics, or a tag attached in the
+ * Buildbase console), since there is nothing to choose otherwise.
  */
 export function CookieSettings() {
-  if (!buildbase.analytics || !isAuthConfigured) return null;
+  if (!isAuthConfigured) return null;
+  return <CookieSettingsButton />;
+}
+
+function CookieSettingsButton() {
+  const categories = useConsentCategories();
+  if (categories.length === 0) return null;
   return (
     <button
       type="button"

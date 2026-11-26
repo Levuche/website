@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next';
 import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
+import { TAG_SCRIPT_ORIGINS } from '@buildbase/sdk/tracking';
 
 /** Only the production host is indexed; previews and staging send noindex. */
 const isIndexable =
@@ -15,20 +16,38 @@ const buildbaseApi = new URL(
 ).origin;
 
 /**
+ * The hosts the tags from Buildbase's Tracking & tags load from and report
+ * to (Buildbase's "Providers" doc). The script hosts come from the SDK, so
+ * they follow the providers it supports. The others are the hosts Buildbase
+ * measured for Google (GA4, Tag Manager, Google Ads), Meta and X; any other
+ * pixel's reporting host shows as refused in the browser console on the dev
+ * site, where the policy is report-only, and gets added here.
+ */
+const tagScriptHosts = [
+  ...TAG_SCRIPT_ORIGINS,
+  'https://googleads.g.doubleclick.net',
+];
+const tagConnectHosts = [
+  'https://ad.doubleclick.net',
+  'https://*.google-analytics.com',
+  'https://*.analytics.google.com',
+  'https://www.google.com',
+];
+
+/**
  * The Content-Security-Policy: only the hosts the site needs. Next.js and
  * next-themes put small scripts and styles inline, so those stay allowed.
- * Blog and docs images come from Buildbase Content, so any https image is
- * allowed. Sign-in and Stripe Checkout are full-page redirects and need no
- * entry. Adding a tracking tag (Settings > Tracking & tags) means adding its
- * hosts here too: Buildbase's "Providers" doc lists them.
+ * Blog and docs images come from Buildbase Content, and tracking pixels are
+ * images too, so any https image is allowed. Sign-in and Stripe Checkout are
+ * full-page redirects and need no entry.
  */
 const contentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline' ${tagScriptHosts.join(' ')}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self' ${buildbaseApi}`,
+  `connect-src 'self' ${buildbaseApi} ${tagConnectHosts.join(' ')}`,
   "frame-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
