@@ -159,6 +159,9 @@ test('pages send the security headers', async ({ request }) => {
     expect(csp, path).toContain("default-src 'self'");
     expect(csp, path).toContain("frame-ancestors 'none'");
     expect(csp, path).toContain("object-src 'none'");
+    // The hosts of the tags attached in the Buildbase console.
+    expect(csp, path).toContain('https://www.googletagmanager.com');
+    expect(csp, path).toContain('https://connect.facebook.net');
     expect(headers['strict-transport-security'], path).toContain('max-age=');
     expect(headers['x-content-type-options'], path).toBe('nosniff');
     expect(headers['x-frame-options'], path).toBe('DENY');

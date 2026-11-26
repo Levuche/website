@@ -1,10 +1,10 @@
 import { expect, test } from './fixtures';
 
 /*
- * The cookie banner shows only while Buildbase web analytics is on
- * (NEXT_PUBLIC_BUILDBASE_ANALYTICS=on) and sign-in is set up, as on the dev
- * site once analytics is turned on there. Elsewhere it stays off and these
- * tests are skipped.
+ * The cookie banner shows while something needs consent: Buildbase web
+ * analytics (NEXT_PUBLIC_BUILDBASE_ANALYTICS=on) or a tag attached in the
+ * Buildbase console, with sign-in set up. These tests cover web analytics,
+ * as on the dev site once it is turned on there; elsewhere they are skipped.
  */
 const analyticsOn = process.env.NEXT_PUBLIC_BUILDBASE_ANALYTICS === 'on';
 

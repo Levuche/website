@@ -2,6 +2,7 @@
 
 import { ApiVersion } from '@buildbase/sdk';
 import { CookieBanner, SaaSOSProvider } from '@buildbase/sdk/react';
+import { useConsentCategories } from '@/hooks/use-consent-categories';
 import { buildbase, isAuthConfigured } from '@/lib/buildbase-config';
 
 /**
@@ -22,6 +23,12 @@ export function SaaSProvider({ children }: { children: React.ReactNode }) {
       // Web analytics stays off unless NEXT_PUBLIC_BUILDBASE_ANALYTICS=on,
       // so nothing is collected before the privacy and cookie pages say so.
       analytics={buildbase.analytics}
+      // Loads the tags attached to this site's sign-in client in the
+      // Buildbase console (Settings > Tracking & tags): GA4, Google Ads, the
+      // Meta, LinkedIn, X and TikTok pixels and the rest. Google tags start
+      // with cookies off; every other tag waits for the visitor's yes in the
+      // cookie banner. With nothing attached, nothing loads.
+      tracking={{}}
       auth={{
         clientId: buildbase.clientId,
         redirectUrl: buildbase.redirectUrl,
@@ -61,13 +68,20 @@ export function SaaSProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-      {/* With analytics on, visitors are asked first: the banner shows once,
-          remembers the answer in the bb_consent cookie, and "Cookie settings"
-          in the footer opens it again. The site has no marketing tags, so it
-          asks about analytics only. */}
-      {buildbase.analytics && (
-        <CookieBanner privacyHref="/privacy" categories={['analytics']} />
-      )}
+      <ConsentBanner />
     </SaaSOSProvider>
   );
+}
+
+/**
+ * Asks visitors first whenever something needs their consent: web analytics,
+ * or a tag attached in the console. It shows once, remembers the answer in
+ * the bb_consent cookie, and "Cookie settings" in the footer opens it again.
+ * It asks only about the kinds of tag that are really on the page, so the
+ * Marketing switch appears once an ad pixel is attached.
+ */
+function ConsentBanner() {
+  const categories = useConsentCategories();
+  if (categories.length === 0) return null;
+  return <CookieBanner privacyHref="/privacy" categories={categories} />;
 }
