@@ -107,9 +107,11 @@ it asks about marketing before affiliates go live.
 
 ## Web analytics, goals and the cookie banner
 
-Off until `NEXT_PUBLIC_BUILDBASE_ANALYTICS=on` (the GitHub variable
-`BUILDBASE_ANALYTICS` for the deploy and preview workflows). It needs sign-in
-set up too, since it runs inside the Buildbase provider. To turn it on:
+Controlled by `NEXT_PUBLIC_BUILDBASE_ANALYTICS=on`. The dev site and preview
+builds always set it (in `deploy.yml` and `preview.yml`); production reads the
+GitHub variable `BUILDBASE_ANALYTICS` and stays off until it is `on`. It needs
+sign-in set up too, since it runs inside the Buildbase provider. To turn it on
+for an environment:
 
 1. Console, **Settings > Analytics**: under **Domains**, **Track**
    `levuche.com` and `app.levuche.com` in production, and `dev.levuche.com`
@@ -124,13 +126,16 @@ set up too, since it runs inside the Buildbase provider. To turn it on:
 
 With it on, the site shows Buildbase's `CookieBanner` (analytics only, with a
 link to `/privacy`) and a **Cookie settings** button in the footer that opens
-it again. Visitors are counted with cookies only after they say yes. The
-cookies to list on the Cookies page:
+it again. Before an answer, the default for the visitor's region applies (set
+on the sign-in client's **Consent** block in the console): in the EEA, the UK
+and Switzerland a visit is counted without an ID or cookie until they say yes.
+Saying no deletes `bb_vid` and `bb_sid`. The cookies to list on the Cookies
+page:
 
 | Cookie       | What it does                       | How long            |
 | ------------ | ---------------------------------- | ------------------- |
-| `bb_vid`     | A random visitor ID, after a yes   | 395 days            |
-| `bb_sid`     | A random visit ID, after a yes     | 30 minutes, renewed |
+| `bb_vid`     | A random visitor ID                | 395 days            |
+| `bb_sid`     | A random visit ID                  | 30 minutes, renewed |
 | `bb_consent` | The visitor's answer to the banner | 395 days            |
 
 Goals (`src/lib/goals.ts`), sent only while analytics is on:

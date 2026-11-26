@@ -63,7 +63,8 @@ jobs:
       NEXT_PUBLIC_BUILDBASE_ORG_ID: ${{ vars.BUILDBASE_ORG_ID }}
       NEXT_PUBLIC_BUILDBASE_ENVIRONMENT: ${{ vars.BUILDBASE_ENVIRONMENT }}
       NEXT_PUBLIC_BUILDBASE_CLIENT_ID: ${{ vars.BUILDBASE_CLIENT_ID }}
-      NEXT_PUBLIC_BUILDBASE_ANALYTICS: ${{ vars.BUILDBASE_ANALYTICS }}
+      # As on the dev site: web analytics on, behind the cookie banner.
+      NEXT_PUBLIC_BUILDBASE_ANALYTICS: 'on'
       # Optional: a Cloudflare Access service token, so the checks can see
       # past the team sign-in.
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
