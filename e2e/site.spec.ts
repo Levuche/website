@@ -1,5 +1,6 @@
 import { expect, test } from './fixtures';
 import { expectNoA11yViolations } from './a11y';
+import { legalPages } from '../src/lib/legal';
 
 /*
  * The marketing pages. Content comes from Buildbase where it is set up, so
@@ -159,6 +160,13 @@ test('pages send the security headers', async ({ request }) => {
     expect(csp, path).toContain("default-src 'self'");
     expect(csp, path).toContain("frame-ancestors 'none'");
     expect(csp, path).toContain("object-src 'none'");
+    // The hosts of the tags attached in the Buildbase console.
+    expect(csp, path).toContain('https://www.googletagmanager.com');
+    expect(csp, path).toContain('https://connect.facebook.net');
+    // Blocked scripts and requests are reported to the site's own route.
+    expect(csp, path).toContain('report-uri /api/csp-report');
+    expect(csp, path).toContain('report-to csp');
+    expect(headers['reporting-endpoints'], path).toBe('csp="/api/csp-report"');
     expect(headers['strict-transport-security'], path).toContain('max-age=');
     expect(headers['x-content-type-options'], path).toBe('nosniff');
     expect(headers['x-frame-options'], path).toBe('DENY');
@@ -207,4 +215,147 @@ test.describe('every page fits phone, tablet and desktop screens', () => {
       }
     });
   }
+});
+
+test('the CSP report route takes both report shapes', async ({ request }) => {
+  const older = await request.post('/api/csp-report', {
+    headers: { 'Content-Type': 'application/csp-report' },
+    data: JSON.stringify({
+      'csp-report': {
+        'document-uri': 'https://levuche.com/',
+        'effective-directive': 'script-src-elem',
+        'blocked-uri': 'https://example.com/tag.js',
+      },
+    }),
+  });
+  expect(older.status()).toBe(204);
+  const current = await request.post('/api/csp-report', {
+    headers: { 'Content-Type': 'application/reports+json' },
+    data: JSON.stringify([
+      {
+        type: 'csp-violation',
+        body: {
+          documentURL: 'https://levuche.com/',
+          effectiveDirective: 'connect-src',
+          blockedURL: 'https://example.com/collect',
+        },
+      },
+    ]),
+  });
+  expect(current.status()).toBe(204);
+  const junk = await request.post('/api/csp-report', { data: 'not json' });
+  expect(junk.status()).toBe(204);
+});
+
+test('each page has its own share image', async ({ page, request }) => {
+  const pages = {
+    '/': '/og.png',
+    '/pricing': '/og/pricing.png',
+    '/blog': '/og/blog.png',
+    '/docs': '/og/docs.png',
+    '/contact': '/og/contact.png',
+    '/terms': '/og/terms.png',
+  };
+  for (const [path, image] of Object.entries(pages)) {
+    await page.goto(path);
+    const og = page.locator('meta[property="og:image"]').first();
+    await expect(og, path).toHaveAttribute('content', new RegExp(`${image}$`));
+    const twitter = page.locator('meta[name="twitter:image"]').first();
+    await expect(twitter, path).toHaveAttribute(
+      'content',
+      new RegExp(`${image}$`)
+    );
+    const file = await request.get(image);
+    expect(file.status(), image).toBe(200);
+    expect(file.headers()['content-type'], image).toBe('image/png');
+  }
+});
+
+test('every legal and trust page has a share image', async ({ request }) => {
+  for (const { slug } of legalPages) {
+    const file = await request.get(`/og/${slug}.png`);
+    expect(file.status(), slug).toBe(200);
+  }
+});
+
+test('the blog has an RSS feed, linked from every page', async ({
+  page,
+  request,
+}) => {
+  const feed = await request.get('/blog/rss.xml');
+  expect(feed.status()).toBe(200);
+  expect(feed.headers()['content-type']).toContain('application/rss+xml');
+  const xml = await feed.text();
+  expect(xml).toContain('<rss version="2.0"');
+  expect(xml).toContain('<channel>');
+  expect(xml).toMatch(/<link>[^<]*\/blog<\/link>/);
+
+  for (const path of ['/', '/blog']) {
+    await page.goto(path);
+    await expect(
+      page.locator('link[rel="alternate"][type="application/rss+xml"]'),
+      path
+    ).toHaveAttribute('href', /\/blog\/rss\.xml$/);
+  }
+  await page.goto('/blog');
+  await expect(page.getByRole('link', { name: 'RSS feed' })).toHaveAttribute(
+    'href',
+    '/blog/rss.xml'
+  );
+});
+
+test.describe('blog and docs search', () => {
+  for (const [base, label] of [
+    ['/blog', 'Search the blog'],
+    ['/docs', 'Search the docs'],
+  ] as const) {
+    test(`${base}/search shows a search box and stays out of search engines`, async ({
+      page,
+    }) => {
+      const response = await page.goto(`${base}/search`);
+      expect(response?.status()).toBe(200);
+      const form = page.getByRole('search');
+      await expect(form).toHaveAttribute('action', `${base}/search`);
+      await expect(page.getByRole('searchbox', { name: label })).toBeVisible();
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+        'content',
+        /noindex/
+      );
+    });
+
+    test(`${base}/search says when nothing matches`, async ({ page }) => {
+      await page.goto(`${base}/search?q=zzqxnomatchzzqx`);
+      await expect(page.getByRole('heading', { level: 1 })).toContainText(
+        'zzqxnomatchzzqx'
+      );
+      await expect(page.getByRole('status')).toContainText('Nothing matched');
+      await expect(page.getByRole('searchbox', { name: label })).toHaveValue(
+        'zzqxnomatchzzqx'
+      );
+    });
+
+    test(`${base}/search copes with an unknown tag or folder and a long query`, async ({
+      request,
+    }) => {
+      for (const query of [
+        'tag=no-such-tag',
+        'in=no/such/folder&q=hello',
+        `q=${'a'.repeat(500)}`,
+      ]) {
+        const response = await request.get(`${base}/search?${query}`);
+        expect(response.status(), query).toBe(200);
+      }
+    });
+  }
+
+  test('a search from the box lands on the results page', async ({ page }) => {
+    await page.goto('/docs/search');
+    const box = page.getByRole('searchbox', { name: 'Search the docs' });
+    await box.fill('levuche');
+    await box.press('Enter');
+    await expect(page).toHaveURL(/\/docs\/search\?q=levuche/);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(
+      'levuche'
+    );
+  });
 });

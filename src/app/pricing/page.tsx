@@ -19,6 +19,7 @@ import { pageMetadata } from '@/lib/metadata';
 export const metadata: Metadata = pageMetadata({
   path: '/pricing',
   title: 'Pricing',
+  image: '/og/pricing.png',
   description:
     'Levuche plans for creators who sell packs, prompts and guides from their link in bio.',
 });

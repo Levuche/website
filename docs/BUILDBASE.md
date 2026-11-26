@@ -101,14 +101,17 @@ environment id come from `@levuche/kit` (`withReferral()`,
 Nothing is kept until affiliate programs are turned on in the console
 (**Billing > Selling > Settings > Affiliates**): an unknown code keeps
 nothing. A referral is marketing storage, so before turning programs on,
-list `bb_referral:<org id>` on the **Cookies** page and add the `marketing`
-category to the cookie banner.
+list `bb_referral:<org id>` on the **Cookies** page. The banner shows its
+**Marketing** switch only once an ad pixel is attached (below), so check that
+it asks about marketing before affiliates go live.
 
 ## Web analytics, goals and the cookie banner
 
-Off until `NEXT_PUBLIC_BUILDBASE_ANALYTICS=on` (the GitHub variable
-`BUILDBASE_ANALYTICS` for the deploy and preview workflows). It needs sign-in
-set up too, since it runs inside the Buildbase provider. To turn it on:
+Controlled by `NEXT_PUBLIC_BUILDBASE_ANALYTICS=on`. The dev site and preview
+builds always set it (in `deploy.yml` and `preview.yml`); production reads the
+GitHub variable `BUILDBASE_ANALYTICS` and stays off until it is `on`. It needs
+sign-in set up too, since it runs inside the Buildbase provider. To turn it on
+for an environment:
 
 1. Console, **Settings > Analytics**: under **Domains**, **Track**
    `levuche.com` and `app.levuche.com` in production, and `dev.levuche.com`
@@ -123,13 +126,16 @@ set up too, since it runs inside the Buildbase provider. To turn it on:
 
 With it on, the site shows Buildbase's `CookieBanner` (analytics only, with a
 link to `/privacy`) and a **Cookie settings** button in the footer that opens
-it again. Visitors are counted with cookies only after they say yes. The
-cookies to list on the Cookies page:
+it again. Before an answer, the default for the visitor's region applies (set
+on the sign-in client's **Consent** block in the console): in the EEA, the UK
+and Switzerland a visit is counted without an ID or cookie until they say yes.
+Saying no deletes `bb_vid` and `bb_sid`. The cookies to list on the Cookies
+page:
 
 | Cookie       | What it does                       | How long            |
 | ------------ | ---------------------------------- | ------------------- |
-| `bb_vid`     | A random visitor ID, after a yes   | 395 days            |
-| `bb_sid`     | A random visit ID, after a yes     | 30 minutes, renewed |
+| `bb_vid`     | A random visitor ID                | 395 days            |
+| `bb_sid`     | A random visit ID                  | 30 minutes, renewed |
 | `bb_consent` | The visitor's answer to the banner | 395 days            |
 
 Goals (`src/lib/goals.ts`), sent only while analytics is on:
@@ -141,10 +147,42 @@ Goals (`src/lib/goals.ts`), sent only while analytics is on:
 | `buy_add_on`   | A Buy button for the add-on is pressed |
 | `contact_sent` | The contact form sends a message       |
 
-Sign-up, login, checkout and payment are counted by Buildbase itself. Adding
-a tag under **Settings > Tracking & tags** also needs its hosts in the
-Content-Security-Policy (`next.config.ts`) and, for a marketing tag, the
-`marketing` category on the banner.
+Sign-up, login, checkout and payment are counted by Buildbase itself.
+
+## Ad pixels and other tags
+
+The site loads whatever tags are attached to its sign-in client in the
+console, through the provider's `tracking` option. Nothing is set in code or
+in environment variables. To add one, for example GA4, Google Ads or the
+Meta pixel:
+
+1. Console, **Settings > Tracking & tags**: add the tag with its ID. For
+   Google Ads, fill in the conversion labels for sign-up and purchase.
+2. **User management > Access > Authentication > Settings**, **Edit** on the
+   website's client, **Tracking & tags**: attach it. While you are there, set
+   the **Consent** default (denied in the EEA, the UK and Switzerland,
+   granted elsewhere is Buildbase's suggestion; the choice is ours).
+3. Attach the same Google tags to the app's client too, so a visitor who
+   clicks an ad on levuche.com and signs up in the app is one conversion.
+4. Update the **Cookies** and **Privacy** docs: name each vendor, and list
+   `bb_attr` (ad click IDs and campaign tags, 90 days, kept only after a yes
+   to marketing). **Settings > Tracking & tags** writes the vendor paragraph
+   for the Privacy doc.
+5. On dev.levuche.com, check the tag loads as Buildbase's _Verify and
+   troubleshoot_ page describes, and that the browser console reports no
+   refused host. The policy there is report-only, so a missing host shows
+   without breaking the page; add it in `next.config.ts` before production,
+   where the policy is enforced.
+
+The cookie banner asks only about what is on the page: **Analytics** while
+web analytics is on or an analytics tag is attached, and **Marketing** once an
+ad pixel is. Google's tags load straight away with cookies off; every other
+tag waits for a yes. With nothing attached and analytics off, there is no
+banner and no **Cookie settings** link.
+
+The Content-Security-Policy (`next.config.ts`) takes the tags' script hosts
+from the SDK (`TAG_SCRIPT_ORIGINS`), plus the reporting hosts Buildbase lists
+for Google, Meta and X.
 
 ## Content model
 
@@ -174,10 +212,22 @@ navigation nests the same way. Add, rename or move folders and posts in the
 console and the site follows on the next request; only published posts are
 shown, and folders with nothing published are left out.
 
+Search: Buildbase has no content search, so the site searches the
+published posts itself, from the same cached list reads. The search box on
+`/blog`, every docs page and each folder's page goes to `/blog/search` or
+`/docs/search` (`?q=` words, `?tag=` a tag's slug, `?in=` a folder's path).
+Every word has to appear in a post's title, tags, folder names, description
+or text, and titles count most. Matching folders and tags are listed above
+the posts. Tags come from Manage tags in Blogs or Docs; public, unarchived
+tags show under each post and link to the others that carry them. Result
+pages are not indexed by search engines. A folder with the slug `search` at
+the top of the blog or docs would be hidden by the search page, so don't
+use that slug.
+
 Legal pages are docs in a Docs folder with the slug `legal`, one published
 page each, with these slugs: `terms`, `privacy`, `cookies`, `pack-terms`,
 `refunds`, `fees`, `creator-rules`, `copyright`, `security`,
-`subprocessors`. Each shows at `/<slug>` (for example `legal/fees` is
+`subprocessors`, `accessibility`. Each shows at `/<slug>` (for example `legal/fees` is
 `/fees`), and the `legal` folder is left out of `/docs` and the sitemap's
 docs. Until a page is published, its page says the text is still being
 written and gives the contact address. The page shows the doc's last update

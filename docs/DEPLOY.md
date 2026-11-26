@@ -87,7 +87,10 @@ In GitHub, `Levuche/website` > **Settings**:
    | `BUILDBASE_ORG_ID`      | Levuche org id                    | Levuche org id                       |
    | `BUILDBASE_ENVIRONMENT` | the development environment's key | not used (production is the default) |
    | `BUILDBASE_CLIENT_ID`   | development sign-in client id     | production sign-in client id         |
-   | `BUILDBASE_ANALYTICS`   | `on` when wanted                  | `on` when wanted                     |
+   | `BUILDBASE_ANALYTICS`   | not used (always on)              | `on` when wanted                     |
+
+   Web analytics is always on for the dev site and preview builds, behind the
+   cookie banner, so `BUILDBASE_ANALYTICS` is read only by production.
 
    The site address and sign-in redirect are fixed in the workflow
    (`https://dev.levuche.com` and `https://levuche.com`), so the dev site can
@@ -281,6 +284,14 @@ console open. If nothing is reported, the `levuche.com` build enforces the
 same policy. When you add a tracking tag in Buildbase (Settings > Tracking &
 tags), add its hosts to the policy first; Buildbase's _Providers_ page lists
 them.
+
+Browsers also report what the policy blocks, or would block, to
+`/api/csp-report` (`report-to` and `report-uri`). Each report is one
+`csp-violation` line in the Worker's logs, with the directive, the blocked
+host and the page's path: **Workers & Pages** → the Worker → **Observability**
+→ search `csp-violation`. On `levuche-com` a line means something was blocked
+for a visitor; on `levuche-com-dev` it means the production policy would block
+it. Reports from browser extensions are dropped.
 
 ## 12. Error pages and error alerts
 

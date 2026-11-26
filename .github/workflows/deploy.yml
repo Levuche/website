@@ -48,17 +48,19 @@ jobs:
       NEXT_PUBLIC_BUILDBASE_ORG_ID: ${{ vars.BUILDBASE_ORG_ID }}
       NEXT_PUBLIC_BUILDBASE_ENVIRONMENT: ${{ vars.BUILDBASE_ENVIRONMENT }}
       NEXT_PUBLIC_BUILDBASE_CLIENT_ID: ${{ vars.BUILDBASE_CLIENT_ID }}
-      NEXT_PUBLIC_BUILDBASE_ANALYTICS: ${{ vars.BUILDBASE_ANALYTICS }}
+      # Web analytics is on for dev, behind the cookie banner. Production keeps
+      # the BUILDBASE_ANALYTICS variable, so it stays off until it is set there.
+      NEXT_PUBLIC_BUILDBASE_ANALYTICS: 'on'
       # Optional: a Cloudflare Access service token, so the checks after the
       # deploy can see past the team sign-in (docs/DEPLOY.md).
       CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
       CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -117,11 +119,11 @@ jobs:
       NEXT_PUBLIC_BUILDBASE_CLIENT_ID: ${{ vars.BUILDBASE_CLIENT_ID }}
       NEXT_PUBLIC_BUILDBASE_ANALYTICS: ${{ vars.BUILDBASE_ANALYTICS }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm

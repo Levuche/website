@@ -36,6 +36,9 @@ export function SiteFooter() {
           <Link href="/security" className="text-lv-link">
             Security
           </Link>
+          <Link href="/accessibility" className="text-lv-link">
+            Accessibility
+          </Link>
           <Link href="/contact" className="text-lv-link">
             Contact
           </Link>
