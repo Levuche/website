@@ -3,20 +3,54 @@ import Link from 'next/link';
 import { ArticleHtml } from '@/components/article-html';
 import { JsonLd } from '@/components/json-ld';
 import { formatDate } from '@/components/content/entry-list';
+import { SearchBox } from '@/components/content/search-box';
+import { TagList } from '@/components/content/tag-list';
+import type { TagLink } from '@/lib/content';
 import { renderMarkdown } from '@/lib/markdown';
 import { absoluteUrl, site } from '@/lib/site';
+
+export interface Crumb {
+  label: string;
+  href: string;
+}
+
+/** Links back up the folder tree: the index, then each folder above a page. */
+export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
+  return (
+    <nav aria-label="Breadcrumb">
+      <ol className="m-0 flex list-none flex-wrap items-center gap-1.5 p-0 text-sm">
+        {crumbs.map((crumb, i) => (
+          <li key={crumb.href} className="m-0 flex items-center gap-1.5">
+            {i > 0 ? (
+              <span aria-hidden="true" className="text-lv-text-3">
+                /
+              </span>
+            ) : null}
+            <Link href={crumb.href} className="text-lv-link font-semibold">
+              {crumb.label}
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
 
 /** One blog post or doc page: title, date, cover and the Markdown body. */
 export function EntryPage({
   item,
   path,
   base,
-  backLabel,
+  crumbs,
+  tags = [],
 }: {
   item: BlogPost | DocPage;
   path: string;
   base: '/blog' | '/docs';
-  backLabel: string;
+  /** The index and the folders above this page, outermost first. */
+  crumbs: Crumb[];
+  /** Its public tags, each linking to the others that carry it. */
+  tags?: TagLink[];
 }) {
   const body = renderMarkdown(item.content);
   const date = base === '/blog' ? formatDate(item.publishedAt) : null;
@@ -40,17 +74,13 @@ export function EntryPage({
   };
 
   return (
-    <article className="mx-auto flex max-w-[820px] flex-col gap-5 px-[clamp(16px,3vw,32px)] pt-7 pb-16">
+    <article className="max-w-article px-gutter mx-auto flex flex-col gap-5 pt-6 pb-14">
       <JsonLd data={jsonLd} />
-      <Link href={base} className="text-lv-link text-sm font-semibold">
-        ← {backLabel}
-      </Link>
-      <h1 className="m-0 text-[clamp(34px,4.5vw,46px)] leading-[1.08] font-bold tracking-[-1.2px]">
-        {item.title}
-      </h1>
+      <Breadcrumbs crumbs={crumbs} />
+      <h1 className="text-h1 m-0">{item.title}</h1>
       {date ? <p className="text-lv-text-3 m-0 text-sm">{date}</p> : null}
       {item.description ? (
-        <p className="text-lv-text-2 m-0 text-lg leading-relaxed">
+        <p className="text-lv-text-2 m-0 text-base leading-relaxed">
           {item.description}
         </p>
       ) : null}
@@ -59,11 +89,31 @@ export function EntryPage({
         <img
           src={image}
           alt=""
-          className="w-full rounded-[20px]"
+          className="rounded-card w-full"
           loading="lazy"
         />
       ) : null}
       <ArticleHtml html={body.html} />
+      <TagList tags={tags} base={base} />
+      {/* The docs have a search box beside every page; the blog has it here. */}
+      {base === '/blog' ? (
+        <SearchBox base="/blog" className="border-lv-border border-t pt-6" />
+      ) : null}
     </article>
   );
+}
+
+/** Crumbs for a page or folder: the index, then the given folders. */
+export function folderCrumbs(
+  base: '/blog' | '/docs',
+  indexLabel: string,
+  folders: { name: string; path: string }[]
+): Crumb[] {
+  return [
+    { label: indexLabel, href: base },
+    ...folders.map((folder) => ({
+      label: folder.name,
+      href: `${base}/${folder.path}`,
+    })),
+  ];
 }

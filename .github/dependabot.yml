@@ -1,0 +1,39 @@
+# Weekly dependency updates, as pull requests into dev. Minor and patch
+# updates come grouped in one pull request; each major update comes alone.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore(deps)
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    # Skip majors the site's tools can't use yet. Remove a line once they can.
+    ignore:
+      # eslint-config-next's plugins support eslint 9 at most.
+      - dependency-name: eslint
+        versions: ['>=10']
+      # Next and typescript-eslint need TypeScript 6 or older.
+      - dependency-name: typescript
+        versions: ['>=7']
+      # The site builds and runs on Node 22, so its types stay on 22 or older.
+      - dependency-name: '@types/node'
+        versions: ['>=23']
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: chore(ci)
+    groups:
+      actions:
+        patterns: ['*']

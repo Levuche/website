@@ -20,6 +20,15 @@ npm-debug.log*
 .open-next/
 .wrangler/
 .dev.vars*
+# Generated on dev and preview builds (scripts/write-asset-headers.mjs)
+public/_headers
 
 # Buildbase CLI state (claim links, blueprint outputs)
 .buildbase/
+
+# Playwright
+/test-results/
+/playwright-report/
+
+# Lighthouse CI reports
+/.lighthouseci/

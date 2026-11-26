@@ -9,8 +9,9 @@ import { site } from '@/lib/site';
 export const metadata: Metadata = pageMetadata({
   path: '/contact',
   title: 'Contact',
+  image: '/og/contact.png',
   description:
-    'How to reach the Levuche team about the beta, your account, privacy or security.',
+    'How to reach the Levuche team about your page, your account, privacy or security.',
 });
 
 function Address({ value }: { value: string }) {
@@ -28,26 +29,24 @@ function Address({ value }: { value: string }) {
  */
 export default function ContactPage() {
   const card =
-    'bg-lv-card border-lv-border flex flex-col gap-2 rounded-[20px] border p-6';
+    'bg-lv-card border-lv-border flex flex-col gap-2 rounded-card border p-6';
   const text = 'text-lv-text-2 m-0 text-base leading-relaxed';
   return (
     <SiteShell>
-      <div className="mx-auto flex max-w-[880px] flex-col gap-8 px-[clamp(16px,3vw,32px)] pt-7 pb-16">
+      <div className="max-w-article px-gutter mx-auto flex flex-col gap-8 pt-7 pb-16">
         <div className="flex flex-col gap-2.5">
-          <h1 className="m-0 text-[clamp(36px,5vw,48px)] leading-[1.05] font-bold tracking-[-1.4px]">
-            Contact
-          </h1>
-          <p className="text-lv-text-2 m-0 text-[17px] leading-relaxed">
-            Questions about the beta, your site or your data? Write to us.
+          <h1 className="text-h1 m-0">Contact</h1>
+          <p className="text-lv-text-2 m-0 text-base leading-relaxed">
+            Questions about Levuche, your site or your data? Write to us.
           </p>
         </div>
 
-        <section className="bg-lv-card border-lv-border flex flex-col gap-4 rounded-[20px] border p-6">
+        <section className="bg-lv-card border-lv-border rounded-card flex flex-col gap-4 border p-6">
           <h2 className="m-0 text-lg font-bold">Send us a message</h2>
           <ContactForm />
         </section>
 
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))] gap-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <section className={card}>
             <h2 className="m-0 text-lg font-bold">General and support</h2>
             <p className={text}>
@@ -82,7 +81,7 @@ export default function ContactPage() {
           </section>
         </div>
 
-        <section className="bg-lv-surface flex flex-col gap-2 rounded-[20px] p-6">
+        <section className="bg-lv-surface rounded-card flex flex-col gap-2 p-6">
           <h2 className="m-0 text-lg font-bold">Who runs Levuche</h2>
           <p className={text}>
             Levuche was founded by {site.owner.founder} and is managed by{' '}

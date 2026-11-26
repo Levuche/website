@@ -12,12 +12,12 @@ export default function LegalLayout({
   const security = contact.security;
   return (
     <SiteShell>
-      <div className="mx-auto grid max-w-[1184px] grid-cols-1 items-start gap-10 px-[clamp(16px,3vw,32px)] pt-7 pb-16 md:grid-cols-[240px_minmax(0,1fr)] md:gap-14">
-        <aside className="flex flex-col gap-5">
+      <div className="max-w-layout px-gutter mx-auto grid grid-cols-1 items-start gap-10 pt-7 pb-16 md:grid-cols-[240px_minmax(0,1fr)] md:gap-14">
+        <aside className="max-md:border-lv-border flex flex-col gap-5 max-md:order-last max-md:border-t max-md:pt-8">
           <LegalNav />
           <div className="border-lv-border flex flex-col gap-2 rounded-2xl border p-4">
-            <p className="m-0 text-[15px] font-bold">Found a security issue?</p>
-            <p className="text-lv-text-2 m-0 text-[13px] leading-[1.55]">
+            <p className="text-ui m-0 font-bold">Found a security issue?</p>
+            <p className="text-lv-text-2 text-caption m-0">
               Tell us privately at{' '}
               <a href={`mailto:${security}`} className="text-lv-link">
                 {security}

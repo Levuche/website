@@ -17,6 +17,14 @@ export const siteUrl = (
  */
 export const isIndexable = siteUrl === PRODUCTION_URL;
 
+/**
+ * The dashboard (the Levuche app), where signed-in people go:
+ * https://app.levuche.com in production, https://app-dev.levuche.com for dev.
+ */
+export const appUrl = (
+  process.env.NEXT_PUBLIC_APP_URL?.trim() || 'https://app.levuche.com'
+).replace(/\/+$/, '');
+
 export const site = {
   name: 'Levuche',
   wordmark: 'levuche',

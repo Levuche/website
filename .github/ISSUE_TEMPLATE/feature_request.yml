@@ -1,0 +1,44 @@
+name: Feature request
+description: Suggest an improvement or something new.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Start with the problem, not the solution. Issues, discussions and pull requests are public. Never post passwords, API keys, card or bank details, order numbers, or anyone's personal information, your own included.
+  - type: dropdown
+    id: who
+    attributes:
+      label: Who is it for?
+      multiple: true
+      options:
+        - Creators
+        - Buyers
+        - The Levuche team
+        - Developers reading this repository
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's the problem?
+      description: What are they trying to do, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything you've tried instead?
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Before you send
+      options:
+        - label: I searched the open and closed issues and the discussions.
+          required: true

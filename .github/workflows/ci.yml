@@ -48,16 +48,65 @@ jobs:
           fi
           echo "$HEAD into $BASE is allowed."
 
+  # Builds the site twice, once as levuche.com and once as the dev site, and
+  # checks what search engines see on each: levuche.com is open with a
+  # sitemap; the dev site and preview links say noindex everywhere, block
+  # every crawler in robots.txt and have no sitemap (docs/DEPLOY.md).
+  indexing:
+    name: Search indexing (${{ matrix.site }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - site: production
+            url: https://levuche.com
+          - site: private
+            url: https://dev.levuche.com
+    env:
+      NEXT_PUBLIC_SITE_URL: ${{ matrix.url }}
+      SITE: ${{ matrix.site }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Start the site
+        run: |
+          npx next start -p 3200 > next-start.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf -o /dev/null http://localhost:3200/robots.txt && exit 0
+            sleep 2
+          done
+          cat next-start.log
+          exit 1
+
+      - name: Check what search engines see
+        env:
+          CHECK_ASSET_HEADERS: '1'
+        run: npm run check:indexing -- http://localhost:3200 "$SITE"
+
   check:
     name: Check and build
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: npm
@@ -81,3 +130,30 @@ jobs:
           npx wrangler deploy --dry-run --outdir .wrangler/dry-run 2>&1 | tee wrangler-output.txt
           echo "## Cloudflare Worker" >> "$GITHUB_STEP_SUMMARY"
           grep "Total Upload" wrangler-output.txt >> "$GITHUB_STEP_SUMMARY" || true
+
+  e2e:
+    name: End-to-end tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      # A plain Next.js build with no Buildbase values: the pages fall back
+      # to the seed content, as on a fork.
+      - name: Build
+        run: npm run build
+
+      - name: Run the end-to-end tests
+        run: npm run e2e

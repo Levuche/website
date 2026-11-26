@@ -1,126 +1,27 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+/*
+ * The product theme: design tokens v1.1 (--lv-*, light and dark), their
+ * shadcn/ui and Tailwind names, the dark: variant and the size presets. It
+ * comes from @levuche/kit (github.com/Levuche/kit), so the website and the
+ * app share one copy.
+ */
+@import '@levuche/kit/theme.css';
 
 /*
- * Levuche design tokens v1.0 (Levuche/design, tokens/levuche-tokens.css,
- * locked 2026-11-25). The theme provider sets data-lv="light" or "dark" on
- * <html>, so these apply page-wide. Marketing pages use only --lv-* tokens;
- * --site-* is the sample creator brand used in the phone preview.
+ * --site-* is a creator's brand on their levuche.page site. Those tokens and
+ * the page blocks (profile, links, packs, video) come from @levuche/ui
+ * (github.com/Levuche/ui), used here for the phone preview on the home page.
  */
-:root:not([data-lv]),
-[data-lv='light'] {
-  --lv-bg: #ffffff;
-  --lv-surface: #f6f7fd;
-  --lv-surface-2: #eef0fb;
-  --lv-card: #ffffff;
-  --lv-border: #dde0f3;
-  --lv-text: #14154a;
-  --lv-text-2: #3a3b5c;
-  --lv-text-3: #5b5d7e;
-  --lv-link: #24257a;
-  --lv-brand: #24257a;
-  --lv-on-brand: #ffffff;
-  --lv-brand-2: #33358f;
-  --lv-accent: #ffb627;
-  --lv-on-accent: #24257a;
-  --lv-accent-soft: #fff4dc;
-  --lv-on-accent-soft: #6b4a00;
-  --lv-primary: #24257a;
-  --lv-on-primary: #ffffff;
-  --lv-success-bg: #e3f5ea;
-  --lv-success: #1c6b3a;
-  --lv-danger: #9b1c1c;
-  --lv-danger-border: #f3d3d3;
-  --lv-shadow: 0 20px 50px rgba(20, 21, 74, 0.16);
-  --lv-canvas: #e9ebf7;
-  color-scheme: light;
-}
-[data-lv='dark'] {
-  --lv-bg: #0d0e26;
-  --lv-surface: #14153a;
-  --lv-surface-2: #1c1e4a;
-  --lv-card: #181a42;
-  --lv-border: #2c2e63;
-  --lv-text: #f1f2fc;
-  --lv-text-2: #c9cbf2;
-  --lv-text-3: #a3a6d6;
-  --lv-link: #ffcb66;
-  --lv-brand: #24257a;
-  --lv-on-brand: #ffffff;
-  --lv-brand-2: #33358f;
-  --lv-accent: #ffb627;
-  --lv-on-accent: #14154a;
-  --lv-accent-soft: #3a2c08;
-  --lv-on-accent-soft: #ffd27a;
-  --lv-primary: #ffb627;
-  --lv-on-primary: #14154a;
-  --lv-success-bg: #0f3320;
-  --lv-success: #8fe0b0;
-  --lv-danger: #ff9b9b;
-  --lv-danger-border: #5a2626;
-  --lv-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-  --lv-canvas: #090a1c;
-  color-scheme: dark;
-}
-[data-site='light'] {
-  --site-bg: #ffffff;
-  --site-surface: #fff4ec;
-  --site-surface-2: #ffe6d4;
-  --site-border: #f1dfd2;
-  --site-text: #1a1325;
-  --site-text-2: #4b4458;
-  --site-link: #9a3412;
-  --site-accent: #c2410c;
-  --site-on-accent: #ffffff;
-  color-scheme: light;
-}
-[data-site='dark'] {
-  --site-bg: #0f1020;
-  --site-surface: #1b1c33;
-  --site-surface-2: #2a2b4a;
-  --site-border: #23244a;
-  --site-text: #f4f4f8;
-  --site-text-2: #c2c3d8;
-  --site-link: #ffb27a;
-  --site-accent: #ff8a3d;
-  --site-on-accent: #0f1020;
-  color-scheme: dark;
-}
-
-@theme inline {
-  --font-sans: var(--font-sora), 'Helvetica Neue', Arial, sans-serif;
-  --color-lv-bg: var(--lv-bg);
-  --color-lv-surface: var(--lv-surface);
-  --color-lv-surface-2: var(--lv-surface-2);
-  --color-lv-card: var(--lv-card);
-  --color-lv-border: var(--lv-border);
-  --color-lv-text: var(--lv-text);
-  --color-lv-text-2: var(--lv-text-2);
-  --color-lv-text-3: var(--lv-text-3);
-  --color-lv-link: var(--lv-link);
-  --color-lv-brand: var(--lv-brand);
-  --color-lv-on-brand: var(--lv-on-brand);
-  --color-lv-accent: var(--lv-accent);
-  --color-lv-on-accent: var(--lv-on-accent);
-  --color-lv-accent-soft: var(--lv-accent-soft);
-  --color-lv-on-accent-soft: var(--lv-on-accent-soft);
-  --color-lv-primary: var(--lv-primary);
-  --color-lv-on-primary: var(--lv-on-primary);
-  --color-lv-success: var(--lv-success);
-  --color-lv-danger: var(--lv-danger);
-  --color-site-bg: var(--site-bg);
-  --color-site-surface: var(--site-surface);
-  --color-site-surface-2: var(--site-surface-2);
-  --color-site-text: var(--site-text);
-  --color-site-text-2: var(--site-text-2);
-  --color-site-accent: var(--site-accent);
-  --color-site-on-accent: var(--site-on-accent);
-  --shadow-lv: var(--lv-shadow);
-  /* About 68 characters a line, for legal text. */
-  --container-measure: 68ch;
-}
+@import '@levuche/ui/tokens.css';
+/* Let Tailwind see the classes the page blocks use. */
+@source '../../node_modules/@levuche/ui/src';
 
 html {
   scroll-behavior: smooth;
+  /* Keep room for the scrollbar on short pages too, so the header and the
+     page don't shift sideways between a short page and a long one. */
+  scrollbar-gutter: stable;
 }
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -137,7 +38,7 @@ body {
 }
 
 /*
- * Buildbase SDK components (sign-in dialogs, account screens, the beta form)
+ * Buildbase SDK components (sign-in dialogs, account screens)
  * in Levuche's colours. The SDK reads HSL triplets on its own .saas-os-ui
  * root; these mirror the --lv-* tokens above. Keep them in step.
  */
@@ -195,8 +96,8 @@ body {
    sanitised in src/lib/markdown.ts; these rules give it the site's type. */
 .lv-prose {
   color: var(--lv-text-2);
-  font-size: 17px;
-  line-height: 1.7;
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
   overflow-wrap: anywhere;
 }
 .lv-prose > :first-child {
@@ -211,13 +112,13 @@ body {
   scroll-margin-top: 1rem;
 }
 .lv-prose h2 {
-  margin: 2.25rem 0 0.75rem;
-  font-size: 1.5rem;
+  margin: 2rem 0 0.75rem;
+  font-size: 1.375rem;
   letter-spacing: -0.3px;
 }
 .lv-prose h3 {
-  margin: 1.75rem 0 0.5rem;
-  font-size: 1.2rem;
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.125rem;
 }
 .lv-prose h4 {
   margin: 1.5rem 0 0.5rem;

@@ -1,14 +1,26 @@
 'use client';
 
-import { useId, useState } from 'react';
-
-type State = 'idle' | 'sending' | 'sent' | 'error';
+import { CheckIcon } from 'lucide-react';
+import { useId } from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  useSendContactMessage,
+  type ContactMessage,
+} from '@/hooks/use-send-contact-message';
+import { ApiError } from '@/lib/api';
 
 const MESSAGES: Record<string, string> = {
   invalid_fields: 'Please add your name, a valid email and a message.',
   rate_limited: 'Too many messages just now. Please try again in a minute.',
   not_configured:
     'The form isn’t open yet. Please email us at the address above.',
+  captcha_failed:
+    'We couldn’t check that you’re not a bot. Please try again, or email us.',
+  email_refused: 'Please use a different email address.',
 };
 
 /**
@@ -17,96 +29,68 @@ const MESSAGES: Record<string, string> = {
  */
 export function ContactForm() {
   const id = useId();
-  const [state, setState] = useState<State>('idle');
-  const [error, setError] = useState<string | null>(null);
+  const send = useSendContactMessage();
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const fields = Object.fromEntries(new FormData(form).entries());
-    setState('sending');
-    setError(null);
-    try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fields),
-      });
-      const body = (await res.json().catch(() => ({}))) as { error?: string };
-      if (!res.ok) throw new Error(body.error ?? 'unavailable');
-      form.reset();
-      setState('sent');
-    } catch (err) {
-      const code = err instanceof Error ? err.message : '';
-      setError(
-        MESSAGES[code] ??
-          'Your message didn’t send. Please try again, or email us instead.'
-      );
-      setState('error');
-    }
-  }
-
-  if (state === 'sent') {
+  if (send.isSuccess) {
     return (
-      <p
-        role="status"
-        className="bg-lv-success-bg text-lv-success m-0 rounded-2xl p-5 font-semibold"
-      >
-        Thanks, your message is on its way. We’ll reply by email.
-      </p>
+      <Alert variant="success" className="p-5 text-base">
+        <CheckIcon aria-hidden />
+        <AlertDescription>
+          Thanks, your message is on its way. We’ll reply by email.
+        </AlertDescription>
+      </Alert>
     );
   }
 
-  const label = 'text-sm font-semibold';
-  const input =
-    'border-lv-border bg-lv-card text-lv-text min-h-12 rounded-xl border-2 px-4 text-base';
+  const error = send.error
+    ? ((send.error instanceof ApiError && MESSAGES[send.error.code]) ??
+      'Your message didn’t send. Please try again, or email us instead.')
+    : null;
 
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={(event) => {
+        event.preventDefault();
+        const fields = Object.fromEntries(
+          new FormData(event.currentTarget).entries()
+        ) as ContactMessage;
+        send.mutate(fields);
+      }}
       className="flex flex-col gap-4"
-      noValidate={false}
     >
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor={`${id}-name`} className={label}>
-          Name
-        </label>
-        <input
-          id={`${id}-name`}
-          name="name"
-          required
-          maxLength={200}
-          autoComplete="name"
-          className={input}
-        />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor={`${id}-email`} className={label}>
-          Email
-        </label>
-        <input
-          id={`${id}-email`}
-          name="email"
-          type="email"
-          required
-          maxLength={320}
-          autoComplete="email"
-          className={input}
-        />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor={`${id}-message`} className={label}>
-          Message
-        </label>
-        <textarea
-          id={`${id}-message`}
-          name="message"
-          required
-          rows={6}
-          maxLength={5000}
-          className={`${input} py-3`}
-        />
-      </div>
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor={`${id}-name`}>Name</FieldLabel>
+          <Input
+            id={`${id}-name`}
+            name="name"
+            required
+            maxLength={200}
+            autoComplete="name"
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor={`${id}-email`}>Email</FieldLabel>
+          <Input
+            id={`${id}-email`}
+            name="email"
+            type="email"
+            required
+            maxLength={320}
+            autoComplete="email"
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor={`${id}-message`}>Message</FieldLabel>
+          <Textarea
+            id={`${id}-message`}
+            name="message"
+            required
+            rows={6}
+            maxLength={5000}
+          />
+        </Field>
+      </FieldGroup>
       {/* Left empty by people; bots tend to fill it. */}
       <div aria-hidden className="hidden">
         <label htmlFor={`${id}-company`}>Company</label>
@@ -117,18 +101,14 @@ export function ContactForm() {
           autoComplete="off"
         />
       </div>
-      {error && (
-        <p role="alert" className="text-lv-danger m-0 text-sm font-semibold">
-          {error}
-        </p>
-      )}
-      <button
+      {error && <Alert variant="destructive">{error}</Alert>}
+      <Button
         type="submit"
-        disabled={state === 'sending'}
-        className="bg-lv-primary text-lv-on-primary min-h-12 cursor-pointer self-start rounded-full border-0 px-7 font-bold disabled:opacity-60"
+        loading={send.isPending}
+        className="self-start px-6"
       >
-        {state === 'sending' ? 'Sending…' : 'Send message'}
-      </button>
+        {send.isPending ? 'Sending…' : 'Send message'}
+      </Button>
     </form>
   );
 }

@@ -1,14 +1,18 @@
 import Link from 'next/link';
+import { CookieSettings } from '@/components/cookie-settings';
 import { site } from '@/lib/site';
 
 /** Footer with the ownership line from the brand rollout checklist. */
 export function SiteFooter() {
   return (
     <footer className="border-lv-border border-t">
-      <div className="text-lv-text-3 mx-auto flex max-w-[1240px] flex-wrap justify-between gap-5 px-[clamp(16px,3vw,32px)] py-8 text-sm">
+      <div className="text-lv-text-3 max-w-layout px-gutter mx-auto flex flex-wrap justify-between gap-5 py-8 text-sm">
         <p className="m-0">
           © 2026{' '}
-          <a href={site.owner.url} className="text-lv-link">
+          <a
+            href={site.owner.url}
+            className="text-lv-link underline underline-offset-2"
+          >
             {site.owner.name}
           </a>
           . Levuche is a product managed by {site.owner.name}.
@@ -32,9 +36,13 @@ export function SiteFooter() {
           <Link href="/security" className="text-lv-link">
             Security
           </Link>
+          <Link href="/accessibility" className="text-lv-link">
+            Accessibility
+          </Link>
           <Link href="/contact" className="text-lv-link">
             Contact
           </Link>
+          <CookieSettings />
         </nav>
       </div>
     </footer>
