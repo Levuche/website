@@ -282,6 +282,14 @@ same policy. When you add a tracking tag in Buildbase (Settings > Tracking &
 tags), add its hosts to the policy first; Buildbase's _Providers_ page lists
 them.
 
+Browsers also report what the policy blocks, or would block, to
+`/api/csp-report` (`report-to` and `report-uri`). Each report is one
+`csp-violation` line in the Worker's logs, with the directive, the blocked
+host and the page's path: **Workers & Pages** → the Worker → **Observability**
+→ search `csp-violation`. On `levuche-com` a line means something was blocked
+for a visitor; on `levuche-com-dev` it means the production policy would block
+it. Reports from browser extensions are dropped.
+
 ## 12. Error pages and error alerts
 
 Unknown addresses get `src/app/not-found.tsx` (404). A page that throws while

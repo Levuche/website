@@ -53,6 +53,10 @@ const contentSecurityPolicy = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
+  // Where browsers report what the policy blocks (src/app/api/csp-report).
+  // report-to is the current way; report-uri is for browsers without it.
+  'report-uri /api/csp-report',
+  'report-to csp',
 ].join('; ');
 
 /**
@@ -68,6 +72,8 @@ const securityHeaders = [
       : 'Content-Security-Policy-Report-Only',
     value: contentSecurityPolicy,
   },
+  // The `csp` endpoint the policy's report-to names.
+  { key: 'Reporting-Endpoints', value: 'csp="/api/csp-report"' },
   {
     key: 'Strict-Transport-Security',
     value: 'max-age=63072000; includeSubDomains',
