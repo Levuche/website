@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { QueryProvider } from '@/components/query-provider';
+import { ReferralCapture } from '@/components/referral-capture';
 import { SaaSProvider } from '@/components/saas-provider';
 import { ThemeProvider } from '@/components/theme-provider';
 import { isIndexable, site, siteUrl } from '@/lib/site';
@@ -45,6 +46,7 @@ export default function RootLayout({
         >
           <QueryProvider>
             <SaaSProvider>{children}</SaaSProvider>
+            <ReferralCapture />
           </QueryProvider>
         </ThemeProvider>
       </body>

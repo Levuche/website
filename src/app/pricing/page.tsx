@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { FaqList } from '@/components/faq-list';
 import { PricingPlans } from '@/components/pricing-plans';
 import { SiteShell } from '@/components/site-shell';
+import { TrackGoal } from '@/components/track-goal';
 import {
   BILLING,
   addOnOffer,
@@ -18,6 +19,7 @@ import { pageMetadata } from '@/lib/metadata';
 export const metadata: Metadata = pageMetadata({
   path: '/pricing',
   title: 'Pricing',
+  image: '/og/pricing.png',
   description:
     'Levuche plans for creators who sell packs, prompts and guides from their link in bio.',
 });
@@ -46,6 +48,7 @@ export default async function PricingPage() {
 
   return (
     <SiteShell current="pricing">
+      <TrackGoal name="pricing_view" />
       <div
         className={cn(
           'max-w-layout px-gutter mx-auto flex flex-col gap-7 pt-7 pb-16',
@@ -71,8 +74,8 @@ export default async function PricingPage() {
               )}
               {offers.length === 0 && (
                 <p className="text-lv-text-2 m-0 text-base leading-relaxed">
-                  Plans are being finalised. Join the beta and we’ll email you
-                  when they’re ready.
+                  Plans are being finalised. Get started now and pick one when
+                  you’re ready to sell.
                 </p>
               )}
             </div>

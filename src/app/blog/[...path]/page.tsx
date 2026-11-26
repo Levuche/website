@@ -9,8 +9,10 @@ import {
   findFolder,
   getContentTree,
   getEntry,
+  getTags,
+  tagsOf,
 } from '@/lib/content';
-import { pageMetadata } from '@/lib/metadata';
+import { entryImage, pageMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,6 +47,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       path: `/blog/${path}`,
       title: item.seo?.title || item.title,
       description: item.seo?.description || item.description || DESCRIPTION,
+      // The thumbnail set on it in Buildbase, else the blog's image.
+      image: entryImage(item.image, '/og/blog.png'),
     });
   }
   if (folder) {
@@ -52,6 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       path: `/blog/${path}`,
       title: `${folder.folder.name} · Blog`,
       description: DESCRIPTION,
+      image: '/og/blog.png',
     });
   }
   return {};
@@ -61,6 +66,10 @@ export default async function BlogEntry({ params }: Props) {
   const path = await pathOf(params);
   const { tree, item, folder, parents } = await load(path);
   if (item) {
+    const link = tree.all.find((entry) => entry.id === item._id);
+    const tags = link?.tagIds.length
+      ? tagsOf(link.tagIds, await getTags('blogs'))
+      : [];
     return (
       <SiteShell>
         <EntryPage
@@ -68,6 +77,7 @@ export default async function BlogEntry({ params }: Props) {
           path={path}
           base="/blog"
           crumbs={folderCrumbs('/blog', 'Blog', parents)}
+          tags={tags}
         />
       </SiteShell>
     );

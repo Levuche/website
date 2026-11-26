@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { LevucheLogo } from '@/components/logo';
 import { AuthButtons } from '@/components/auth-buttons';
 import { cn } from '@/lib/utils';
@@ -16,7 +15,7 @@ export function SiteHeader({ current = null }: { current?: Current }) {
         aria-label="Main"
         className="flex flex-wrap items-center gap-x-[clamp(12px,2vw,24px)] gap-y-2 text-sm"
       >
-        {/* Phones get Pricing, Sign in and the beta button on one row; the
+        {/* Phones get Pricing, Sign in and Get started on one row; the
             home page's own sections are a scroll away. */}
         <Link href="/#how" className={cn(link, 'max-sm:hidden')}>
           How it works
@@ -36,9 +35,6 @@ export function SiteHeader({ current = null }: { current?: Current }) {
           Pricing
         </Link>
         <AuthButtons />
-        <Button asChild>
-          <Link href="/#beta">Join the beta</Link>
-        </Button>
       </nav>
     </header>
   );

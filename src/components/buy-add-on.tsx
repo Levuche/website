@@ -7,8 +7,8 @@ import {
   usePurchaseAddOn,
 } from '@buildbase/sdk/react';
 import { useMutation } from '@tanstack/react-query';
-import Link from 'next/link';
 import { useEffect, useId, useRef, useState } from 'react';
+import { GetStarted } from '@/components/auth-buttons';
 import { Alert } from '@/components/ui/alert';
 import { Field, FieldLabel } from '@/components/ui/field';
 import {
@@ -16,6 +16,7 @@ import {
   NativeSelectOption,
 } from '@/components/ui/native-select';
 import { isAuthConfigured } from '@/lib/buildbase-config';
+import { goal } from '@/lib/goals';
 
 const BUY_PARAM = 'buy';
 
@@ -27,7 +28,7 @@ const BUY_PARAM = 'buy';
  * Buildbase opens Stripe Checkout and the buyer comes back to /pricing.
  * Not signed in: Buildbase's sign-in first, then the purchase carries on
  * by itself (the `?buy=<slug>` on the way back). With no sign-in client
- * set up the button joins the beta instead.
+ * set up the button is "Get started" instead, a link to the dashboard.
  */
 type Props = {
   slug: string;
@@ -39,11 +40,7 @@ type Props = {
 
 export function BuyAddOn(props: Props) {
   if (!isAuthConfigured) {
-    return (
-      <Link href="/#beta" className={props.className}>
-        Join the beta
-      </Link>
-    );
+    return <GetStarted className={props.className} />;
   }
   return <BuyWithBuildbase {...props} />;
 }
@@ -96,6 +93,7 @@ function BuyWithBuildbase({
   const opening = loading || checkoutMutation.isPending;
 
   const buy = async () => {
+    goal('buy_add_on', { slug });
     checkoutMutation.reset();
     setSignInError(null);
     if (!isAuthenticated) {

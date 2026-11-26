@@ -15,6 +15,25 @@
     "binding": "ASSETS",
   },
   "observability": { "enabled": true },
+  // Per-address limits for the routes that call Buildbase
+  // (src/lib/rate-limit.ts). namespace_id is any number unique in the
+  // Cloudflare account; the dev Worker uses its own, so the two sites don't
+  // share counters. Bindings aren't inherited, so env.dev repeats them.
+  "ratelimits": [
+    // The contact form and its spam check: 5 a minute per address.
+    {
+      "name": "CONTACT_LIMITER",
+      "namespace_id": "47101",
+      "simple": { "limit": 5, "period": 60 },
+    },
+    // Signing in and out: 20 a minute per address, the same as Buildbase's
+    // own sign-in limit.
+    {
+      "name": "AUTH_LIMITER",
+      "namespace_id": "47102",
+      "simple": { "limit": 20, "period": 60 },
+    },
+  ],
   // Production: levuche.com only (no workers.dev address). The levuche.com
   // zone must be on the same Cloudflare account before the first deploy.
   // www.levuche.com is a 301 redirect rule in the dashboard, not a route.
@@ -35,6 +54,18 @@
       "routes": [{ "pattern": "dev.levuche.com", "custom_domain": true }],
       "workers_dev": false,
       "preview_urls": true,
+      "ratelimits": [
+        {
+          "name": "CONTACT_LIMITER",
+          "namespace_id": "47201",
+          "simple": { "limit": 5, "period": 60 },
+        },
+        {
+          "name": "AUTH_LIMITER",
+          "namespace_id": "47202",
+          "simple": { "limit": 20, "period": 60 },
+        },
+      ],
     },
   },
 }

@@ -79,6 +79,13 @@ export const legalPages: LegalPage[] = [
     group: 'Trust',
     description: 'The third-party services that process data for Levuche.',
   },
+  {
+    slug: 'accessibility',
+    title: 'Accessibility statement',
+    group: 'Trust',
+    description:
+      'How Levuche works to be usable by everyone, and how to report a barrier.',
+  },
 ];
 
 export function getLegalPage(slug: string): LegalPage | undefined {

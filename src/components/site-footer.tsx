@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CookieSettings } from '@/components/cookie-settings';
 import { site } from '@/lib/site';
 
 /** Footer with the ownership line from the brand rollout checklist. */
@@ -35,9 +36,13 @@ export function SiteFooter() {
           <Link href="/security" className="text-lv-link">
             Security
           </Link>
+          <Link href="/accessibility" className="text-lv-link">
+            Accessibility
+          </Link>
           <Link href="/contact" className="text-lv-link">
             Contact
           </Link>
+          <CookieSettings />
         </nav>
       </div>
     </footer>

@@ -5,8 +5,15 @@ import { DocsNav } from '@/components/content/docs-nav';
 import { EntryPage, folderCrumbs } from '@/components/content/entry-page';
 import { FolderPage } from '@/components/content/folder-page';
 import { SiteShell } from '@/components/site-shell';
-import { findFolder, getContentTree, getEntry } from '@/lib/content';
-import { pageMetadata } from '@/lib/metadata';
+import { SearchBox } from '@/components/content/search-box';
+import {
+  findFolder,
+  getContentTree,
+  getEntry,
+  getTags,
+  tagsOf,
+} from '@/lib/content';
+import { entryImage, pageMetadata } from '@/lib/metadata';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,6 +48,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       path: `/docs/${path}`,
       title: item.seo?.title || item.title,
       description: item.seo?.description || item.description || DESCRIPTION,
+      // The thumbnail set on it in Buildbase, else the docs' image.
+      image: entryImage(item.image, '/og/docs.png'),
     });
   }
   if (folder) {
@@ -48,6 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       path: `/docs/${path}`,
       title: `${folder.folder.name} · Docs`,
       description: DESCRIPTION,
+      image: '/og/docs.png',
     });
   }
   return {};
@@ -57,10 +67,15 @@ export default async function DocsEntry({ params }: Props) {
   const path = await pathOf(params);
   const { tree, item, folder, parents } = await load(path);
   if (!item && !folder) notFound();
+  const link = item ? tree.all.find((entry) => entry.id === item._id) : null;
+  const tags = link?.tagIds.length
+    ? tagsOf(link.tagIds, await getTags('docs'))
+    : [];
   return (
     <SiteShell>
       <div className="max-w-layout md:px-gutter mx-auto grid grid-cols-1 items-start md:grid-cols-[240px_minmax(0,1fr)] md:gap-6">
         <aside className="max-md:border-lv-border max-md:px-gutter pt-7 max-md:order-last max-md:border-t max-md:pb-14">
+          <SearchBox base="/docs" className="mb-5" />
           <DocsNav tree={tree} current={path} />
         </aside>
         {item ? (
@@ -69,6 +84,7 @@ export default async function DocsEntry({ params }: Props) {
             path={path}
             base="/docs"
             crumbs={folderCrumbs('/docs', 'Docs', parents)}
+            tags={tags}
           />
         ) : folder ? (
           <FolderPage

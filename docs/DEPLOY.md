@@ -87,7 +87,10 @@ In GitHub, `Levuche/website` > **Settings**:
    | `BUILDBASE_ORG_ID`      | Levuche org id                    | Levuche org id                       |
    | `BUILDBASE_ENVIRONMENT` | the development environment's key | not used (production is the default) |
    | `BUILDBASE_CLIENT_ID`   | development sign-in client id     | production sign-in client id         |
-   | `BUILDBASE_ANALYTICS`   | `on` when wanted                  | `on` when wanted                     |
+   | `BUILDBASE_ANALYTICS`   | not used (always on)              | `on` when wanted                     |
+
+   Web analytics is always on for the dev site and preview builds, behind the
+   cookie banner, so `BUILDBASE_ANALYTICS` is read only by production.
 
    The site address and sign-in redirect are fixed in the workflow
    (`https://dev.levuche.com` and `https://levuche.com`), so the dev site can
@@ -266,6 +269,90 @@ Search engines have probably not listed the dev site, since it has sent
 noindex from the start. If it ever shows up in Google, add `dev.levuche.com`
 in Search Console and use **Removals**.
 
+## 11. Security headers
+
+Every page sends a Content-Security-Policy, `Strict-Transport-Security`,
+`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` and
+`Permissions-Policy` (`next.config.ts`). The policy allows only this site, the
+Buildbase API and https images from Buildbase Content.
+
+The dev site and preview links send it as
+`Content-Security-Policy-Report-Only`: anything it would block shows as a
+warning in the browser console and still loads. Before a release to main,
+open the dev site's pages, sign in, buy and send the contact form with the
+console open. If nothing is reported, the `levuche.com` build enforces the
+same policy. When you add a tracking tag in Buildbase (Settings > Tracking &
+tags), add its hosts to the policy first; Buildbase's _Providers_ page lists
+them.
+
+Browsers also report what the policy blocks, or would block, to
+`/api/csp-report` (`report-to` and `report-uri`). Each report is one
+`csp-violation` line in the Worker's logs, with the directive, the blocked
+host and the page's path: **Workers & Pages** → the Worker → **Observability**
+→ search `csp-violation`. On `levuche-com` a line means something was blocked
+for a visitor; on `levuche-com-dev` it means the production policy would block
+it. Reports from browser extensions are dropped.
+
+## 12. Error pages and error alerts
+
+Unknown addresses get `src/app/not-found.tsx` (404). A page that throws while
+rendering gets `src/app/error.tsx`: the header and footer stay, with **Try
+again** and a link home. If the root layout itself fails,
+`src/app/global-error.tsx` shows a plain page with its own `<html>`. Both log
+the error with `console.error`, and show Next.js's error reference so a report
+from a visitor can be matched to the log line.
+
+`wrangler.jsonc` already turns on Workers observability, so those errors and
+any 5xx responses are recorded. Alerts are set in the Cloudflare dashboard,
+once for each Worker (`levuche-com` and `levuche-com-dev`):
+
+1. **Workers & Pages** → the Worker → **Observability** → turn on **Issues**.
+   Issues groups uncaught exceptions, failed invocations, 5xx responses and
+   `console.error` calls with an error.
+2. In **Issues**, add an **automation** that sends new and returning issues to
+   your email (or a webhook). An occurrence threshold of `1` alerts on the
+   first error.
+
+Source: Cloudflare, Workers Logs, "Alert on application events".
+
+## 13. Rate limits
+
+Two layers slow down a burst of requests from one address on the routes that
+call Buildbase.
+
+**In the Worker (already on).** `wrangler.jsonc` gives each Worker two rate
+limiting bindings, and `src/lib/rate-limit.ts` checks them by the visitor's
+address:
+
+| Binding           | Routes                                      | Limit per address |
+| ----------------- | ------------------------------------------- | ----------------- |
+| `CONTACT_LIMITER` | `/api/contact` and `/api/contact/challenge` | 5 a minute each   |
+| `AUTH_LIMITER`    | `/api/auth/token` and `/api/auth/signout`   | 20 a minute each  |
+
+Over the limit, the route answers 429 and the contact form says "Too many
+messages just now". The counts are approximate and kept per Cloudflare
+location. `/api/auth/session` has no limit: it only reads this site's cookie
+and runs on every page load. Nothing needs setting up; the bindings deploy
+with the Worker. Each Worker has its own `namespace_id`, and those numbers
+must not be used by another Worker in the account.
+
+**At the edge (dashboard, once).** A rate limiting rule on the `levuche.com`
+zone blocks a flood before the Worker runs, so it costs nothing. It covers
+levuche.com and dev.levuche.com, not preview links. In the dashboard: the
+`levuche.com` zone, then **Security** > **Security rules** > **Create rule** >
+**Rate limiting rules**:
+
+1. Name: `API burst`.
+2. **Edit expression**:
+   `(http.request.uri.path eq "/api/contact" or starts_with(http.request.uri.path, "/api/auth/")) and http.request.method eq "POST"`
+3. **With the same characteristics**: IP.
+4. **When rate exceeds**: 10 requests per 10 seconds.
+5. **Then take action**: Block, for 10 seconds.
+6. **Deploy**.
+
+These are the Free plan's values (one rule, 10-second periods). On Pro or
+above, use 1 minute and Managed Challenge instead.
+
 ## Sources
 
 Cloudflare docs, read November 2026:
@@ -275,4 +362,5 @@ Cloudflare docs, read November 2026:
 - [Workers as the Cloudflare for SaaS fallback origin](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/start/advanced-settings/worker-as-origin/) and [Cloudflare for SaaS plans](https://developers.cloudflare.com/cloudflare-for-platforms/cloudflare-for-saas/plans/)
 - [OpenNext on Cloudflare: deploying](https://opennext.js.org/cloudflare/howtos/dev-deploy)
 - [Version URLs](https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/) and [Cloudflare Access for Workers](https://developers.cloudflare.com/workers/configuration/cloudflare-access/)
+- [Workers rate limiting](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) and [rate limiting rules](https://developers.cloudflare.com/waf/rate-limiting-rules/)
 - [Self-hosted Access applications](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/self-hosted-public-app/), [Access service tokens](https://developers.cloudflare.com/cloudflare-one/access-controls/service-credentials/service-tokens/) and [static asset headers](https://developers.cloudflare.com/workers/static-assets/headers/)

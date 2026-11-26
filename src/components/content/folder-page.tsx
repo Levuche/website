@@ -1,5 +1,6 @@
 import { Breadcrumbs, type Crumb } from '@/components/content/entry-page';
 import { EntryList, FolderList } from '@/components/content/entry-list';
+import { SearchBox } from '@/components/content/search-box';
 import type { EntryLink, FolderNode } from '@/lib/content';
 
 /**
@@ -25,6 +26,10 @@ export function FolderPage({
         <Breadcrumbs crumbs={crumbs} />
         <h1 className="text-h1 m-0">{folder.name}</h1>
       </div>
+      <SearchBox
+        base={base}
+        folder={{ path: folder.path, name: folder.name }}
+      />
       {folder.folders.length > 0 ? (
         <FolderList
           folders={folder.folders}
