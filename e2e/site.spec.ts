@@ -211,3 +211,29 @@ test.describe('every page fits phone, tablet and desktop screens', () => {
     });
   }
 });
+
+test('the blog has an RSS feed, linked from every page', async ({
+  page,
+  request,
+}) => {
+  const feed = await request.get('/blog/rss.xml');
+  expect(feed.status()).toBe(200);
+  expect(feed.headers()['content-type']).toContain('application/rss+xml');
+  const xml = await feed.text();
+  expect(xml).toContain('<rss version="2.0"');
+  expect(xml).toContain('<channel>');
+  expect(xml).toMatch(/<link>[^<]*\/blog<\/link>/);
+
+  for (const path of ['/', '/blog']) {
+    await page.goto(path);
+    await expect(
+      page.locator('link[rel="alternate"][type="application/rss+xml"]'),
+      path
+    ).toHaveAttribute('href', /\/blog\/rss\.xml$/);
+  }
+  await page.goto('/blog');
+  await expect(page.getByRole('link', { name: 'RSS feed' })).toHaveAttribute(
+    'href',
+    '/blog/rss.xml'
+  );
+});
